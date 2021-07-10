@@ -1,50 +1,149 @@
-// tslint:disable no-default-export
+// Copyright 2020-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* eslint-disable guard-for-in */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable class-methods-use-this */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable more/no-then */
+/* eslint-disable no-param-reassign */
 
 import { reject } from 'lodash';
-import { ServerKeysType, WebAPIType } from './WebAPI';
-import { SignalProtocolAddressClass } from '../libsignal.d';
+
+import { z } from 'zod';
+import {
+  CiphertextMessageType,
+  CiphertextMessage,
+  PlaintextContent,
+  ProtocolAddress,
+  sealedSenderEncrypt,
+  SenderCertificate,
+  signalEncrypt,
+  UnidentifiedSenderMessageContent,
+} from '@signalapp/signal-client';
+
+import { WebAPIType } from './WebAPI';
 import { ContentClass, DataMessageClass } from '../textsecure.d';
 import {
   CallbackResultType,
   SendMetadataType,
   SendOptionsType,
+  CustomError,
 } from './SendMessage';
 import {
   OutgoingIdentityKeyError,
   OutgoingMessageError,
   SendMessageNetworkError,
+  SendMessageChallengeError,
   UnregisteredUserError,
 } from './Errors';
+import { isValidNumber } from '../types/PhoneNumber';
+import { Sessions, IdentityKeys } from '../LibSignalStores';
+import { typedArrayToArrayBuffer as toArrayBuffer } from '../Crypto';
+import { updateConversationsWithUuidLookup } from '../updateConversationsWithUuidLookup';
+import { getKeysForIdentifier } from './getKeysForIdentifier';
+
+export const enum SenderCertificateMode {
+  WithE164,
+  WithoutE164,
+}
+
+type SendMetadata = {
+  type: number;
+  destinationDeviceId: number;
+  destinationRegistrationId: number;
+  content: string;
+};
+
+export const serializedCertificateSchema = z
+  .object({
+    expires: z.number().optional(),
+    serialized: z.instanceof(ArrayBuffer),
+  })
+  .nonstrict();
+
+export type SerializedCertificateType = z.infer<
+  typeof serializedCertificateSchema
+>;
 
 type OutgoingMessageOptionsType = SendOptionsType & {
   online?: boolean;
 };
 
+function ciphertextMessageTypeToEnvelopeType(type: number) {
+  if (type === CiphertextMessageType.PreKey) {
+    return window.textsecure.protobuf.Envelope.Type.PREKEY_BUNDLE;
+  }
+  if (type === CiphertextMessageType.Whisper) {
+    return window.textsecure.protobuf.Envelope.Type.CIPHERTEXT;
+  }
+  if (type === CiphertextMessageType.Plaintext) {
+    return window.textsecure.protobuf.Envelope.Type.PLAINTEXT_CONTENT;
+  }
+  throw new Error(
+    `ciphertextMessageTypeToEnvelopeType: Unrecognized type ${type}`
+  );
+}
+
+function getPaddedMessageLength(messageLength: number): number {
+  const messageLengthWithTerminator = messageLength + 1;
+  let messagePartCount = Math.floor(messageLengthWithTerminator / 160);
+
+  if (messageLengthWithTerminator % 160 !== 0) {
+    messagePartCount += 1;
+  }
+
+  return messagePartCount * 160;
+}
+
+export function padMessage(messageBuffer: ArrayBuffer): Uint8Array {
+  const plaintext = new Uint8Array(
+    getPaddedMessageLength(messageBuffer.byteLength + 1) - 1
+  );
+  plaintext.set(new Uint8Array(messageBuffer));
+  plaintext[messageBuffer.byteLength] = 0x80;
+
+  return plaintext;
+}
+
 export default class OutgoingMessage {
   server: WebAPIType;
+
   timestamp: number;
+
   identifiers: Array<string>;
-  message: ContentClass;
+
+  message: ContentClass | PlaintextContent;
+
   callback: (result: CallbackResultType) => void;
-  silent?: boolean;
+
   plaintext?: Uint8Array;
 
   identifiersCompleted: number;
-  errors: Array<any>;
-  successfulIdentifiers: Array<any>;
-  failoverIdentifiers: Array<any>;
-  unidentifiedDeliveries: Array<any>;
+
+  errors: Array<CustomError>;
+
+  successfulIdentifiers: Array<unknown>;
+
+  failoverIdentifiers: Array<unknown>;
+
+  unidentifiedDeliveries: Array<unknown>;
 
   sendMetadata?: SendMetadataType;
-  senderCertificate?: ArrayBuffer;
+
   online?: boolean;
+
+  groupId?: string;
+
+  contentHint: number;
 
   constructor(
     server: WebAPIType,
     timestamp: number,
     identifiers: Array<string>,
-    message: ContentClass | DataMessageClass,
-    silent: boolean | undefined,
+    message: ContentClass | DataMessageClass | PlaintextContent,
+    contentHint: number,
+    groupId: string | undefined,
     callback: (result: CallbackResultType) => void,
     options: OutgoingMessageOptionsType = {}
   ) {
@@ -60,8 +159,9 @@ export default class OutgoingMessage {
     this.server = server;
     this.timestamp = timestamp;
     this.identifiers = identifiers;
+    this.contentHint = contentHint;
+    this.groupId = groupId;
     this.callback = callback;
-    this.silent = silent;
 
     this.identifiersCompleted = 0;
     this.errors = [];
@@ -69,12 +169,12 @@ export default class OutgoingMessage {
     this.failoverIdentifiers = [];
     this.unidentifiedDeliveries = [];
 
-    const { sendMetadata, senderCertificate, online } = options || ({} as any);
+    const { sendMetadata, online } = options;
     this.sendMetadata = sendMetadata;
-    this.senderCertificate = senderCertificate;
     this.online = online;
   }
-  numberCompleted() {
+
+  numberCompleted(): void {
     this.identifiersCompleted += 1;
     if (this.identifiersCompleted >= this.identifiers.length) {
       this.callback({
@@ -85,81 +185,53 @@ export default class OutgoingMessage {
       });
     }
   }
-  registerError(identifier: string, reason: string, error?: Error) {
+
+  registerError(
+    identifier: string,
+    reason: string,
+    providedError?: Error
+  ): void {
+    let error = providedError;
+
     if (!error || (error.name === 'HTTPError' && error.code !== 404)) {
-      // tslint:disable-next-line no-parameter-reassignment
-      error = new OutgoingMessageError(
-        identifier,
-        this.message.toArrayBuffer(),
-        this.timestamp,
-        error
-      );
+      if (error && error.code === 428) {
+        error = new SendMessageChallengeError(identifier, error);
+      } else {
+        error = new OutgoingMessageError(identifier, null, null, error);
+      }
     }
 
-    // eslint-disable-next-line no-param-reassign
     error.reason = reason;
+    error.stackForLog = providedError ? providedError.stack : undefined;
+
     this.errors[this.errors.length] = error;
     this.numberCompleted();
   }
+
   reloadDevicesAndSend(
     identifier: string,
     recurse?: boolean
   ): () => Promise<void> {
-    return async () =>
-      window.textsecure.storage.protocol
-        .getDeviceIds(identifier)
-        .then(async deviceIds => {
-          if (deviceIds.length === 0) {
-            this.registerError(
-              identifier,
-              'Got empty device list when loading device keys',
-              undefined
-            );
-            return;
-          }
-          return this.doSendMessage(identifier, deviceIds, recurse);
-        });
+    return async () => {
+      const deviceIds = await window.textsecure.storage.protocol.getDeviceIds(
+        identifier
+      );
+      if (deviceIds.length === 0) {
+        this.registerError(
+          identifier,
+          'reloadDevicesAndSend: Got empty device list when loading device keys',
+          undefined
+        );
+        return undefined;
+      }
+      return this.doSendMessage(identifier, deviceIds, recurse);
+    };
   }
 
-  // tslint:disable-next-line max-func-body-length
-  async getKeysForIdentifier(identifier: string, updateDevices: Array<number>) {
-    const handleResult = async (response: ServerKeysType) =>
-      Promise.all(
-        response.devices.map(async device => {
-          if (
-            updateDevices === undefined ||
-            updateDevices.indexOf(device.deviceId) > -1
-          ) {
-            const address = new window.libsignal.SignalProtocolAddress(
-              identifier,
-              device.deviceId
-            );
-            const builder = new window.libsignal.SessionBuilder(
-              window.textsecure.storage.protocol,
-              address
-            );
-            if (device.registrationId === 0) {
-              window.log.info('device registrationId 0!');
-            }
-
-            const deviceForProcess = {
-              ...device,
-              identityKey: response.identityKey,
-            };
-            return builder.processPreKey(deviceForProcess).catch(error => {
-              if (error.message === 'Identity key changed') {
-                error.timestamp = this.timestamp;
-                error.originalMessage = this.message.toArrayBuffer();
-                error.identityKey = response.identityKey;
-              }
-              throw error;
-            });
-          }
-
-          return null;
-        })
-      );
-
+  async getKeysForIdentifier(
+    identifier: string,
+    updateDevices?: Array<number>
+  ): Promise<void | Array<void | null>> {
     const { sendMetadata } = this;
     const info =
       sendMetadata && sendMetadata[identifier]
@@ -167,73 +239,30 @@ export default class OutgoingMessage {
         : { accessKey: undefined };
     const { accessKey } = info;
 
-    if (updateDevices === undefined) {
-      if (accessKey) {
-        return this.server
-          .getKeysForIdentifierUnauth(identifier, undefined, { accessKey })
-          .catch(async (error: Error) => {
-            if (error.code === 401 || error.code === 403) {
-              if (this.failoverIdentifiers.indexOf(identifier) === -1) {
-                this.failoverIdentifiers.push(identifier);
-              }
-              return this.server.getKeysForIdentifier(identifier);
-            }
-            throw error;
-          })
-          .then(handleResult);
+    try {
+      const { accessKeyFailed } = await getKeysForIdentifier(
+        identifier,
+        this.server,
+        updateDevices,
+        accessKey
+      );
+      if (accessKeyFailed && !this.failoverIdentifiers.includes(identifier)) {
+        this.failoverIdentifiers.push(identifier);
       }
-
-      return this.server.getKeysForIdentifier(identifier).then(handleResult);
+    } catch (error) {
+      if (error?.message?.includes('untrusted identity for address')) {
+        error.timestamp = this.timestamp;
+      }
+      throw error;
     }
-
-    let promise: Promise<any> = Promise.resolve();
-    updateDevices.forEach(deviceId => {
-      promise = promise.then(async () => {
-        let innerPromise;
-
-        if (accessKey) {
-          innerPromise = this.server
-            .getKeysForIdentifierUnauth(identifier, deviceId, { accessKey })
-            .then(handleResult)
-            .catch(async error => {
-              if (error.code === 401 || error.code === 403) {
-                if (this.failoverIdentifiers.indexOf(identifier) === -1) {
-                  this.failoverIdentifiers.push(identifier);
-                }
-                return this.server
-                  .getKeysForIdentifier(identifier, deviceId)
-                  .then(handleResult);
-              }
-              throw error;
-            });
-        } else {
-          innerPromise = this.server
-            .getKeysForIdentifier(identifier, deviceId)
-            .then(handleResult);
-        }
-
-        return innerPromise.catch(async e => {
-          if (e.name === 'HTTPError' && e.code === 404) {
-            if (deviceId !== 1) {
-              return this.removeDeviceIdsForIdentifier(identifier, [deviceId]);
-            }
-            throw new UnregisteredUserError(identifier, e);
-          } else {
-            throw e;
-          }
-        });
-      });
-    });
-
-    return promise;
   }
 
   async transmitMessage(
     identifier: string,
-    jsonData: Array<any>,
+    jsonData: Array<unknown>,
     timestamp: number,
     { accessKey }: { accessKey?: string } = {}
-  ) {
+  ): Promise<void> {
     let promise;
 
     if (accessKey) {
@@ -241,7 +270,6 @@ export default class OutgoingMessage {
         identifier,
         jsonData,
         timestamp,
-        this.silent,
         this.online,
         { accessKey }
       );
@@ -250,7 +278,6 @@ export default class OutgoingMessage {
         identifier,
         jsonData,
         timestamp,
-        this.silent,
         this.online
       );
     }
@@ -259,9 +286,13 @@ export default class OutgoingMessage {
       if (e.name === 'HTTPError' && e.code !== 409 && e.code !== 410) {
         // 409 and 410 should bubble and be handled by doSendMessage
         // 404 should throw UnregisteredUserError
+        // 428 should throw SendMessageChallengeError
         // all other network errors can be retried later.
         if (e.code === 404) {
           throw new UnregisteredUserError(identifier, e);
+        }
+        if (e.code === 428) {
+          throw new SendMessageChallengeError(identifier, e);
         }
         throw new SendMessageNetworkError(identifier, jsonData, e);
       }
@@ -269,50 +300,49 @@ export default class OutgoingMessage {
     });
   }
 
-  getPaddedMessageLength(messageLength: number) {
-    const messageLengthWithTerminator = messageLength + 1;
-    let messagePartCount = Math.floor(messageLengthWithTerminator / 160);
-
-    if (messageLengthWithTerminator % 160 !== 0) {
-      messagePartCount += 1;
-    }
-
-    return messagePartCount * 160;
-  }
-
-  getPlaintext() {
+  getPlaintext(): ArrayBuffer {
     if (!this.plaintext) {
-      const messageBuffer = this.message.toArrayBuffer();
-      this.plaintext = new Uint8Array(
-        this.getPaddedMessageLength(messageBuffer.byteLength + 1) - 1
-      );
-      this.plaintext.set(new Uint8Array(messageBuffer));
-      this.plaintext[messageBuffer.byteLength] = 0x80;
+      const { message } = this;
+
+      if (message instanceof window.textsecure.protobuf.Content) {
+        this.plaintext = padMessage(message.toArrayBuffer());
+      } else {
+        this.plaintext = message.serialize();
+      }
     }
-    return this.plaintext;
+    return toArrayBuffer(this.plaintext);
   }
 
-  // tslint:disable-next-line max-func-body-length
+  async getCiphertextMessage({
+    identityKeyStore,
+    protocolAddress,
+    sessionStore,
+  }: {
+    identityKeyStore: IdentityKeys;
+    protocolAddress: ProtocolAddress;
+    sessionStore: Sessions;
+  }): Promise<CiphertextMessage> {
+    const { message } = this;
+
+    if (message instanceof window.textsecure.protobuf.Content) {
+      return signalEncrypt(
+        Buffer.from(this.getPlaintext()),
+        protocolAddress,
+        sessionStore,
+        identityKeyStore
+      );
+    }
+
+    return message.asCiphertextMessage();
+  }
+
   async doSendMessage(
     identifier: string,
     deviceIds: Array<number>,
     recurse?: boolean
   ): Promise<void> {
-    const ciphers: {
-      [key: number]: {
-        closeOpenSessionForDevice: (
-          address: SignalProtocolAddressClass
-        ) => Promise<void>;
-      };
-    } = {};
-    const plaintext = this.getPlaintext();
-
-    const { sendMetadata, senderCertificate } = this;
-    const info =
-      sendMetadata && sendMetadata[identifier]
-        ? sendMetadata[identifier]
-        : { accessKey: undefined };
-    const { accessKey } = info;
+    const { sendMetadata } = this;
+    const { accessKey, senderCertificate } = sendMetadata?.[identifier] || {};
 
     if (accessKey && !senderCertificate) {
       window.log.warn(
@@ -322,12 +352,11 @@ export default class OutgoingMessage {
 
     const sealedSender = Boolean(accessKey && senderCertificate);
 
-    // We don't send to ourselves if unless sealedSender is enabled
+    // We don't send to ourselves unless sealedSender is enabled
     const ourNumber = window.textsecure.storage.user.getNumber();
     const ourUuid = window.textsecure.storage.user.getUuid();
     const ourDeviceId = window.textsecure.storage.user.getDeviceId();
     if ((identifier === ourNumber || identifier === ourUuid) && !sealedSender) {
-      // tslint:disable-next-line no-parameter-reassignment
       deviceIds = reject(
         deviceIds,
         deviceId =>
@@ -338,59 +367,90 @@ export default class OutgoingMessage {
       );
     }
 
+    const sessionStore = new Sessions();
+    const identityKeyStore = new IdentityKeys();
+
     return Promise.all(
-      deviceIds.map(async deviceId => {
-        const address = new window.libsignal.SignalProtocolAddress(
-          identifier,
-          deviceId
+      deviceIds.map(async destinationDeviceId => {
+        const address = `${identifier}.${destinationDeviceId}`;
+
+        return window.textsecure.storage.protocol.enqueueSessionJob<SendMetadata>(
+          address,
+          async () => {
+            const protocolAddress = ProtocolAddress.new(
+              identifier,
+              destinationDeviceId
+            );
+
+            const activeSession = await sessionStore.getSession(
+              protocolAddress
+            );
+            if (!activeSession) {
+              throw new Error(
+                'OutgoingMessage.doSendMessage: No active sesssion!'
+              );
+            }
+
+            const destinationRegistrationId = activeSession.remoteRegistrationId();
+
+            if (sealedSender && senderCertificate) {
+              const ciphertextMessage = await this.getCiphertextMessage({
+                identityKeyStore,
+                protocolAddress,
+                sessionStore,
+              });
+
+              const certificate = SenderCertificate.deserialize(
+                Buffer.from(senderCertificate.serialized)
+              );
+              const groupIdBuffer = this.groupId
+                ? Buffer.from(this.groupId, 'base64')
+                : null;
+
+              const content = UnidentifiedSenderMessageContent.new(
+                ciphertextMessage,
+                certificate,
+                this.contentHint,
+                groupIdBuffer
+              );
+
+              const buffer = await sealedSenderEncrypt(
+                content,
+                protocolAddress,
+                identityKeyStore
+              );
+
+              return {
+                type:
+                  window.textsecure.protobuf.Envelope.Type.UNIDENTIFIED_SENDER,
+                destinationDeviceId,
+                destinationRegistrationId,
+                content: buffer.toString('base64'),
+              };
+            }
+
+            const ciphertextMessage = await this.getCiphertextMessage({
+              identityKeyStore,
+              protocolAddress,
+              sessionStore,
+            });
+            const type = ciphertextMessageTypeToEnvelopeType(
+              ciphertextMessage.type()
+            );
+
+            const content = ciphertextMessage.serialize().toString('base64');
+
+            return {
+              type,
+              destinationDeviceId,
+              destinationRegistrationId,
+              content,
+            };
+          }
         );
-
-        const options: any = {};
-
-        // No limit on message keys if we're communicating with our other devices
-        if (ourNumber === identifier || ourUuid === identifier) {
-          options.messageKeysLimit = false;
-        }
-
-        if (sealedSender) {
-          const secretSessionCipher = new window.Signal.Metadata.SecretSessionCipher(
-            window.textsecure.storage.protocol
-          );
-          ciphers[address.getDeviceId()] = secretSessionCipher;
-
-          const ciphertext = await secretSessionCipher.encrypt(
-            address,
-            senderCertificate,
-            plaintext
-          );
-
-          return {
-            type: window.textsecure.protobuf.Envelope.Type.UNIDENTIFIED_SENDER,
-            destinationDeviceId: address.getDeviceId(),
-            destinationRegistrationId: await secretSessionCipher.getRemoteRegistrationId(
-              address
-            ),
-            content: window.Signal.Crypto.arrayBufferToBase64(ciphertext),
-          };
-        } else {
-          const sessionCipher = new window.libsignal.SessionCipher(
-            window.textsecure.storage.protocol,
-            address,
-            options
-          );
-          ciphers[address.getDeviceId()] = sessionCipher;
-
-          const ciphertext = await sessionCipher.encrypt(plaintext);
-          return {
-            type: ciphertext.type,
-            destinationDeviceId: address.getDeviceId(),
-            destinationRegistrationId: ciphertext.registrationId,
-            content: btoa(ciphertext.body),
-          };
-        }
       })
     )
-      .then(async jsonData => {
+      .then(async (jsonData: Array<SendMetadata>) => {
         if (sealedSender) {
           return this.transmitMessage(identifier, jsonData, this.timestamp, {
             accessKey,
@@ -407,8 +467,8 @@ export default class OutgoingMessage {
                 }
 
                 // This ensures that we don't hit this codepath the next time through
-                if (info) {
-                  info.accessKey = undefined;
+                if (sendMetadata) {
+                  delete sendMetadata[identifier];
                 }
 
                 return this.doSendMessage(identifier, deviceIds, recurse);
@@ -438,25 +498,22 @@ export default class OutgoingMessage {
               'Hit retry limit attempting to reload device list',
               error
             );
-            return;
+            return undefined;
           }
 
           let p: Promise<any> = Promise.resolve();
           if (error.code === 409) {
             p = this.removeDeviceIdsForIdentifier(
               identifier,
-              error.response.extraDevices
+              error.response.extraDevices || []
             );
           } else {
             p = Promise.all(
-              error.response.staleDevices.map(async (deviceId: number) =>
-                ciphers[deviceId].closeOpenSessionForDevice(
-                  new window.libsignal.SignalProtocolAddress(
-                    identifier,
-                    deviceId
-                  )
-                )
-              )
+              error.response.staleDevices.map(async (deviceId: number) => {
+                await window.textsecure.storage.protocol.archiveSession(
+                  `${identifier}.${deviceId}`
+                );
+              })
             );
           }
 
@@ -471,11 +528,10 @@ export default class OutgoingMessage {
               this.reloadDevicesAndSend(identifier, error.code === 409)
             );
           });
-        } else if (error.message === 'Identity key changed') {
+        }
+        if (error?.message?.includes('untrusted identity for address')) {
           // eslint-disable-next-line no-param-reassign
           error.timestamp = this.timestamp;
-          // eslint-disable-next-line no-param-reassign
-          error.originalMessage = this.message.toArrayBuffer();
           window.log.error(
             'Got "key changed" error from encrypt - no identityKey for application layer',
             identifier,
@@ -483,34 +539,19 @@ export default class OutgoingMessage {
           );
 
           window.log.info('closing all sessions for', identifier);
-          const address = new window.libsignal.SignalProtocolAddress(
-            identifier,
-            1
-          );
-
-          const sessionCipher = new window.libsignal.SessionCipher(
-            window.textsecure.storage.protocol,
-            address
-          );
-          window.log.info('closing session for', address.toString());
-          return Promise.all([
-            // Primary device
-            sessionCipher.closeOpenSessionForDevice(),
-            // The rest of their devices
-            window.textsecure.storage.protocol.archiveSiblingSessions(
-              address.toString()
-            ),
-          ]).then(
-            () => {
-              throw error;
-            },
-            innerError => {
-              window.log.error(
-                `doSendMessage: Error closing sessions: ${innerError.stack}`
-              );
-              throw error;
-            }
-          );
+          window.textsecure.storage.protocol
+            .archiveAllSessions(identifier)
+            .then(
+              () => {
+                throw error;
+              },
+              innerError => {
+                window.log.error(
+                  `doSendMessage: Error closing sessions: ${innerError.stack}`
+                );
+                throw error;
+              }
+            );
         }
 
         this.registerError(
@@ -518,72 +559,87 @@ export default class OutgoingMessage {
           'Failed to create or send message',
           error
         );
-      });
-  }
 
-  async getStaleDeviceIdsForIdentifier(identifier: string) {
-    return window.textsecure.storage.protocol
-      .getDeviceIds(identifier)
-      .then(async deviceIds => {
-        if (deviceIds.length === 0) {
-          return [1];
-        }
-        const updateDevices: Array<number> = [];
-        return Promise.all(
-          deviceIds.map(async deviceId => {
-            const address = new window.libsignal.SignalProtocolAddress(
-              identifier,
-              deviceId
-            );
-            const sessionCipher = new window.libsignal.SessionCipher(
-              window.textsecure.storage.protocol,
-              address
-            );
-            return sessionCipher.hasOpenSession().then(hasSession => {
-              if (!hasSession) {
-                updateDevices.push(deviceId);
-              }
-            });
-          })
-        ).then(() => updateDevices);
+        return undefined;
       });
   }
 
   async removeDeviceIdsForIdentifier(
     identifier: string,
     deviceIdsToRemove: Array<number>
-  ) {
-    let promise = Promise.resolve();
-    // tslint:disable-next-line forin no-for-in no-for-in-array
-    for (const j in deviceIdsToRemove) {
-      promise = promise.then(async () => {
-        const encodedAddress = `${identifier}.${deviceIdsToRemove[j]}`;
-        return window.textsecure.storage.protocol.removeSession(encodedAddress);
-      });
-    }
-    return promise;
+  ): Promise<void> {
+    await Promise.all(
+      deviceIdsToRemove.map(async deviceId => {
+        await window.textsecure.storage.protocol.archiveSession(
+          `${identifier}.${deviceId}`
+        );
+      })
+    );
   }
 
-  async sendToIdentifier(identifier: string) {
+  async sendToIdentifier(providedIdentifier: string): Promise<void> {
+    let identifier = providedIdentifier;
     try {
-      const updateDevices = await this.getStaleDeviceIdsForIdentifier(
+      if (window.isValidGuid(identifier)) {
+        // We're good!
+      } else if (isValidNumber(identifier)) {
+        if (!window.textsecure.messaging) {
+          throw new Error(
+            'sendToIdentifier: window.textsecure.messaging is not available!'
+          );
+        }
+
+        try {
+          await updateConversationsWithUuidLookup({
+            conversationController: window.ConversationController,
+            conversations: [
+              window.ConversationController.getOrCreate(identifier, 'private'),
+            ],
+            messaging: window.textsecure.messaging,
+          });
+
+          const uuid = window.ConversationController.get(identifier)?.get(
+            'uuid'
+          );
+          if (!uuid) {
+            throw new UnregisteredUserError(
+              identifier,
+              new Error('User is not registered')
+            );
+          }
+          identifier = uuid;
+        } catch (error) {
+          window.log.error(
+            `sendToIdentifier: Failed to fetch UUID for identifier ${identifier}`,
+            error && error.stack ? error.stack : error
+          );
+        }
+      } else {
+        throw new Error(
+          `sendToIdentifier: identifier ${identifier} was neither a UUID or E164`
+        );
+      }
+
+      const deviceIds = await window.textsecure.storage.protocol.getDeviceIds(
         identifier
       );
-      await this.getKeysForIdentifier(identifier, updateDevices);
+      if (deviceIds.length === 0) {
+        await this.getKeysForIdentifier(identifier);
+      }
       await this.reloadDevicesAndSend(identifier, true)();
     } catch (error) {
-      if (error.message === 'Identity key changed') {
+      if (error?.message?.includes('untrusted identity for address')) {
         const newError = new OutgoingIdentityKeyError(
           identifier,
           error.originalMessage,
           error.timestamp,
           error.identityKey
         );
-        this.registerError(identifier, 'Identity key changed', newError);
+        this.registerError(identifier, 'Untrusted identity', newError);
       } else {
         this.registerError(
           identifier,
-          `Failed to retrieve new device keys for number ${identifier}`,
+          `Failed to retrieve new device keys for identifier ${identifier}`,
           error
         );
       }

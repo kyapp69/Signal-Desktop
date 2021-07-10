@@ -1,18 +1,6 @@
-export function getSearchResultsProps(attributes: any) {
-  // @ts-ignore
-  const model = new window.Whisper.Message(attributes);
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 
-  return model.getPropsForSearchResult();
-}
-
-export function getBubbleProps(attributes: any) {
-  // @ts-ignore
-  const model = new window.Whisper.Message(attributes);
-
-  return model.getPropsForBubble();
-}
-
-export function showSettings() {
-  // @ts-ignore
+export function showSettings(): void {
   window.showSettings();
 }

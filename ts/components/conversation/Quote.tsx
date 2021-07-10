@@ -1,21 +1,28 @@
-// tslint:disable:react-this-binding-issue
+// Copyright 2018-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 
-import React from 'react';
+import React, { useRef, useState, useEffect, ReactNode } from 'react';
+import { noop } from 'lodash';
 import classNames from 'classnames';
 
-import * as MIME from '../../../ts/types/MIME';
-import * as GoogleChrome from '../../../ts/util/GoogleChrome';
+import * as MIME from '../../types/MIME';
+import * as GoogleChrome from '../../util/GoogleChrome';
 
 import { MessageBody } from './MessageBody';
-import { ColorType, LocalizerType } from '../../types/Util';
+import { BodyRangesType, LocalizerType } from '../../types/Util';
+import { ConversationColorType, CustomColorType } from '../../types/Colors';
 import { ContactName } from './ContactName';
+import { getTextWithMentions } from '../../util/getTextWithMentions';
+import { getCustomColorStyle } from '../../util/getCustomColorStyle';
 
-interface Props {
-  attachment?: QuotedAttachmentType;
-  authorPhoneNumber: string;
+export type Props = {
+  authorTitle: string;
+  authorPhoneNumber?: string;
   authorProfileName?: string;
   authorName?: string;
-  authorColor?: ColorType;
+  conversationColor: ConversationColorType;
+  customColor?: CustomColorType;
+  bodyRanges?: BodyRangesType;
   i18n: LocalizerType;
   isFromMe: boolean;
   isIncoming: boolean;
@@ -23,37 +30,49 @@ interface Props {
   onClick?: () => void;
   onClose?: () => void;
   text: string;
+  rawAttachment?: QuotedAttachmentType;
+  isViewOnce: boolean;
   referencedMessageNotFound: boolean;
-}
+  doubleCheckMissingQuoteReference: () => unknown;
+};
 
-interface State {
+type State = {
   imageBroken: boolean;
-}
+};
 
-export interface QuotedAttachmentType {
+export type QuotedAttachmentType = {
   contentType: MIME.MIMEType;
-  fileName: string;
+  fileName?: string;
   /** Not included in protobuf */
   isVoiceMessage: boolean;
   thumbnail?: Attachment;
-}
+};
 
-interface Attachment {
+type Attachment = {
   contentType: MIME.MIMEType;
   /** Not included in protobuf, and is loaded asynchronously */
   objectUrl?: string;
-}
+};
 
 function validateQuote(quote: Props): boolean {
   if (quote.text) {
     return true;
   }
 
-  if (quote.attachment) {
+  if (quote.rawAttachment) {
     return true;
   }
 
   return false;
+}
+
+// Long message attachments should not be shown.
+function getAttachment(
+  rawAttachment: undefined | QuotedAttachmentType
+): undefined | QuotedAttachmentType {
+  return rawAttachment && !MIME.isLongMessage(rawAttachment.contentType)
+    ? rawAttachment
+    : undefined;
 }
 
 function getObjectUrl(thumbnail: Attachment | undefined): string | undefined {
@@ -61,40 +80,66 @@ function getObjectUrl(thumbnail: Attachment | undefined): string | undefined {
     return thumbnail.objectUrl;
   }
 
-  return;
+  return undefined;
 }
 
 function getTypeLabel({
   i18n,
+  isViewOnce = false,
   contentType,
   isVoiceMessage,
 }: {
   i18n: LocalizerType;
+  isViewOnce?: boolean;
   contentType: MIME.MIMEType;
   isVoiceMessage: boolean;
 }): string | undefined {
   if (GoogleChrome.isVideoTypeSupported(contentType)) {
+    if (isViewOnce) {
+      return i18n('message--getDescription--disappearing-video');
+    }
     return i18n('video');
   }
   if (GoogleChrome.isImageTypeSupported(contentType)) {
+    if (isViewOnce) {
+      return i18n('message--getDescription--disappearing-photo');
+    }
     return i18n('photo');
   }
+
+  if (isViewOnce) {
+    return i18n('message--getDescription--disappearing-media');
+  }
+
   if (MIME.isAudio(contentType) && isVoiceMessage) {
     return i18n('voiceMessage');
   }
-  if (MIME.isAudio(contentType)) {
-    return i18n('audio');
-  }
 
-  return;
+  return MIME.isAudio(contentType) ? i18n('audio') : undefined;
 }
 
 export class Quote extends React.Component<Props, State> {
-  public state = {
-    imageBroken: false,
-  };
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      imageBroken: false,
+    };
+  }
 
-  public handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+  componentDidMount(): void {
+    const {
+      doubleCheckMissingQuoteReference,
+      referencedMessageNotFound,
+    } = this.props;
+
+    if (referencedMessageNotFound) {
+      doubleCheckMissingQuoteReference();
+    }
+  }
+
+  public handleKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement>
+  ): void => {
     const { onClick } = this.props;
 
     // This is important to ensure that using this quote to navigate to the referenced
@@ -105,7 +150,8 @@ export class Quote extends React.Component<Props, State> {
       onClick();
     }
   };
-  public handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+
+  public handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
     const { onClick } = this.props;
 
     if (onClick) {
@@ -115,15 +161,16 @@ export class Quote extends React.Component<Props, State> {
     }
   };
 
-  public handleImageError = () => {
-    // tslint:disable-next-line no-console
-    console.log('Message: Image failed to load; failing over to placeholder');
+  public handleImageError = (): void => {
+    window.console.info(
+      'Message: Image failed to load; failing over to placeholder'
+    );
     this.setState({
       imageBroken: true,
     });
   };
 
-  public renderImage(url: string, i18n: LocalizerType, icon?: string) {
+  public renderImage(url: string, icon?: string): JSX.Element {
     const iconElement = icon ? (
       <div className="module-quote__icon-container__inner">
         <div className="module-quote__icon-container__circle-background">
@@ -138,18 +185,14 @@ export class Quote extends React.Component<Props, State> {
     ) : null;
 
     return (
-      <div className="module-quote__icon-container">
-        <img
-          src={url}
-          alt={i18n('quoteThumbnailAlt')}
-          onError={this.handleImageError}
-        />
+      <ThumbnailImage src={url} onError={this.handleImageError}>
         {iconElement}
-      </div>
+      </ThumbnailImage>
     );
   }
 
-  public renderIcon(icon: string) {
+  // eslint-disable-next-line class-methods-use-this
+  public renderIcon(icon: string): JSX.Element {
     return (
       <div className="module-quote__icon-container">
         <div className="module-quote__icon-container__inner">
@@ -166,11 +209,12 @@ export class Quote extends React.Component<Props, State> {
     );
   }
 
-  public renderGenericFile() {
-    const { attachment, isIncoming } = this.props;
+  public renderGenericFile(): JSX.Element | null {
+    const { rawAttachment, isIncoming } = this.props;
+    const attachment = getAttachment(rawAttachment);
 
     if (!attachment) {
-      return;
+      return null;
     }
 
     const { fileName, contentType } = attachment;
@@ -198,9 +242,10 @@ export class Quote extends React.Component<Props, State> {
     );
   }
 
-  public renderIconContainer() {
-    const { attachment, i18n } = this.props;
+  public renderIconContainer(): JSX.Element | null {
+    const { rawAttachment, isViewOnce } = this.props;
     const { imageBroken } = this.state;
+    const attachment = getAttachment(rawAttachment);
 
     if (!attachment) {
       return null;
@@ -209,14 +254,18 @@ export class Quote extends React.Component<Props, State> {
     const { contentType, thumbnail } = attachment;
     const objectUrl = getObjectUrl(thumbnail);
 
+    if (isViewOnce) {
+      return this.renderIcon('view-once');
+    }
+
     if (GoogleChrome.isVideoTypeSupported(contentType)) {
       return objectUrl && !imageBroken
-        ? this.renderImage(objectUrl, i18n, 'play')
+        ? this.renderImage(objectUrl, 'play')
         : this.renderIcon('movie');
     }
     if (GoogleChrome.isImageTypeSupported(contentType)) {
       return objectUrl && !imageBroken
-        ? this.renderImage(objectUrl, i18n)
+        ? this.renderImage(objectUrl)
         : this.renderIcon('image');
     }
     if (MIME.isAudio(contentType)) {
@@ -226,10 +275,21 @@ export class Quote extends React.Component<Props, State> {
     return null;
   }
 
-  public renderText() {
-    const { i18n, text, attachment, isIncoming } = this.props;
+  public renderText(): JSX.Element | null {
+    const {
+      bodyRanges,
+      i18n,
+      text,
+      rawAttachment,
+      isIncoming,
+      isViewOnce,
+    } = this.props;
 
     if (text) {
+      const quoteText = bodyRanges
+        ? getTextWithMentions(bodyRanges, text)
+        : text;
+
       return (
         <div
           dir="auto"
@@ -238,10 +298,12 @@ export class Quote extends React.Component<Props, State> {
             isIncoming ? 'module-quote__primary__text--incoming' : null
           )}
         >
-          <MessageBody text={text} disableLinks={true} i18n={i18n} />
+          <MessageBody disableLinks text={quoteText} i18n={i18n} />
         </div>
       );
     }
+
+    const attachment = getAttachment(rawAttachment);
 
     if (!attachment) {
       return null;
@@ -249,7 +311,12 @@ export class Quote extends React.Component<Props, State> {
 
     const { contentType, isVoiceMessage } = attachment;
 
-    const typeLabel = getTypeLabel({ i18n, contentType, isVoiceMessage });
+    const typeLabel = getTypeLabel({
+      i18n,
+      isViewOnce,
+      contentType,
+      isVoiceMessage,
+    });
     if (typeLabel) {
       return (
         <div
@@ -266,8 +333,8 @@ export class Quote extends React.Component<Props, State> {
     return null;
   }
 
-  public renderClose() {
-    const { onClose } = this.props;
+  public renderClose(): JSX.Element | null {
+    const { i18n, onClose } = this.props;
 
     if (!onClose) {
       return null;
@@ -296,6 +363,7 @@ export class Quote extends React.Component<Props, State> {
           // We can't be a button because the overall quote is a button; can't nest them
           role="button"
           className="module-quote__close-button"
+          aria-label={i18n('close')}
           onKeyDown={keyDownHandler}
           onClick={clickHandler}
         />
@@ -303,10 +371,11 @@ export class Quote extends React.Component<Props, State> {
     );
   }
 
-  public renderAuthor() {
+  public renderAuthor(): JSX.Element {
     const {
       authorProfileName,
       authorPhoneNumber,
+      authorTitle,
       authorName,
       i18n,
       isFromMe,
@@ -327,14 +396,22 @@ export class Quote extends React.Component<Props, State> {
             phoneNumber={authorPhoneNumber}
             name={authorName}
             profileName={authorProfileName}
+            title={authorTitle}
+            i18n={i18n}
           />
         )}
       </div>
     );
   }
 
-  public renderReferenceWarning() {
-    const { i18n, isIncoming, referencedMessageNotFound } = this.props;
+  public renderReferenceWarning(): JSX.Element | null {
+    const {
+      conversationColor,
+      customColor,
+      i18n,
+      isIncoming,
+      referencedMessageNotFound,
+    } = this.props;
 
     if (!referencedMessageNotFound) {
       return null;
@@ -344,8 +421,11 @@ export class Quote extends React.Component<Props, State> {
       <div
         className={classNames(
           'module-quote__reference-warning',
-          isIncoming ? 'module-quote__reference-warning--incoming' : null
+          isIncoming
+            ? `module-quote--incoming-${conversationColor}`
+            : `module-quote--outgoing-${conversationColor}`
         )}
+        style={{ ...getCustomColorStyle(customColor, true) }}
       >
         <div
           className={classNames(
@@ -369,9 +449,10 @@ export class Quote extends React.Component<Props, State> {
     );
   }
 
-  public render() {
+  public render(): JSX.Element | null {
     const {
-      authorColor,
+      conversationColor,
+      customColor,
       isIncoming,
       onClick,
       referencedMessageNotFound,
@@ -390,20 +471,22 @@ export class Quote extends React.Component<Props, State> {
         )}
       >
         <button
+          type="button"
           onClick={this.handleClick}
           onKeyDown={this.handleKeyDown}
           className={classNames(
             'module-quote',
             isIncoming ? 'module-quote--incoming' : 'module-quote--outgoing',
             isIncoming
-              ? `module-quote--incoming-${authorColor}`
-              : `module-quote--outgoing-${authorColor}`,
+              ? `module-quote--incoming-${conversationColor}`
+              : `module-quote--outgoing-${conversationColor}`,
             !onClick ? 'module-quote--no-click' : null,
             withContentAbove ? 'module-quote--with-content-above' : null,
             referencedMessageNotFound
               ? 'module-quote--with-reference-warning'
               : null
           )}
+          style={{ ...getCustomColorStyle(customColor, true) }}
         >
           <div className="module-quote__primary">
             {this.renderAuthor()}
@@ -417,4 +500,52 @@ export class Quote extends React.Component<Props, State> {
       </div>
     );
   }
+}
+
+function ThumbnailImage({
+  src,
+  onError,
+  children,
+}: Readonly<{
+  src: string;
+  onError: () => void;
+  children: ReactNode;
+}>): JSX.Element {
+  const imageRef = useRef(new Image());
+  const [loadedSrc, setLoadedSrc] = useState<null | string>(null);
+
+  useEffect(() => {
+    const image = new Image();
+    image.onload = () => {
+      setLoadedSrc(src);
+    };
+    image.src = src;
+    imageRef.current = image;
+    return () => {
+      image.onload = noop;
+    };
+  }, [src]);
+
+  useEffect(() => {
+    setLoadedSrc(null);
+  }, [src]);
+
+  useEffect(() => {
+    const image = imageRef.current;
+    image.onerror = onError;
+    return () => {
+      image.onerror = noop;
+    };
+  }, [onError]);
+
+  return (
+    <div
+      className="module-quote__icon-container"
+      style={
+        loadedSrc ? { backgroundImage: `url('${encodeURI(loadedSrc)}')` } : {}
+      }
+    >
+      {children}
+    </div>
+  );
 }

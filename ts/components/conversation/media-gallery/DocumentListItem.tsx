@@ -1,11 +1,13 @@
+// Copyright 2018-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import React from 'react';
 import classNames from 'classnames';
 
 import moment from 'moment';
-// tslint:disable-next-line:match-default-export-name
 import formatFileSize from 'filesize';
 
-interface Props {
+type Props = {
   // Required
   timestamp: number;
 
@@ -14,14 +16,14 @@ interface Props {
   fileSize?: number;
   onClick?: () => void;
   shouldShowSeparator?: boolean;
-}
+};
 
 export class DocumentListItem extends React.Component<Props> {
   public static defaultProps: Partial<Props> = {
     shouldShowSeparator: true,
   };
 
-  public render() {
+  public render(): JSX.Element {
     const { shouldShowSeparator } = this.props;
 
     return (
@@ -39,12 +41,13 @@ export class DocumentListItem extends React.Component<Props> {
   }
 
   private renderContent() {
-    const { fileName, fileSize, timestamp } = this.props;
+    const { fileName, fileSize, onClick, timestamp } = this.props;
 
     return (
       <button
+        type="button"
         className="module-document-list-item__content"
-        onClick={this.props.onClick}
+        onClick={onClick}
       >
         <div className="module-document-list-item__icon" />
         <div className="module-document-list-item__metadata">
@@ -52,7 +55,9 @@ export class DocumentListItem extends React.Component<Props> {
             {fileName}
           </span>
           <span className="module-document-list-item__file-size">
-            {typeof fileSize === 'number' ? formatFileSize(fileSize) : ''}
+            {typeof fileSize === 'number'
+              ? formatFileSize(fileSize, { round: 0 })
+              : ''}
           </span>
         </div>
         <div className="module-document-list-item__date">

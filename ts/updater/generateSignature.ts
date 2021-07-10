@@ -1,3 +1,7 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* eslint-disable no-console */
 import { join, resolve } from 'path';
 import { readdir as readdirCallback } from 'fs';
 
@@ -5,13 +9,9 @@ import pify from 'pify';
 
 import { getCliOptions, getPrintableError } from './common';
 import { writeSignature } from './signature';
-
-// @ts-ignore
 import * as packageJson from '../../package.json';
 
 const readdir = pify(readdirCallback);
-
-/* tslint:disable:no-console */
 
 const OPTIONS = [
   {

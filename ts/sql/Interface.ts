@@ -1,28 +1,176 @@
-import { LocaleMessagesType } from '../types/I18N';
+// Copyright 2020-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 
-export type AttachmentDownloadJobType = any;
-export type ConverationMetricsType = any;
-export type ConversationType = any;
-export type EmojiType = any;
-export type IdentityKeyType = any;
-export type ItemType = any;
-export type MessageType = any;
-export type MessageTypeUnhydrated = any;
-export type PreKeyType = any;
-export type SearchResultMessageType = any;
-export type SessionType = any;
-export type SignedPreKeyType = any;
-export type StickerPackStatusType = string;
-export type StickerPackType = any;
-export type StickerType = any;
-export type UnprocessedType = any;
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable camelcase */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  ConversationAttributesType,
+  ConversationModelCollectionType,
+  MessageAttributesType,
+  MessageModelCollectionType,
+} from '../model-types.d';
+import { MessageModel } from '../models/messages';
+import { ConversationModel } from '../models/conversations';
+import { StoredJob } from '../jobs/types';
+import { ReactionType } from '../types/Reactions';
+import { ConversationColorType, CustomColorType } from '../types/Colors';
+import { StorageAccessType } from '../types/Storage.d';
+import { AttachmentType } from '../types/Attachment';
 
-export type BackboneConversationModelType = any;
-export type BackboneConversationCollectionType = any;
-export type BackboneMessageModelType = any;
-export type BackboneMessageCollectionType = any;
+export type AttachmentDownloadJobTypeType =
+  | 'long-message'
+  | 'attachment'
+  | 'preview'
+  | 'contact'
+  | 'quote'
+  | 'sticker';
 
-export interface DataInterface {
+export type AttachmentDownloadJobType = {
+  attachment: AttachmentType;
+  attempts: number;
+  id: string;
+  index: number;
+  messageId: string;
+  pending: number;
+  timestamp: number;
+  type: AttachmentDownloadJobTypeType;
+};
+export type MessageMetricsType = {
+  id: string;
+  // eslint-disable-next-line camelcase
+  received_at: number;
+  // eslint-disable-next-line camelcase
+  sent_at: number;
+};
+export type ConversationMetricsType = {
+  oldest?: MessageMetricsType;
+  newest?: MessageMetricsType;
+  oldestUnread?: MessageMetricsType;
+  totalUnread: number;
+};
+export type ConversationType = ConversationAttributesType;
+export type EmojiType = {
+  shortName: string;
+  lastUsage: number;
+};
+export type IdentityKeyType = {
+  firstUse: boolean;
+  id: string;
+  nonblockingApproval: boolean;
+  publicKey: ArrayBuffer;
+  timestamp: number;
+  verified: number;
+};
+export type ItemKeyType = keyof StorageAccessType;
+export type AllItemsType = Partial<StorageAccessType>;
+export type ItemType<K extends ItemKeyType> = {
+  id: K;
+  value: StorageAccessType[K];
+};
+export type MessageType = MessageAttributesType;
+export type MessageTypeUnhydrated = {
+  json: string;
+};
+export type PreKeyType = {
+  id: number;
+  privateKey: ArrayBuffer;
+  publicKey: ArrayBuffer;
+};
+export type SearchResultMessageType = {
+  json: string;
+  snippet: string;
+};
+export type ClientSearchResultMessageType = MessageType & {
+  json: string;
+  bodyRanges: [];
+  snippet: string;
+};
+export type SenderKeyType = {
+  // Primary key
+  id: string;
+  // These two are combined into one string to give us the final id
+  senderId: string;
+  distributionId: string;
+  // Raw data to serialize/deserialize into signal-client SenderKeyRecord
+  data: Buffer;
+  lastUpdatedDate: number;
+};
+export type SessionType = {
+  id: string;
+  conversationId: string;
+  deviceId: number;
+  record: string;
+  version?: number;
+};
+export type SignedPreKeyType = {
+  confirmed: boolean;
+  // eslint-disable-next-line camelcase
+  created_at: number;
+  id: number;
+  privateKey: ArrayBuffer;
+  publicKey: ArrayBuffer;
+};
+export type StickerPackStatusType =
+  | 'known'
+  | 'ephemeral'
+  | 'downloaded'
+  | 'installed'
+  | 'pending'
+  | 'error';
+
+export type StickerType = {
+  id: number;
+  packId: string;
+
+  emoji: string | null;
+  isCoverOnly: boolean;
+  lastUsed?: number;
+  path: string;
+  width: number;
+  height: number;
+};
+export type StickerPackType = {
+  id: string;
+  key: string;
+
+  attemptedStatus: 'downloaded' | 'installed' | 'ephemeral';
+  author: string;
+  coverStickerId: number;
+  createdAt: number;
+  downloadAttempts: number;
+  installedAt: number | null;
+  lastUsed: number;
+  status: StickerPackStatusType;
+  stickerCount: number;
+  stickers: ReadonlyArray<string>;
+  title: string;
+};
+export type UnprocessedType = {
+  id: string;
+  timestamp: number;
+  version: number;
+  attempts: number;
+  envelope?: string;
+
+  source?: string;
+  sourceUuid?: string;
+  sourceDevice?: number;
+  serverGuid?: string;
+  serverTimestamp?: number;
+  decrypted?: string;
+};
+
+export type UnprocessedUpdateType = {
+  source?: string;
+  sourceUuid?: string;
+  sourceDevice?: string;
+  serverGuid?: string;
+  serverTimestamp?: number;
+  decrypted?: string;
+};
+
+export type DataInterface = {
   close: () => Promise<void>;
   removeDB: () => Promise<void>;
   removeIndexedDBFiles: () => Promise<void>;
@@ -48,23 +196,31 @@ export interface DataInterface {
   removeAllSignedPreKeys: () => Promise<void>;
   getAllSignedPreKeys: () => Promise<Array<SignedPreKeyType>>;
 
-  createOrUpdateItem: (data: ItemType) => Promise<void>;
-  getItemById: (id: string) => Promise<ItemType | undefined>;
-  bulkAddItems: (array: Array<ItemType>) => Promise<void>;
-  removeItemById: (id: string) => Promise<void>;
+  createOrUpdateItem<K extends ItemKeyType>(data: ItemType<K>): Promise<void>;
+  getItemById<K extends ItemKeyType>(id: K): Promise<ItemType<K> | undefined>;
+  removeItemById: (id: ItemKeyType) => Promise<void>;
   removeAllItems: () => Promise<void>;
-  getAllItems: () => Promise<Array<ItemType>>;
+  getAllItems: () => Promise<AllItemsType>;
+
+  createOrUpdateSenderKey: (key: SenderKeyType) => Promise<void>;
+  getSenderKeyById: (id: string) => Promise<SenderKeyType | undefined>;
+  removeAllSenderKeys: () => Promise<void>;
+  getAllSenderKeys: () => Promise<Array<SenderKeyType>>;
+  removeSenderKeyById: (id: string) => Promise<void>;
 
   createOrUpdateSession: (data: SessionType) => Promise<void>;
   createOrUpdateSessions: (array: Array<SessionType>) => Promise<void>;
-  getSessionById: (id: string) => Promise<SessionType | undefined>;
-  getSessionsById: (conversationId: string) => Promise<Array<SessionType>>;
+  commitSessionsAndUnprocessed(options: {
+    sessions: Array<SessionType>;
+    unprocessed: Array<UnprocessedType>;
+  }): Promise<void>;
   bulkAddSessions: (array: Array<SessionType>) => Promise<void>;
   removeSessionById: (id: string) => Promise<void>;
   removeSessionsByConversation: (conversationId: string) => Promise<void>;
   removeAllSessions: () => Promise<void>;
   getAllSessions: () => Promise<Array<SessionType>>;
 
+  eraseStorageServiceStateFromConversations: () => Promise<void>;
   getConversationCount: () => Promise<number>;
   saveConversation: (data: ConversationType) => Promise<void>;
   saveConversations: (array: Array<ConversationType>) => Promise<void>;
@@ -75,44 +231,35 @@ export interface DataInterface {
     query: string,
     options?: { limit?: number }
   ) => Promise<Array<ConversationType>>;
-  searchMessages: (
-    query: string,
-    options?: { limit?: number }
-  ) => Promise<Array<SearchResultMessageType>>;
-  searchMessagesInConversation: (
-    query: string,
-    conversationId: string,
-    options?: { limit?: number }
-  ) => Promise<Array<SearchResultMessageType>>;
 
-  getMessageCount: () => Promise<number>;
-  saveMessages: (
-    arrayOfMessages: Array<MessageType>,
-    options: { forceSave?: boolean }
-  ) => Promise<void>;
+  getMessageCount: (conversationId?: string) => Promise<number>;
+  hasUserInitiatedMessages: (conversationId: string) => Promise<boolean>;
   getAllMessageIds: () => Promise<Array<string>>;
   getMessageMetricsForConversation: (
     conversationId: string
-  ) => Promise<ConverationMetricsType>;
+  ) => Promise<ConversationMetricsType>;
+  hasGroupCallHistoryMessage: (
+    conversationId: string,
+    eraId: string
+  ) => Promise<boolean>;
+  migrateConversationMessages: (
+    obsoleteId: string,
+    currentId: string
+  ) => Promise<void>;
+  getNextTapToViewMessageTimestampToAgeOut: () => Promise<undefined | number>;
 
   getUnprocessedCount: () => Promise<number>;
   getAllUnprocessed: () => Promise<Array<UnprocessedType>>;
-  saveUnprocessed: (
-    data: UnprocessedType,
-    options?: { forceSave?: boolean }
-  ) => Promise<number>;
   updateUnprocessedAttempts: (id: string, attempts: number) => Promise<void>;
   updateUnprocessedWithData: (
     id: string,
-    data: UnprocessedType
+    data: UnprocessedUpdateType
   ) => Promise<void>;
-  updateUnprocessedsWithData: (array: Array<UnprocessedType>) => Promise<void>;
+  updateUnprocessedsWithData: (
+    array: Array<{ id: string; data: UnprocessedUpdateType }>
+  ) => Promise<void>;
   getUnprocessedById: (id: string) => Promise<UnprocessedType | undefined>;
-  saveUnprocesseds: (
-    arrayOfUnprocessed: Array<UnprocessedType>,
-    options?: { forceSave?: boolean }
-  ) => Promise<void>;
-  removeUnprocessed: (id: string) => Promise<void>;
+  removeUnprocessed: (id: string | Array<string>) => Promise<void>;
   removeAllUnprocessed: () => Promise<void>;
 
   getNextAttachmentDownloadJobs: (
@@ -152,6 +299,7 @@ export interface DataInterface {
   getRecentStickers: (options?: {
     limit?: number;
   }) => Promise<Array<StickerType>>;
+  clearAllErrorStickerPackAttempts: () => Promise<void>;
 
   updateEmojiUsage: (shortName: string, timeUsed?: number) => Promise<void>;
   getRecentEmojis: (limit?: number) => Promise<Array<EmojiType>>;
@@ -171,7 +319,26 @@ export interface DataInterface {
     conversationId: string,
     options: { limit: number }
   ) => Promise<Array<MessageType>>;
-}
+  getMessageServerGuidsForSpam: (
+    conversationId: string
+  ) => Promise<Array<string>>;
+  getMessagesUnexpectedlyMissingExpirationStartTimestamp: () => Promise<
+    Array<MessageType>
+  >;
+  getSoonestMessageExpiry: () => Promise<undefined | number>;
+
+  getJobsInQueue(queueType: string): Promise<Array<StoredJob>>;
+  insertJob(job: Readonly<StoredJob>): Promise<void>;
+  deleteJob(id: string): Promise<void>;
+
+  updateAllConversationColors: (
+    conversationColor?: ConversationColorType,
+    customColorData?: {
+      id: string;
+      value: CustomColorType;
+    }
+  ) => Promise<void>;
+};
 
 // The reason for client/server divergence is the need to inject Backbone models and
 //   collections into data calls so those are the objects returned. This was necessary in
@@ -185,7 +352,7 @@ export type ServerInterface = DataInterface & {
   getAllConversations: () => Promise<Array<ConversationType>>;
   getAllGroupsInvolvingId: (id: string) => Promise<Array<ConversationType>>;
   getAllPrivateConversations: () => Promise<Array<ConversationType>>;
-  getConversationById: (id: string) => Promise<ConversationType>;
+  getConversationById: (id: string) => Promise<ConversationType | undefined>;
   getExpiredMessages: () => Promise<Array<MessageType>>;
   getMessageById: (id: string) => Promise<MessageType | undefined>;
   getMessageBySender: (options: {
@@ -197,25 +364,73 @@ export type ServerInterface = DataInterface & {
   getMessagesBySentAt: (sentAt: number) => Promise<Array<MessageType>>;
   getOlderMessagesByConversation: (
     conversationId: string,
-    options?: { limit?: number; receivedAt?: number }
+    options?: {
+      limit?: number;
+      receivedAt?: number;
+      sentAt?: number;
+      messageId?: string;
+    }
   ) => Promise<Array<MessageTypeUnhydrated>>;
   getNewerMessagesByConversation: (
     conversationId: string,
-    options?: { limit?: number; receivedAt?: number }
+    options?: { limit?: number; receivedAt?: number; sentAt?: number }
   ) => Promise<Array<MessageTypeUnhydrated>>;
-  getNextExpiringMessage: () => Promise<MessageType>;
-  getNextTapToViewMessageToAgeOut: () => Promise<MessageType>;
-  getOutgoingWithoutExpiresAt: () => Promise<Array<MessageType>>;
+  getLastConversationActivity: (options: {
+    conversationId: string;
+    ourConversationId: string;
+  }) => Promise<MessageType | undefined>;
+  getLastConversationPreview: (options: {
+    conversationId: string;
+    ourConversationId: string;
+  }) => Promise<MessageType | undefined>;
   getTapToViewMessagesNeedingErase: () => Promise<Array<MessageType>>;
-  getUnreadByConversation: (
-    conversationId: string
-  ) => Promise<Array<MessageType>>;
+  getUnreadCountForConversation: (conversationId: string) => Promise<number>;
+  getUnreadByConversationAndMarkRead: (
+    conversationId: string,
+    newestUnreadId: number,
+    readAt?: number
+  ) => Promise<
+    Array<
+      Pick<MessageType, 'id' | 'source' | 'sourceUuid' | 'sent_at' | 'type'>
+    >
+  >;
+  getUnreadReactionsAndMarkRead: (
+    conversationId: string,
+    newestUnreadId: number
+  ) => Promise<
+    Array<Pick<ReactionType, 'targetAuthorUuid' | 'targetTimestamp'>>
+  >;
+  markReactionAsRead: (
+    targetAuthorUuid: string,
+    targetTimestamp: number
+  ) => Promise<ReactionType | undefined>;
+  removeReactionFromConversation: (reaction: {
+    emoji: string;
+    fromId: string;
+    targetAuthorUuid: string;
+    targetTimestamp: number;
+  }) => Promise<void>;
+  addReaction: (reactionObj: ReactionType) => Promise<void>;
   removeConversation: (id: Array<string> | string) => Promise<void>;
-  removeMessage: (id: Array<string> | string) => Promise<void>;
+  removeMessage: (id: string) => Promise<void>;
+  removeMessages: (ids: Array<string>) => Promise<void>;
+  searchMessages: (
+    query: string,
+    options?: { limit?: number }
+  ) => Promise<Array<SearchResultMessageType>>;
+  searchMessagesInConversation: (
+    query: string,
+    conversationId: string,
+    options?: { limit?: number }
+  ) => Promise<Array<SearchResultMessageType>>;
   saveMessage: (
     data: MessageType,
     options: { forceSave?: boolean }
-  ) => Promise<number>;
+  ) => Promise<string>;
+  saveMessages: (
+    arrayOfMessages: Array<MessageType>,
+    options: { forceSave?: boolean }
+  ) => Promise<void>;
   updateConversation: (data: ConversationType) => Promise<void>;
 
   // For testing only
@@ -223,11 +438,12 @@ export type ServerInterface = DataInterface & {
 
   // Server-only
 
-  initialize: (options: {
+  initialize: (options: { configDir: string; key: string }) => Promise<void>;
+
+  initializeRenderer: (options: {
     configDir: string;
     key: string;
-    messages: LocaleMessagesType;
-  }) => Promise<boolean>;
+  }) => Promise<void>;
 
   removeKnownAttachments: (
     allAttachments: Array<string>
@@ -239,118 +455,147 @@ export type ServerInterface = DataInterface & {
 };
 
 export type ClientInterface = DataInterface & {
-  getAllConversations: ({
-    ConversationCollection,
-  }: {
-    ConversationCollection: BackboneConversationCollectionType;
-  }) => Promise<Array<ConversationType>>;
+  getAllConversations: (options: {
+    ConversationCollection: typeof ConversationModelCollectionType;
+  }) => Promise<ConversationModelCollectionType>;
   getAllGroupsInvolvingId: (
     id: string,
-    {
-      ConversationCollection,
-    }: {
-      ConversationCollection: BackboneConversationCollectionType;
+    options: {
+      ConversationCollection: typeof ConversationModelCollectionType;
     }
-  ) => Promise<Array<ConversationType>>;
-  getAllPrivateConversations: ({
-    ConversationCollection,
-  }: {
-    ConversationCollection: BackboneConversationCollectionType;
-  }) => Promise<Array<ConversationType>>;
+  ) => Promise<ConversationModelCollectionType>;
+  getAllPrivateConversations: (options: {
+    ConversationCollection: typeof ConversationModelCollectionType;
+  }) => Promise<ConversationModelCollectionType>;
   getConversationById: (
     id: string,
-    { Conversation }: { Conversation: BackboneConversationModelType }
-  ) => Promise<ConversationType>;
-  getExpiredMessages: ({
-    MessageCollection,
-  }: {
-    MessageCollection: BackboneMessageCollectionType;
-  }) => Promise<Array<MessageType>>;
+    options: { Conversation: typeof ConversationModel }
+  ) => Promise<ConversationModel | undefined>;
+  getExpiredMessages: (options: {
+    MessageCollection: typeof MessageModelCollectionType;
+  }) => Promise<MessageModelCollectionType>;
   getMessageById: (
     id: string,
-    { Message }: { Message: BackboneMessageModelType }
-  ) => Promise<MessageType | undefined>;
+    options: { Message: typeof MessageModel }
+  ) => Promise<MessageModel | undefined>;
   getMessageBySender: (
-    options: {
+    data: {
       source: string;
       sourceUuid: string;
       sourceDevice: string;
       sent_at: number;
     },
-    { Message }: { Message: BackboneMessageModelType }
-  ) => Promise<Array<MessageType>>;
+    options: { Message: typeof MessageModel }
+  ) => Promise<MessageModel | null>;
   getMessagesBySentAt: (
     sentAt: number,
-    { MessageCollection }: { MessageCollection: BackboneMessageCollectionType }
-  ) => Promise<Array<MessageType>>;
+    options: { MessageCollection: typeof MessageModelCollectionType }
+  ) => Promise<MessageModelCollectionType>;
   getOlderMessagesByConversation: (
     conversationId: string,
     options: {
       limit?: number;
+      messageId?: string;
       receivedAt?: number;
-      MessageCollection: BackboneMessageCollectionType;
+      sentAt?: number;
+      MessageCollection: typeof MessageModelCollectionType;
     }
-  ) => Promise<Array<MessageTypeUnhydrated>>;
+  ) => Promise<MessageModelCollectionType>;
   getNewerMessagesByConversation: (
     conversationId: string,
     options: {
       limit?: number;
       receivedAt?: number;
-      MessageCollection: BackboneMessageCollectionType;
+      sentAt?: number;
+      MessageCollection: typeof MessageModelCollectionType;
     }
-  ) => Promise<Array<MessageTypeUnhydrated>>;
-  getNextExpiringMessage: ({
-    Message,
-  }: {
-    Message: BackboneMessageModelType;
-  }) => Promise<MessageType>;
-  getNextTapToViewMessageToAgeOut: ({
-    Message,
-  }: {
-    Message: BackboneMessageModelType;
-  }) => Promise<MessageType>;
-  getOutgoingWithoutExpiresAt: ({
-    MessageCollection,
-  }: {
-    MessageCollection: BackboneMessageCollectionType;
-  }) => Promise<Array<MessageType>>;
-  getTapToViewMessagesNeedingErase: ({
-    MessageCollection,
-  }: {
-    MessageCollection: BackboneMessageCollectionType;
-  }) => Promise<Array<MessageType>>;
-  getUnreadByConversation: (
+  ) => Promise<MessageModelCollectionType>;
+  getLastConversationActivity: (options: {
+    conversationId: string;
+    ourConversationId: string;
+    Message: typeof MessageModel;
+  }) => Promise<MessageModel | undefined>;
+  getLastConversationPreview: (options: {
+    conversationId: string;
+    ourConversationId: string;
+    Message: typeof MessageModel;
+  }) => Promise<MessageModel | undefined>;
+  getTapToViewMessagesNeedingErase: (options: {
+    MessageCollection: typeof MessageModelCollectionType;
+  }) => Promise<MessageModelCollectionType>;
+  getUnreadCountForConversation: (conversationId: string) => Promise<number>;
+  getUnreadByConversationAndMarkRead: (
     conversationId: string,
-    { MessageCollection }: { MessageCollection: BackboneMessageCollectionType }
-  ) => Promise<Array<MessageType>>;
+    newestUnreadId: number,
+    readAt?: number
+  ) => Promise<
+    Array<
+      Pick<MessageType, 'id' | 'source' | 'sourceUuid' | 'sent_at' | 'type'>
+    >
+  >;
+  getUnreadReactionsAndMarkRead: (
+    conversationId: string,
+    newestUnreadId: number
+  ) => Promise<
+    Array<Pick<ReactionType, 'targetAuthorUuid' | 'targetTimestamp'>>
+  >;
+  markReactionAsRead: (
+    targetAuthorUuid: string,
+    targetTimestamp: number
+  ) => Promise<ReactionType | undefined>;
+  removeReactionFromConversation: (reaction: {
+    emoji: string;
+    fromId: string;
+    targetAuthorUuid: string;
+    targetTimestamp: number;
+  }) => Promise<void>;
+  addReaction: (reactionObj: ReactionType) => Promise<void>;
   removeConversation: (
     id: string,
-    { Conversation }: { Conversation: BackboneConversationModelType }
+    options: { Conversation: typeof ConversationModel }
   ) => Promise<void>;
   removeMessage: (
     id: string,
-    { Message }: { Message: BackboneMessageModelType }
+    options: { Message: typeof MessageModel }
+  ) => Promise<void>;
+  removeMessages: (
+    ids: Array<string>,
+    options: { Message: typeof MessageModel }
   ) => Promise<void>;
   saveMessage: (
     data: MessageType,
-    options: { forceSave?: boolean; Message: BackboneMessageModelType }
-  ) => Promise<number>;
-  updateConversation: (data: ConversationType) => void;
+    options: { forceSave?: boolean; Message: typeof MessageModel }
+  ) => Promise<string>;
+  saveMessages: (
+    arrayOfMessages: Array<MessageType>,
+    options: { forceSave?: boolean; Message: typeof MessageModel }
+  ) => Promise<void>;
+  searchMessages: (
+    query: string,
+    options?: { limit?: number }
+  ) => Promise<Array<ClientSearchResultMessageType>>;
+  searchMessagesInConversation: (
+    query: string,
+    conversationId: string,
+    options?: { limit?: number }
+  ) => Promise<Array<ClientSearchResultMessageType>>;
+  updateConversation: (data: ConversationType, extra?: unknown) => void;
 
   // Test-only
 
-  _getAllMessages: ({
-    MessageCollection,
-  }: {
-    MessageCollection: BackboneMessageCollectionType;
-  }) => Promise<Array<MessageType>>;
+  _getAllMessages: (options: {
+    MessageCollection: typeof MessageModelCollectionType;
+  }) => Promise<MessageModelCollectionType>;
 
   // Client-side only
 
   shutdown: () => Promise<void>;
   removeAllMessagesInConversation: (
     conversationId: string,
-    { MessageCollection }: { MessageCollection: BackboneMessageCollectionType }
+    options: {
+      logId: string;
+      MessageCollection: typeof MessageModelCollectionType;
+    }
   ) => Promise<void>;
   removeOtherData: () => Promise<void>;
   cleanupOrphanedAttachments: () => Promise<void>;
@@ -359,9 +604,12 @@ export type ClientInterface = DataInterface & {
   // Client-side only, and test-only
 
   _removeConversations: (ids: Array<string>) => Promise<void>;
-  _removeMessages: (ids: Array<string>) => Promise<void>;
-  _cleanData: (data: any, path?: string) => any;
   _jobs: { [id: string]: ClientJobType };
+
+  // These are defined on the server-only and used in the client to determine
+  // whether we should use IPC to use the database in the main process or
+  // use the db already running in the renderer.
+  goBackToMainProcess: () => Promise<void>;
 };
 
 export type ClientJobType = {

@@ -1,43 +1,92 @@
+// Copyright 2018-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
+import { noop } from 'lodash';
 
 import { Avatar } from '../Avatar';
 import { ContactName } from './ContactName';
-import { Message, Props as MessageProps } from './Message';
-import { ColorType, LocalizerType } from '../../types/Util';
+import {
+  Message,
+  MessageStatusType,
+  Props as MessagePropsType,
+  PropsData as MessagePropsDataType,
+} from './Message';
+import { LocalizerType } from '../../types/Util';
+import { ConversationType } from '../../state/ducks/conversations';
+import { assert } from '../../util/assert';
+import { ContactNameColorType } from '../../types/Colors';
 
-interface Contact {
-  status: string;
-  phoneNumber: string;
-  name?: string;
-  profileName?: string;
-  avatarPath?: string;
-  color: ColorType;
+export type Contact = Pick<
+  ConversationType,
+  | 'acceptedMessageRequest'
+  | 'avatarPath'
+  | 'color'
+  | 'id'
+  | 'isMe'
+  | 'name'
+  | 'phoneNumber'
+  | 'profileName'
+  | 'sharedGroupNames'
+  | 'title'
+  | 'unblurredAvatarPath'
+> & {
+  status: MessageStatusType | null;
+
   isOutgoingKeyError: boolean;
   isUnidentifiedDelivery: boolean;
 
   errors?: Array<Error>;
+};
 
-  onSendAnyway: () => void;
-  onShowSafetyNumber: () => void;
-}
-
-interface Props {
-  sentAt: number;
-  receivedAt: number;
-
-  message: MessageProps;
-  errors: Array<Error>;
+export type Props = {
   contacts: Array<Contact>;
+  contactNameColor?: ContactNameColorType;
+  errors: Array<Error>;
+  message: Omit<MessagePropsDataType, 'renderingContext'>;
+  receivedAt: number;
+  sentAt: number;
 
+  sendAnyway: (contactId: string, messageId: string) => unknown;
+  showSafetyNumber: (contactId: string) => void;
   i18n: LocalizerType;
-}
+} & Pick<
+  MessagePropsType,
+  | 'checkForAccount'
+  | 'clearSelectedMessage'
+  | 'deleteMessage'
+  | 'deleteMessageForEveryone'
+  | 'displayTapToViewMessage'
+  | 'downloadAttachment'
+  | 'doubleCheckMissingQuoteReference'
+  | 'interactionMode'
+  | 'kickOffAttachmentDownload'
+  | 'markAttachmentAsCorrupted'
+  | 'openConversation'
+  | 'openLink'
+  | 'reactToMessage'
+  | 'renderAudioAttachment'
+  | 'renderEmojiPicker'
+  | 'replyToMessage'
+  | 'retrySend'
+  | 'showContactDetail'
+  | 'showContactModal'
+  | 'showExpiredIncomingTapToViewToast'
+  | 'showExpiredOutgoingTapToViewToast'
+  | 'showForwardMessageModal'
+  | 'showVisualAttachment'
+>;
+
+const _keyForError = (error: Error): string => {
+  return `${error.name}-${error.message}`;
+};
 
 export class MessageDetail extends React.Component<Props> {
   private readonly focusRef = React.createRef<HTMLDivElement>();
 
-  public componentDidMount() {
+  public componentDidMount(): void {
     // When this component is created, it's initially not part of the DOM, and then it's
     //   added off-screen and animated in. This ensures that the focus takes.
     setTimeout(() => {
@@ -47,32 +96,49 @@ export class MessageDetail extends React.Component<Props> {
     });
   }
 
-  public renderAvatar(contact: Contact) {
+  public renderAvatar(contact: Contact): JSX.Element {
     const { i18n } = this.props;
-    const { avatarPath, color, phoneNumber, name, profileName } = contact;
+    const {
+      acceptedMessageRequest,
+      avatarPath,
+      color,
+      isMe,
+      name,
+      phoneNumber,
+      profileName,
+      sharedGroupNames,
+      title,
+      unblurredAvatarPath,
+    } = contact;
 
     return (
       <Avatar
+        acceptedMessageRequest={acceptedMessageRequest}
         avatarPath={avatarPath}
         color={color}
         conversationType="direct"
         i18n={i18n}
+        isMe={isMe}
         name={name}
         phoneNumber={phoneNumber}
         profileName={profileName}
+        title={title}
+        sharedGroupNames={sharedGroupNames}
         size={52}
+        unblurredAvatarPath={unblurredAvatarPath}
       />
     );
   }
 
-  public renderDeleteButton() {
-    const { i18n, message } = this.props;
+  public renderDeleteButton(): JSX.Element {
+    const { deleteMessage, i18n, message } = this.props;
 
     return (
       <div className="module-message-detail__delete-button-container">
         <button
+          type="button"
           onClick={() => {
-            message.deleteMessage(message.id);
+            deleteMessage(message.id);
           }}
           className="module-message-detail__delete-button"
         >
@@ -82,21 +148,23 @@ export class MessageDetail extends React.Component<Props> {
     );
   }
 
-  public renderContact(contact: Contact) {
-    const { i18n } = this.props;
+  public renderContact(contact: Contact): JSX.Element {
+    const { i18n, message, showSafetyNumber, sendAnyway } = this.props;
     const errors = contact.errors || [];
 
     const errorComponent = contact.isOutgoingKeyError ? (
       <div className="module-message-detail__contact__error-buttons">
         <button
+          type="button"
           className="module-message-detail__contact__show-safety-number"
-          onClick={contact.onShowSafetyNumber}
+          onClick={() => showSafetyNumber(contact.id)}
         >
           {i18n('showSafetyNumber')}
         </button>
         <button
+          type="button"
           className="module-message-detail__contact__send-anyway"
-          onClick={contact.onSendAnyway}
+          onClick={() => sendAnyway(contact.id, message.id)}
         >
           {i18n('sendAnyway')}
         </button>
@@ -106,7 +174,9 @@ export class MessageDetail extends React.Component<Props> {
       <div
         className={classNames(
           'module-message-detail__contact__status-icon',
-          `module-message-detail__contact__status-icon--${contact.status}`
+          contact.status
+            ? `module-message-detail__contact__status-icon--${contact.status}`
+            : undefined
         )}
       />
     ) : null;
@@ -123,10 +193,15 @@ export class MessageDetail extends React.Component<Props> {
               phoneNumber={contact.phoneNumber}
               name={contact.name}
               profileName={contact.profileName}
+              title={contact.title}
+              i18n={i18n}
             />
           </div>
-          {errors.map((error, index) => (
-            <div key={index} className="module-message-detail__contact__error">
+          {errors.map(error => (
+            <div
+              key={_keyForError(error)}
+              className="module-message-detail__contact__error"
+            >
               {error.message}
             </div>
           ))}
@@ -138,7 +213,7 @@ export class MessageDetail extends React.Component<Props> {
     );
   }
 
-  public renderContacts() {
+  public renderContacts(): JSX.Element | null {
     const { contacts } = this.props;
 
     if (!contacts || !contacts.length) {
@@ -152,18 +227,97 @@ export class MessageDetail extends React.Component<Props> {
     );
   }
 
-  public render() {
-    const { errors, message, receivedAt, sentAt, i18n } = this.props;
+  public render(): JSX.Element {
+    const {
+      errors,
+      message,
+      receivedAt,
+      sentAt,
+
+      checkForAccount,
+      clearSelectedMessage,
+      contactNameColor,
+      deleteMessage,
+      deleteMessageForEveryone,
+      displayTapToViewMessage,
+      downloadAttachment,
+      doubleCheckMissingQuoteReference,
+      i18n,
+      interactionMode,
+      kickOffAttachmentDownload,
+      markAttachmentAsCorrupted,
+      openConversation,
+      openLink,
+      reactToMessage,
+      renderAudioAttachment,
+      renderEmojiPicker,
+      replyToMessage,
+      retrySend,
+      showContactDetail,
+      showContactModal,
+      showExpiredIncomingTapToViewToast,
+      showExpiredOutgoingTapToViewToast,
+      showForwardMessageModal,
+      showVisualAttachment,
+    } = this.props;
 
     return (
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       <div className="module-message-detail" tabIndex={0} ref={this.focusRef}>
         <div className="module-message-detail__message-container">
-          <Message i18n={i18n} {...message} />
+          <Message
+            {...message}
+            renderingContext="conversation/MessageDetail"
+            checkForAccount={checkForAccount}
+            clearSelectedMessage={clearSelectedMessage}
+            contactNameColor={contactNameColor}
+            deleteMessage={deleteMessage}
+            deleteMessageForEveryone={deleteMessageForEveryone}
+            disableMenu
+            disableScroll
+            displayTapToViewMessage={displayTapToViewMessage}
+            downloadAttachment={downloadAttachment}
+            doubleCheckMissingQuoteReference={doubleCheckMissingQuoteReference}
+            i18n={i18n}
+            interactionMode={interactionMode}
+            kickOffAttachmentDownload={kickOffAttachmentDownload}
+            markAttachmentAsCorrupted={markAttachmentAsCorrupted}
+            onHeightChange={noop}
+            openConversation={openConversation}
+            openLink={openLink}
+            reactToMessage={reactToMessage}
+            renderAudioAttachment={renderAudioAttachment}
+            renderEmojiPicker={renderEmojiPicker}
+            replyToMessage={replyToMessage}
+            retrySend={retrySend}
+            showForwardMessageModal={showForwardMessageModal}
+            scrollToQuotedMessage={() => {
+              assert(
+                false,
+                'scrollToQuotedMessage should never be called because scrolling is disabled'
+              );
+            }}
+            showContactDetail={showContactDetail}
+            showContactModal={showContactModal}
+            showExpiredIncomingTapToViewToast={
+              showExpiredIncomingTapToViewToast
+            }
+            showExpiredOutgoingTapToViewToast={
+              showExpiredOutgoingTapToViewToast
+            }
+            showMessageDetail={() => {
+              assert(
+                false,
+                "showMessageDetail should never be called because the menu is disabled (and we're already in the message detail!)"
+              );
+            }}
+            showVisualAttachment={showVisualAttachment}
+          />
         </div>
         <table className="module-message-detail__info">
           <tbody>
-            {(errors || []).map((error, index) => (
-              <tr key={index}>
+            {(errors || []).map(error => (
+              <tr key={_keyForError(error)}>
                 <td className="module-message-detail__label">
                   {i18n('error')}
                 </td>

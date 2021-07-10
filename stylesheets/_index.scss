@@ -1,17 +1,23 @@
+// Copyright 2015-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+#app-container {
+  height: 100%;
+}
+
 .conversation-stack,
 .new-conversation,
 .inbox,
+.inbox-container,
 .gutter {
   height: 100%;
   overflow: hidden;
   position: relative;
 }
 
-.expired {
-  .conversation-stack,
-  .gutter {
-    height: calc(100% - 48px);
-  }
+.inbox {
+  display: flex;
+  flex-direction: column;
 }
 
 .scrollable {
@@ -77,4 +83,8 @@
   h3 {
     font-size: large;
   }
+}
+
+.call-manager-wrapper {
+  position: relative;
 }

@@ -1,16 +1,14 @@
-/* global crypto, window */
+// Copyright 2018-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* global window */
 
 const { isFunction, isNumber } = require('lodash');
-const { createLastMessageUpdate } = require('../../../ts/types/Conversation');
 const {
   arrayBufferToBase64,
   base64ToArrayBuffer,
+  computeHash,
 } = require('../../../ts/Crypto');
-
-async function computeHash(arraybuffer) {
-  const hash = await crypto.subtle.digest({ name: 'SHA-512' }, arraybuffer);
-  return arrayBufferToBase64(hash);
-}
 
 function buildAvatarUpdater({ field }) {
   return async (conversation, data, options = {}) => {
@@ -161,7 +159,7 @@ module.exports = {
   arrayBufferToBase64,
   base64ToArrayBuffer,
   computeHash,
-  createLastMessageUpdate,
+
   deleteExternalFiles,
   maybeUpdateAvatar,
   maybeUpdateProfileAvatar,

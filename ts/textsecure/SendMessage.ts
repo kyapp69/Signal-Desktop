@@ -1,18 +1,60 @@
-// tslint:disable no-backbone-get-set-outside-model no-bitwise no-default-export
+// Copyright 2020-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 
-import { without } from 'lodash';
+/* eslint-disable no-nested-ternary */
+/* eslint-disable class-methods-use-this */
+/* eslint-disable more/no-then */
+/* eslint-disable no-bitwise */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable max-classes-per-file */
+
+import { Dictionary } from 'lodash';
 import PQueue from 'p-queue';
+import {
+  PlaintextContent,
+  ProtocolAddress,
+  SenderKeyDistributionMessage,
+} from '@signalapp/signal-client';
 
-import { ProxiedRequestOptionsType, WebAPIType } from './WebAPI';
+import { assert } from '../util/assert';
+import { parseIntOrThrow } from '../util/parseIntOrThrow';
+import { SenderKeys } from '../LibSignalStores';
+import {
+  GroupCredentialsType,
+  GroupLogResponseType,
+  ProxiedRequestOptionsType,
+  ChallengeType,
+  WebAPIType,
+  MultiRecipient200ResponseType,
+} from './WebAPI';
 import createTaskWithTimeout from './TaskWithTimeout';
-import OutgoingMessage from './OutgoingMessage';
+import OutgoingMessage, { SerializedCertificateType } from './OutgoingMessage';
 import Crypto from './Crypto';
 import {
+  base64ToArrayBuffer,
+  concatenateBytes,
+  getRandomBytes,
+  getZeroes,
+  hexToArrayBuffer,
+  typedArrayToArrayBuffer,
+} from '../Crypto';
+import {
   AttachmentPointerClass,
+  CallingMessageClass,
   ContentClass,
   DataMessageClass,
+  StorageServiceCallOptionsType,
+  StorageServiceCredentials,
+  SyncMessageClass,
 } from '../textsecure.d';
 import { MessageError, SignedPreKeyRotationError } from './Errors';
+import { BodyRangesType } from '../types/Util';
+import {
+  LinkPreviewImage,
+  LinkPreviewMetadata,
+} from '../linkPreviews/linkPreviewFetch';
+import { concat } from '../util/iterables';
+import { SignalService as Proto } from '../protobuf';
 
 function stringToArrayBuffer(str: string): ArrayBuffer {
   if (typeof str !== 'string') {
@@ -25,34 +67,28 @@ function stringToArrayBuffer(str: string): ArrayBuffer {
   }
   return res;
 }
-function hexStringToArrayBuffer(string: string): ArrayBuffer {
-  return window.dcodeIO.ByteBuffer.wrap(string, 'hex').toArrayBuffer();
-}
-function base64ToArrayBuffer(string: string): ArrayBuffer {
-  return window.dcodeIO.ByteBuffer.wrap(string, 'base64').toArrayBuffer();
-}
 
 export type SendMetadataType = {
   [identifier: string]: {
     accessKey: string;
+    senderCertificate?: SerializedCertificateType;
   };
 };
 
-type GroupMemberType = {
-  uuid?: string;
-  e164?: string;
-};
-
 export type SendOptionsType = {
-  senderCertificate?: ArrayBuffer;
   sendMetadata?: SendMetadataType;
   online?: boolean;
+};
+
+export type CustomError = Error & {
+  identifier?: string;
+  number?: string;
 };
 
 export type CallbackResultType = {
   successfulIdentifiers?: Array<any>;
   failoverIdentifiers?: Array<any>;
-  errors?: Array<any>;
+  errors?: Array<CustomError>;
   unidentifiedDeliveries?: Array<any>;
   dataMessage?: ArrayBuffer;
 };
@@ -68,7 +104,38 @@ type QuoteAttachmentType = {
   attachmentPointer?: AttachmentPointerClass;
 };
 
-type MessageOptionsType = {
+export type GroupV2InfoType = {
+  groupChange?: Uint8Array;
+  masterKey: Uint8Array;
+  revision: number;
+  members: Array<string>;
+};
+type GroupV1InfoType = {
+  id: string;
+  members: Array<string>;
+};
+
+type GroupCallUpdateType = {
+  eraId: string;
+};
+
+export type AttachmentType = {
+  size: number;
+  data: ArrayBuffer;
+  contentType: string;
+
+  fileName: string;
+  flags: number;
+  width: number;
+  height: number;
+  caption: string;
+
+  attachmentPointer?: AttachmentPointerClass;
+
+  blurHash?: string;
+};
+
+export type MessageOptionsType = {
   attachments?: Array<AttachmentType> | null;
   body?: string;
   expireTimer?: number;
@@ -77,44 +144,96 @@ type MessageOptionsType = {
     id: string;
     type: number;
   };
+  groupV2?: GroupV2InfoType;
   needsSync?: boolean;
   preview?: Array<PreviewType> | null;
-  profileKey?: string;
+  profileKey?: ArrayBuffer;
   quote?: any;
   recipients: Array<string>;
   sticker?: any;
   reaction?: any;
+  deletedForEveryoneTimestamp?: number;
   timestamp: number;
+  mentions?: BodyRangesType;
+  groupCallUpdate?: GroupCallUpdateType;
+};
+export type GroupSendOptionsType = {
+  attachments?: Array<AttachmentType>;
+  expireTimer?: number;
+  groupV2?: GroupV2InfoType;
+  groupV1?: GroupV1InfoType;
+  messageText?: string;
+  preview?: any;
+  profileKey?: ArrayBuffer;
+  quote?: any;
+  reaction?: any;
+  sticker?: any;
+  deletedForEveryoneTimestamp?: number;
+  timestamp: number;
+  mentions?: BodyRangesType;
+  groupCallUpdate?: GroupCallUpdateType;
 };
 
 class Message {
   attachments: Array<any>;
+
   body?: string;
+
   expireTimer?: number;
+
   flags?: number;
+
   group?: {
     id: string;
     type: number;
   };
+
+  groupV2?: GroupV2InfoType;
+
   needsSync?: boolean;
+
   preview: any;
-  profileKey?: string;
-  quote?: any;
+
+  profileKey?: ArrayBuffer;
+
+  quote?: {
+    id?: number;
+    authorUuid?: string;
+    text?: string;
+    attachments?: Array<AttachmentType>;
+    bodyRanges?: BodyRangesType;
+  };
+
   recipients: Array<string>;
+
   sticker?: any;
-  reaction?: any;
+
+  reaction?: {
+    emoji?: string;
+    remove?: boolean;
+    targetAuthorUuid?: string;
+    targetTimestamp?: number;
+  };
+
   timestamp: number;
 
   dataMessage: any;
+
   attachmentPointers?: Array<any>;
 
-  // tslint:disable cyclomatic-complexity
+  deletedForEveryoneTimestamp?: number;
+
+  mentions?: BodyRangesType;
+
+  groupCallUpdate?: GroupCallUpdateType;
+
   constructor(options: MessageOptionsType) {
     this.attachments = options.attachments || [];
     this.body = options.body;
     this.expireTimer = options.expireTimer;
     this.flags = options.flags;
     this.group = options.group;
+    this.groupV2 = options.groupV2;
     this.needsSync = options.needsSync;
     this.preview = options.preview;
     this.profileKey = options.profileKey;
@@ -123,12 +242,15 @@ class Message {
     this.sticker = options.sticker;
     this.reaction = options.reaction;
     this.timestamp = options.timestamp;
+    this.deletedForEveryoneTimestamp = options.deletedForEveryoneTimestamp;
+    this.mentions = options.mentions;
+    this.groupCallUpdate = options.groupCallUpdate;
 
     if (!(this.recipients instanceof Array)) {
       throw new Error('Invalid recipient list');
     }
 
-    if (!this.group && this.recipients.length !== 1) {
+    if (!this.group && !this.groupV2 && this.recipients.length !== 1) {
       throw new Error('Invalid recipient list for non-group');
     }
 
@@ -196,18 +318,30 @@ class Message {
 
     if (this.body) {
       proto.body = this.body;
+
+      const mentionCount = this.mentions ? this.mentions.length : 0;
+      const placeholders = this.body.match(/\uFFFC/g);
+      const placeholderCount = placeholders ? placeholders.length : 0;
+      window.log.info(
+        `Sending a message with ${mentionCount} mentions and ${placeholderCount} placeholders`
+      );
     }
     if (this.flags) {
       proto.flags = this.flags;
     }
-    if (this.group) {
+    if (this.groupV2) {
+      proto.groupV2 = new window.textsecure.protobuf.GroupContextV2();
+      proto.groupV2.masterKey = this.groupV2.masterKey;
+      proto.groupV2.revision = this.groupV2.revision;
+      proto.groupV2.groupChange = this.groupV2.groupChange || null;
+    } else if (this.group) {
       proto.group = new window.textsecure.protobuf.GroupContext();
       proto.group.id = stringToArrayBuffer(this.group.id);
       proto.group.type = this.group.type;
     }
     if (this.sticker) {
       proto.sticker = new window.textsecure.protobuf.DataMessage.Sticker();
-      proto.sticker.packId = hexStringToArrayBuffer(this.sticker.packId);
+      proto.sticker.packId = hexToArrayBuffer(this.sticker.packId);
       proto.sticker.packKey = base64ToArrayBuffer(this.sticker.packKey);
       proto.sticker.stickerId = this.sticker.stickerId;
 
@@ -216,27 +350,34 @@ class Message {
       }
     }
     if (this.reaction) {
-      proto.reaction = this.reaction;
+      proto.reaction = new window.textsecure.protobuf.DataMessage.Reaction();
+      proto.reaction.emoji = this.reaction.emoji || null;
+      proto.reaction.remove = this.reaction.remove || false;
+      proto.reaction.targetAuthorUuid = this.reaction.targetAuthorUuid || null;
+      proto.reaction.targetTimestamp = this.reaction.targetTimestamp || null;
     }
+
     if (Array.isArray(this.preview)) {
       proto.preview = this.preview.map(preview => {
         const item = new window.textsecure.protobuf.DataMessage.Preview();
         item.title = preview.title;
         item.url = preview.url;
+        item.description = preview.description || null;
+        item.date = preview.date || null;
         item.image = preview.image || null;
         return item;
       });
     }
     if (this.quote) {
       const { QuotedAttachment } = window.textsecure.protobuf.DataMessage.Quote;
-      const { Quote } = window.textsecure.protobuf.DataMessage;
+      const { BodyRange, Quote } = window.textsecure.protobuf.DataMessage;
 
       proto.quote = new Quote();
       const { quote } = proto;
 
-      quote.id = this.quote.id;
-      quote.author = this.quote.author;
-      quote.text = this.quote.text;
+      quote.id = this.quote.id || null;
+      quote.authorUuid = this.quote.authorUuid || null;
+      quote.text = this.quote.text || null;
       quote.attachments = (this.quote.attachments || []).map(
         (attachment: AttachmentType) => {
           const quotedAttachment = new QuotedAttachment();
@@ -250,12 +391,54 @@ class Message {
           return quotedAttachment;
         }
       );
+      const bodyRanges: BodyRangesType = this.quote.bodyRanges || [];
+      quote.bodyRanges = bodyRanges.map(range => {
+        const bodyRange = new BodyRange();
+        bodyRange.start = range.start;
+        bodyRange.length = range.length;
+        bodyRange.mentionUuid = range.mentionUuid;
+        return bodyRange;
+      });
+      if (
+        quote.bodyRanges.length &&
+        (!proto.requiredProtocolVersion ||
+          proto.requiredProtocolVersion <
+            window.textsecure.protobuf.DataMessage.ProtocolVersion.MENTIONS)
+      ) {
+        proto.requiredProtocolVersion =
+          window.textsecure.protobuf.DataMessage.ProtocolVersion.MENTIONS;
+      }
     }
     if (this.expireTimer) {
       proto.expireTimer = this.expireTimer;
     }
     if (this.profileKey) {
       proto.profileKey = this.profileKey;
+    }
+    if (this.deletedForEveryoneTimestamp) {
+      proto.delete = {
+        targetSentTimestamp: this.deletedForEveryoneTimestamp,
+      };
+    }
+    if (this.mentions) {
+      proto.requiredProtocolVersion =
+        window.textsecure.protobuf.DataMessage.ProtocolVersion.MENTIONS;
+      proto.bodyRanges = this.mentions.map(
+        ({ start, length, mentionUuid }) => ({
+          start,
+          length,
+          mentionUuid,
+        })
+      );
+    }
+
+    if (this.groupCallUpdate) {
+      const { GroupCallUpdate } = window.textsecure.protobuf.DataMessage;
+
+      const groupCallUpdate = new GroupCallUpdate();
+      groupCallUpdate.eraId = this.groupCallUpdate.eraId;
+
+      proto.groupCallUpdate = groupCallUpdate;
     }
 
     this.dataMessage = proto;
@@ -267,22 +450,9 @@ class Message {
   }
 }
 
-export type AttachmentType = {
-  size: number;
-  data: ArrayBuffer;
-  contentType: string;
-
-  fileName: string;
-  flags: number;
-  width: number;
-  height: number;
-  caption: string;
-
-  attachmentPointer?: AttachmentPointerClass;
-};
-
 export default class MessageSender {
   server: WebAPIType;
+
   pendingMessages: {
     [id: string]: PQueue;
   };
@@ -292,22 +462,56 @@ export default class MessageSender {
     this.pendingMessages = {};
   }
 
-  _getAttachmentSizeBucket(size: number) {
+  async queueJobForIdentifier(
+    identifier: string,
+    runJob: () => Promise<any>
+  ): Promise<void> {
+    const { id } = await window.ConversationController.getOrCreateAndWait(
+      identifier,
+      'private'
+    );
+    this.pendingMessages[id] =
+      this.pendingMessages[id] || new PQueue({ concurrency: 1 });
+
+    const queue = this.pendingMessages[id];
+
+    const taskWithTimeout = createTaskWithTimeout(
+      runJob,
+      `queueJobForIdentifier ${identifier} ${id}`
+    );
+
+    return queue.add(taskWithTimeout);
+  }
+
+  // Attachment upload functions
+
+  _getAttachmentSizeBucket(size: number): number {
     return Math.max(
       541,
       Math.floor(1.05 ** Math.ceil(Math.log(size) / Math.log(1.05)))
     );
   }
 
-  getPaddedAttachment(data: ArrayBuffer) {
-    const size = data.byteLength;
-    const paddedSize = this._getAttachmentSizeBucket(size);
-    const padding = window.Signal.Crypto.getZeroes(paddedSize - size);
+  getRandomPadding(): ArrayBuffer {
+    // Generate a random int from 1 and 512
+    const buffer = getRandomBytes(2);
+    const paddingLength = (new Uint16Array(buffer)[0] & 0x1ff) + 1;
 
-    return window.Signal.Crypto.concatenateBytes(data, padding);
+    // Generate a random padding buffer of the chosen size
+    return getRandomBytes(paddingLength);
   }
 
-  async makeAttachmentPointer(attachment: AttachmentType) {
+  getPaddedAttachment(data: ArrayBuffer): ArrayBuffer {
+    const size = data.byteLength;
+    const paddedSize = this._getAttachmentSizeBucket(size);
+    const padding = getZeroes(paddedSize - size);
+
+    return concatenateBytes(data, padding);
+  }
+
+  async makeAttachmentPointer(
+    attachment: AttachmentType
+  ): Promise<AttachmentPointerClass | undefined> {
     if (typeof attachment !== 'object' || attachment == null) {
       return Promise.resolve(undefined);
     }
@@ -325,8 +529,8 @@ export default class MessageSender {
     }
 
     const padded = this.getPaddedAttachment(data);
-    const key = window.libsignal.crypto.getRandomBytes(64);
-    const iv = window.libsignal.crypto.getRandomBytes(16);
+    const key = getRandomBytes(64);
+    const iv = getRandomBytes(16);
 
     const result = await Crypto.encryptAttachment(padded, key, iv);
     const id = await this.server.putAttachment(result.ciphertext);
@@ -353,29 +557,14 @@ export default class MessageSender {
     if (attachment.caption) {
       proto.caption = attachment.caption;
     }
+    if (attachment.blurHash) {
+      proto.blurHash = attachment.blurHash;
+    }
 
     return proto;
   }
 
-  async queueJobForIdentifier(identifier: string, runJob: () => Promise<any>) {
-    const { id } = await window.ConversationController.getOrCreateAndWait(
-      identifier,
-      'private'
-    );
-    this.pendingMessages[id] =
-      this.pendingMessages[id] || new PQueue({ concurrency: 1 });
-
-    const queue = this.pendingMessages[id];
-
-    const taskWithTimeout = createTaskWithTimeout(
-      runJob,
-      `queueJobForIdentifier ${identifier} ${id}`
-    );
-
-    return queue.add(taskWithTimeout);
-  }
-
-  async uploadAttachments(message: Message) {
+  async uploadAttachments(message: Message): Promise<void> {
     return Promise.all(
       message.attachments.map(this.makeAttachmentPointer.bind(this))
     )
@@ -392,7 +581,7 @@ export default class MessageSender {
       });
   }
 
-  async uploadLinkPreviews(message: Message) {
+  async uploadLinkPreviews(message: Message): Promise<void> {
     try {
       const preview = await Promise.all(
         (message.preview || []).map(async (item: PreviewType) => ({
@@ -411,7 +600,7 @@ export default class MessageSender {
     }
   }
 
-  async uploadSticker(message: Message) {
+  async uploadSticker(message: Message): Promise<void> {
     try {
       const { sticker } = message;
 
@@ -438,7 +627,7 @@ export default class MessageSender {
     const { quote } = message;
 
     if (!quote || !quote.attachments || quote.attachments.length === 0) {
-      return Promise.resolve();
+      return;
     }
 
     await Promise.all(
@@ -461,9 +650,159 @@ export default class MessageSender {
     });
   }
 
-  async sendMessage(attrs: MessageOptionsType, options?: SendOptionsType) {
-    const message = new Message(attrs);
-    const silent = false;
+  // Proto assembly
+
+  async getDataMessage(options: MessageOptionsType): Promise<ArrayBuffer> {
+    const message = await this.getHydratedMessage(options);
+    return message.toArrayBuffer();
+  }
+
+  async getContentMessage(options: MessageOptionsType): Promise<ContentClass> {
+    const message = await this.getHydratedMessage(options);
+    const dataMessage = message.toProto();
+
+    const contentMessage = new window.textsecure.protobuf.Content();
+    contentMessage.dataMessage = dataMessage;
+
+    return contentMessage;
+  }
+
+  async getHydratedMessage(attributes: MessageOptionsType): Promise<Message> {
+    const message = new Message(attributes);
+    await Promise.all([
+      this.uploadAttachments(message),
+      this.uploadThumbnails(message),
+      this.uploadLinkPreviews(message),
+      this.uploadSticker(message),
+    ]);
+
+    return message;
+  }
+
+  getTypingContentMessage(options: {
+    recipientId?: string;
+    groupId?: ArrayBuffer;
+    groupMembers: Array<string>;
+    isTyping: boolean;
+    timestamp?: number;
+  }): ContentClass {
+    const ACTION_ENUM = window.textsecure.protobuf.TypingMessage.Action;
+    const { recipientId, groupId, isTyping, timestamp } = options;
+
+    if (!recipientId && !groupId) {
+      throw new Error(
+        'getTypingContentMessage: Need to provide either recipientId or groupId!'
+      );
+    }
+
+    const finalTimestamp = timestamp || Date.now();
+    const action = isTyping ? ACTION_ENUM.STARTED : ACTION_ENUM.STOPPED;
+
+    const typingMessage = new window.textsecure.protobuf.TypingMessage();
+    typingMessage.groupId = groupId || null;
+    typingMessage.action = action;
+    typingMessage.timestamp = finalTimestamp;
+
+    const contentMessage = new window.textsecure.protobuf.Content();
+    contentMessage.typingMessage = typingMessage;
+
+    return contentMessage;
+  }
+
+  getAttrsFromGroupOptions(options: GroupSendOptionsType): MessageOptionsType {
+    const {
+      messageText,
+      timestamp,
+      attachments,
+      quote,
+      preview,
+      sticker,
+      reaction,
+      expireTimer,
+      profileKey,
+      deletedForEveryoneTimestamp,
+      groupV2,
+      groupV1,
+      mentions,
+      groupCallUpdate,
+    } = options;
+
+    if (!groupV1 && !groupV2) {
+      throw new Error(
+        'getAttrsFromGroupOptions: Neither group1 nor groupv2 information provided!'
+      );
+    }
+
+    const myE164 = window.textsecure.storage.user.getNumber();
+    const myUuid = window.textsecure.storage.user.getUuid();
+
+    const groupMembers = groupV2?.members || groupV1?.members || [];
+
+    // We should always have a UUID but have this check just in case we don't.
+    let isNotMe: (recipient: string) => boolean;
+    if (myUuid) {
+      isNotMe = r => r !== myE164 && r !== myUuid;
+    } else {
+      isNotMe = r => r !== myE164;
+    }
+
+    const blockedIdentifiers = new Set(
+      concat(
+        window.storage.blocked.getBlockedUuids(),
+        window.storage.blocked.getBlockedNumbers()
+      )
+    );
+
+    const recipients = groupMembers.filter(
+      recipient => isNotMe(recipient) && !blockedIdentifiers.has(recipient)
+    );
+
+    return {
+      attachments,
+      body: messageText,
+      deletedForEveryoneTimestamp,
+      expireTimer,
+      groupCallUpdate,
+      groupV2,
+      group: groupV1
+        ? {
+            id: groupV1.id,
+            type: window.textsecure.protobuf.GroupContext.Type.DELIVER,
+          }
+        : undefined,
+      mentions,
+      preview,
+      profileKey,
+      quote,
+      reaction,
+      recipients,
+      sticker,
+      timestamp,
+    };
+  }
+
+  createSyncMessage(): SyncMessageClass {
+    const syncMessage = new window.textsecure.protobuf.SyncMessage();
+
+    syncMessage.padding = this.getRandomPadding();
+
+    return syncMessage;
+  }
+
+  // Low-level sends
+
+  async sendMessage({
+    messageOptions,
+    contentHint,
+    groupId,
+    options,
+  }: {
+    messageOptions: MessageOptionsType;
+    contentHint: number;
+    groupId: string | undefined;
+    options?: SendOptionsType;
+  }): Promise<CallbackResultType> {
+    const message = new Message(messageOptions);
 
     return Promise.all([
       this.uploadAttachments(message),
@@ -471,13 +810,10 @@ export default class MessageSender {
       this.uploadLinkPreviews(message),
       this.uploadSticker(message),
     ]).then(
-      async () =>
+      async (): Promise<CallbackResultType> =>
         new Promise((resolve, reject) => {
-          this.sendMessageProto(
-            message.timestamp,
-            message.recipients || [],
-            message.toProto(),
-            (res: CallbackResultType) => {
+          this.sendMessageProto({
+            callback: (res: CallbackResultType) => {
               res.dataMessage = message.toArrayBuffer();
               if (res.errors && res.errors.length > 0) {
                 reject(res);
@@ -485,20 +821,34 @@ export default class MessageSender {
                 resolve(res);
               }
             },
-            silent,
-            options
-          );
+            contentHint,
+            groupId,
+            options,
+            proto: message.toProto(),
+            recipients: message.recipients || [],
+            timestamp: message.timestamp,
+          });
         })
     );
   }
-  sendMessageProto(
-    timestamp: number,
-    recipients: Array<string>,
-    messageProto: DataMessageClass,
-    callback: (result: CallbackResultType) => void,
-    silent?: boolean,
-    options?: SendOptionsType
-  ) {
+
+  sendMessageProto({
+    timestamp,
+    recipients,
+    proto,
+    contentHint,
+    groupId,
+    callback,
+    options,
+  }: {
+    timestamp: number;
+    recipients: Array<string>;
+    proto: ContentClass | DataMessageClass | PlaintextContent;
+    contentHint: number;
+    groupId: string | undefined;
+    callback: (result: CallbackResultType) => void;
+    options?: SendOptionsType;
+  }): void {
     const rejections = window.textsecure.storage.get(
       'signedKeyRotationRejected',
       0
@@ -511,27 +861,35 @@ export default class MessageSender {
       this.server,
       timestamp,
       recipients,
-      messageProto,
-      silent,
+      proto,
+      contentHint,
+      groupId,
       callback,
       options
     );
 
     recipients.forEach(identifier => {
-      // tslint:disable-next-line no-floating-promises
       this.queueJobForIdentifier(identifier, async () =>
         outgoing.sendToIdentifier(identifier)
       );
     });
   }
 
-  async sendMessageProtoAndWait(
-    timestamp: number,
-    identifiers: Array<string>,
-    messageProto: DataMessageClass,
-    silent?: boolean,
-    options?: SendOptionsType
-  ) {
+  async sendMessageProtoAndWait({
+    timestamp,
+    recipients,
+    proto,
+    contentHint,
+    groupId,
+    options,
+  }: {
+    timestamp: number;
+    recipients: Array<string>;
+    proto: ContentClass | DataMessageClass | PlaintextContent;
+    contentHint: number;
+    groupId: string | undefined;
+    options?: SendOptionsType;
+  }): Promise<CallbackResultType> {
     return new Promise((resolve, reject) => {
       const callback = (result: CallbackResultType) => {
         if (result && result.errors && result.errors.length > 0) {
@@ -540,27 +898,34 @@ export default class MessageSender {
         }
 
         resolve(result);
-        return;
       };
 
-      this.sendMessageProto(
-        timestamp,
-        identifiers,
-        messageProto,
+      this.sendMessageProto({
         callback,
-        silent,
-        options
-      );
+        contentHint,
+        groupId,
+        options,
+        proto,
+        recipients,
+        timestamp,
+      });
     });
   }
 
-  async sendIndividualProto(
-    identifier: string,
-    proto: DataMessageClass | ContentClass,
-    timestamp: number,
-    silent?: boolean,
-    options?: SendOptionsType
-  ) {
+  async sendIndividualProto({
+    identifier,
+    proto,
+    timestamp,
+    contentHint,
+    options,
+  }: {
+    identifier: string | undefined;
+    proto: DataMessageClass | ContentClass | PlaintextContent;
+    timestamp: number;
+    contentHint: number;
+    options?: SendOptionsType;
+  }): Promise<CallbackResultType> {
+    assert(identifier, "Identifier can't be undefined");
     return new Promise((resolve, reject) => {
       const callback = (res: CallbackResultType) => {
         if (res && res.errors && res.errors.length > 0) {
@@ -569,46 +934,99 @@ export default class MessageSender {
           resolve(res);
         }
       };
-      this.sendMessageProto(
-        timestamp,
-        [identifier],
-        proto,
+      this.sendMessageProto({
         callback,
-        silent,
-        options
-      );
+        contentHint,
+        groupId: undefined,
+        options,
+        proto,
+        recipients: [identifier],
+        timestamp,
+      });
     });
   }
 
-  createSyncMessage() {
-    const syncMessage = new window.textsecure.protobuf.SyncMessage();
-
-    // Generate a random int from 1 and 512
-    const buffer = window.libsignal.crypto.getRandomBytes(1);
-    const paddingLength = (new Uint8Array(buffer)[0] & 0x1ff) + 1;
-
-    // Generate a random padding buffer of the chosen size
-    syncMessage.padding = window.libsignal.crypto.getRandomBytes(paddingLength);
-
-    return syncMessage;
+  // You might wonder why this takes a groupId. models/messages.resend() can send a group
+  //   message to just one person.
+  async sendMessageToIdentifier({
+    identifier,
+    messageText,
+    attachments,
+    quote,
+    preview,
+    sticker,
+    reaction,
+    deletedForEveryoneTimestamp,
+    timestamp,
+    expireTimer,
+    contentHint,
+    groupId,
+    profileKey,
+    options,
+  }: {
+    identifier: string;
+    messageText: string | undefined;
+    attachments: Array<AttachmentType> | undefined;
+    quote: unknown;
+    preview: Array<PreviewType> | undefined;
+    sticker: unknown;
+    reaction: unknown;
+    deletedForEveryoneTimestamp: number | undefined;
+    timestamp: number;
+    expireTimer: number | undefined;
+    contentHint: number;
+    groupId: string | undefined;
+    profileKey?: ArrayBuffer;
+    options?: SendOptionsType;
+  }): Promise<CallbackResultType> {
+    return this.sendMessage({
+      messageOptions: {
+        recipients: [identifier],
+        body: messageText,
+        timestamp,
+        attachments,
+        quote,
+        preview,
+        sticker,
+        reaction,
+        deletedForEveryoneTimestamp,
+        expireTimer,
+        profileKey,
+      },
+      contentHint,
+      groupId,
+      options,
+    });
   }
 
-  async sendSyncMessage(
-    encodedDataMessage: ArrayBuffer,
-    timestamp: number,
-    destination: string,
-    destinationUuid: string | null,
-    expirationStartTimestamp: number | null,
-    sentTo: Array<string> = [],
-    unidentifiedDeliveries: Array<string> = [],
-    isUpdate: boolean = false,
-    options?: SendOptionsType
-  ) {
+  // Support for sync messages
+
+  async sendSyncMessage({
+    encodedDataMessage,
+    timestamp,
+    destination,
+    destinationUuid,
+    expirationStartTimestamp,
+    sentTo,
+    unidentifiedDeliveries,
+    isUpdate,
+    options,
+  }: {
+    encodedDataMessage: ArrayBuffer;
+    timestamp: number;
+    destination: string | undefined;
+    destinationUuid: string | null | undefined;
+    expirationStartTimestamp: number | null;
+    sentTo?: Array<string>;
+    unidentifiedDeliveries?: Array<string>;
+    isUpdate?: boolean;
+    options?: SendOptionsType;
+  }): Promise<CallbackResultType | void> {
     const myNumber = window.textsecure.storage.user.getNumber();
     const myUuid = window.textsecure.storage.user.getUuid();
     const myDevice = window.textsecure.storage.user.getDeviceId();
 
-    if (myDevice === 1 || myDevice === '1') {
+    if (myDevice === 1) {
       return Promise.resolve();
     }
 
@@ -628,7 +1046,7 @@ export default class MessageSender {
       sentMessage.expirationStartTimestamp = expirationStartTimestamp;
     }
 
-    const unidentifiedLookup = unidentifiedDeliveries.reduce(
+    const unidentifiedLookup = (unidentifiedDeliveries || []).reduce(
       (accumulator, item) => {
         // eslint-disable-next-line no-param-reassign
         accumulator[item] = true;
@@ -663,53 +1081,26 @@ export default class MessageSender {
     const contentMessage = new window.textsecure.protobuf.Content();
     contentMessage.syncMessage = syncMessage;
 
-    const silent = true;
-    return this.sendIndividualProto(
-      myUuid || myNumber,
-      contentMessage,
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+    return this.sendIndividualProto({
+      identifier: myUuid || myNumber,
+      proto: contentMessage,
       timestamp,
-      silent,
-      options
-    );
+      contentHint: ContentHint.IMPLICIT,
+      options,
+    });
   }
 
-  async getProfile(
-    number: string,
-    options: {
-      accessKey?: string;
-      profileKeyVersion?: string;
-      profileKeyCredentialRequest?: string;
-    } = {}
-  ) {
-    const { accessKey } = options;
-
-    if (accessKey) {
-      const unauthOptions = {
-        ...options,
-        accessKey,
-      };
-      return this.server.getProfileUnauth(number, unauthOptions);
-    }
-
-    return this.server.getProfile(number, options);
-  }
-
-  async getAvatar(path: string) {
-    return this.server.getAvatar(path);
-  }
-
-  async getSticker(packId: string, stickerId: string) {
-    return this.server.getSticker(packId, stickerId);
-  }
-  async getStickerPackManifest(packId: string) {
-    return this.server.getStickerPackManifest(packId);
-  }
-
-  async sendRequestBlockSyncMessage(options?: SendOptionsType) {
+  async sendRequestBlockSyncMessage(
+    options?: SendOptionsType
+  ): Promise<CallbackResultType | void> {
     const myNumber = window.textsecure.storage.user.getNumber();
     const myUuid = window.textsecure.storage.user.getUuid();
     const myDevice = window.textsecure.storage.user.getDeviceId();
-    if (myDevice !== 1 && myDevice !== '1') {
+    if (myDevice !== 1) {
       const request = new window.textsecure.protobuf.SyncMessage.Request();
       request.type =
         window.textsecure.protobuf.SyncMessage.Request.Type.BLOCKED;
@@ -718,24 +1109,29 @@ export default class MessageSender {
       const contentMessage = new window.textsecure.protobuf.Content();
       contentMessage.syncMessage = syncMessage;
 
-      const silent = true;
-      return this.sendIndividualProto(
-        myUuid || myNumber,
-        contentMessage,
-        Date.now(),
-        silent,
-        options
-      );
+      const {
+        ContentHint,
+      } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+      return this.sendIndividualProto({
+        identifier: myUuid || myNumber,
+        proto: contentMessage,
+        timestamp: Date.now(),
+        contentHint: ContentHint.IMPLICIT,
+        options,
+      });
     }
 
     return Promise.resolve();
   }
 
-  async sendRequestConfigurationSyncMessage(options?: SendOptionsType) {
+  async sendRequestConfigurationSyncMessage(
+    options?: SendOptionsType
+  ): Promise<CallbackResultType | void> {
     const myNumber = window.textsecure.storage.user.getNumber();
     const myUuid = window.textsecure.storage.user.getUuid();
     const myDevice = window.textsecure.storage.user.getDeviceId();
-    if (myDevice !== 1 && myDevice !== '1') {
+    if (myDevice !== 1) {
       const request = new window.textsecure.protobuf.SyncMessage.Request();
       request.type =
         window.textsecure.protobuf.SyncMessage.Request.Type.CONFIGURATION;
@@ -744,24 +1140,29 @@ export default class MessageSender {
       const contentMessage = new window.textsecure.protobuf.Content();
       contentMessage.syncMessage = syncMessage;
 
-      const silent = true;
-      return this.sendIndividualProto(
-        myUuid || myNumber,
-        contentMessage,
-        Date.now(),
-        silent,
-        options
-      );
+      const {
+        ContentHint,
+      } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+      return this.sendIndividualProto({
+        identifier: myUuid || myNumber,
+        proto: contentMessage,
+        timestamp: Date.now(),
+        contentHint: ContentHint.IMPLICIT,
+        options,
+      });
     }
 
     return Promise.resolve();
   }
 
-  async sendRequestGroupSyncMessage(options?: SendOptionsType) {
+  async sendRequestGroupSyncMessage(
+    options?: SendOptionsType
+  ): Promise<CallbackResultType | void> {
     const myNumber = window.textsecure.storage.user.getNumber();
     const myUuid = window.textsecure.storage.user.getUuid();
     const myDevice = window.textsecure.storage.user.getDeviceId();
-    if (myDevice !== 1 && myDevice !== '1') {
+    if (myDevice !== 1) {
       const request = new window.textsecure.protobuf.SyncMessage.Request();
       request.type = window.textsecure.protobuf.SyncMessage.Request.Type.GROUPS;
       const syncMessage = this.createSyncMessage();
@@ -769,25 +1170,30 @@ export default class MessageSender {
       const contentMessage = new window.textsecure.protobuf.Content();
       contentMessage.syncMessage = syncMessage;
 
-      const silent = true;
-      return this.sendIndividualProto(
-        myUuid || myNumber,
-        contentMessage,
-        Date.now(),
-        silent,
-        options
-      );
+      const {
+        ContentHint,
+      } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+      return this.sendIndividualProto({
+        identifier: myUuid || myNumber,
+        proto: contentMessage,
+        timestamp: Date.now(),
+        contentHint: ContentHint.IMPLICIT,
+        options,
+      });
     }
 
     return Promise.resolve();
   }
 
-  async sendRequestContactSyncMessage(options?: SendOptionsType) {
+  async sendRequestContactSyncMessage(
+    options?: SendOptionsType
+  ): Promise<CallbackResultType | void> {
     const myNumber = window.textsecure.storage.user.getNumber();
     const myUuid = window.textsecure.storage.user.getUuid();
 
     const myDevice = window.textsecure.storage.user.getDeviceId();
-    if (myDevice !== 1 && myDevice !== '1') {
+    if (myDevice !== 1) {
       const request = new window.textsecure.protobuf.SyncMessage.Request();
       request.type =
         window.textsecure.protobuf.SyncMessage.Request.Type.CONTACTS;
@@ -796,198 +1202,204 @@ export default class MessageSender {
       const contentMessage = new window.textsecure.protobuf.Content();
       contentMessage.syncMessage = syncMessage;
 
-      const silent = true;
-      return this.sendIndividualProto(
-        myUuid || myNumber,
-        contentMessage,
-        Date.now(),
-        silent,
-        options
-      );
+      const {
+        ContentHint,
+      } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+      return this.sendIndividualProto({
+        identifier: myUuid || myNumber,
+        proto: contentMessage,
+        timestamp: Date.now(),
+        contentHint: ContentHint.IMPLICIT,
+        options,
+      });
     }
 
     return Promise.resolve();
   }
 
-  async sendTypingMessage(
-    options: {
-      recipientId: string;
-      groupId: string;
-      groupNumbers: Array<string>;
-      isTyping: boolean;
-      timestamp: number;
-    },
-    sendOptions: SendOptionsType = {}
-  ) {
-    const ACTION_ENUM = window.textsecure.protobuf.TypingMessage.Action;
-    const { recipientId, groupId, groupNumbers, isTyping, timestamp } = options;
-
-    // We don't want to send typing messages to our other devices, but we will
-    //   in the group case.
-    const myNumber = window.textsecure.storage.user.getNumber();
+  async sendFetchManifestSyncMessage(
+    options?: SendOptionsType
+  ): Promise<CallbackResultType | void> {
     const myUuid = window.textsecure.storage.user.getUuid();
-    if (recipientId && (myNumber === recipientId || myUuid === recipientId)) {
-      return null;
+    const myNumber = window.textsecure.storage.user.getNumber();
+    const myDevice = window.textsecure.storage.user.getDeviceId();
+
+    if (myDevice === 1) {
+      return;
     }
 
-    if (!recipientId && !groupId) {
-      throw new Error('Need to provide either recipientId or groupId!');
-    }
+    const fetchLatest = new window.textsecure.protobuf.SyncMessage.FetchLatest();
+    fetchLatest.type =
+      window.textsecure.protobuf.SyncMessage.FetchLatest.Type.STORAGE_MANIFEST;
 
-    const recipients = groupId
-      ? (without(groupNumbers, myNumber, myUuid) as Array<string>)
-      : [recipientId];
-    const groupIdBuffer = groupId
-      ? window.Signal.Crypto.fromEncodedBinaryToArrayBuffer(groupId)
-      : null;
-
-    const action = isTyping ? ACTION_ENUM.STARTED : ACTION_ENUM.STOPPED;
-    const finalTimestamp = timestamp || Date.now();
-
-    const typingMessage = new window.textsecure.protobuf.TypingMessage();
-    typingMessage.groupId = groupIdBuffer;
-    typingMessage.action = action;
-    typingMessage.timestamp = finalTimestamp;
-
+    const syncMessage = this.createSyncMessage();
+    syncMessage.fetchLatest = fetchLatest;
     const contentMessage = new window.textsecure.protobuf.Content();
-    contentMessage.typingMessage = typingMessage;
+    contentMessage.syncMessage = syncMessage;
 
-    const silent = true;
-    const online = true;
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
 
-    return this.sendMessageProtoAndWait(
-      finalTimestamp,
-      recipients,
-      contentMessage,
-      silent,
-      {
-        ...sendOptions,
-        online,
-      }
-    );
+    await this.sendIndividualProto({
+      identifier: myUuid || myNumber,
+      proto: contentMessage,
+      timestamp: Date.now(),
+      contentHint: ContentHint.IMPLICIT,
+      options,
+    });
   }
 
-  async sendDeliveryReceipt(
-    recipientE164: string,
-    recipientUuid: string,
-    timestamps: Array<number>,
+  async sendRequestKeySyncMessage(
     options?: SendOptionsType
-  ) {
+  ): Promise<CallbackResultType | void> {
+    const myUuid = window.textsecure.storage.user.getUuid();
+    const myNumber = window.textsecure.storage.user.getNumber();
+    const myDevice = window.textsecure.storage.user.getDeviceId();
+
+    if (myDevice === 1) {
+      return;
+    }
+
+    const request = new window.textsecure.protobuf.SyncMessage.Request();
+    request.type = window.textsecure.protobuf.SyncMessage.Request.Type.KEYS;
+
+    const syncMessage = this.createSyncMessage();
+    syncMessage.request = request;
+    const contentMessage = new window.textsecure.protobuf.Content();
+    contentMessage.syncMessage = syncMessage;
+
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+    await this.sendIndividualProto({
+      identifier: myUuid || myNumber,
+      proto: contentMessage,
+      timestamp: Date.now(),
+      contentHint: ContentHint.IMPLICIT,
+      options,
+    });
+  }
+
+  async syncReadMessages(
+    reads: Array<{
+      senderUuid?: string;
+      senderE164?: string;
+      timestamp: number;
+    }>,
+    options?: SendOptionsType
+  ): Promise<CallbackResultType | void> {
     const myNumber = window.textsecure.storage.user.getNumber();
     const myUuid = window.textsecure.storage.user.getUuid();
     const myDevice = window.textsecure.storage.user.getDeviceId();
-    if (
-      (myNumber === recipientE164 || myUuid === recipientUuid) &&
-      (myDevice === 1 || myDevice === '1')
-    ) {
+    if (myDevice === 1) {
       return Promise.resolve();
     }
 
-    const receiptMessage = new window.textsecure.protobuf.ReceiptMessage();
-    receiptMessage.type =
-      window.textsecure.protobuf.ReceiptMessage.Type.DELIVERY;
-    receiptMessage.timestamp = timestamps;
+    const syncMessage = this.createSyncMessage();
+    syncMessage.read = [];
+    for (let i = 0; i < reads.length; i += 1) {
+      const read = new window.textsecure.protobuf.SyncMessage.Read();
+      read.timestamp = reads[i].timestamp;
+      read.sender = reads[i].senderE164 || null;
+      read.senderUuid = reads[i].senderUuid || null;
 
-    const contentMessage = new window.textsecure.protobuf.Content();
-    contentMessage.receiptMessage = receiptMessage;
-
-    const silent = true;
-    return this.sendIndividualProto(
-      recipientUuid || recipientE164,
-      contentMessage,
-      Date.now(),
-      silent,
-      options
-    );
-  }
-
-  async sendReadReceipts(
-    senderE164: string,
-    senderUuid: string,
-    timestamps: Array<number>,
-    options?: SendOptionsType
-  ) {
-    const receiptMessage = new window.textsecure.protobuf.ReceiptMessage();
-    receiptMessage.type = window.textsecure.protobuf.ReceiptMessage.Type.READ;
-    receiptMessage.timestamp = timestamps;
-
-    const contentMessage = new window.textsecure.protobuf.Content();
-    contentMessage.receiptMessage = receiptMessage;
-
-    const silent = true;
-    return this.sendIndividualProto(
-      senderUuid || senderE164,
-      contentMessage,
-      Date.now(),
-      silent,
-      options
-    );
-  }
-  async syncReadMessages(
-    reads: Array<{ sender: string; timestamp: number }>,
-    options?: SendOptionsType
-  ) {
-    const myNumber = window.textsecure.storage.user.getNumber();
-    const myUuid = window.textsecure.storage.user.getUuid();
-    const myDevice = window.textsecure.storage.user.getDeviceId();
-    if (myDevice !== 1 && myDevice !== '1') {
-      const syncMessage = this.createSyncMessage();
-      syncMessage.read = [];
-      for (let i = 0; i < reads.length; i += 1) {
-        const read = new window.textsecure.protobuf.SyncMessage.Read();
-        read.timestamp = reads[i].timestamp;
-        read.sender = reads[i].sender;
-
-        syncMessage.read.push(read);
-      }
-      const contentMessage = new window.textsecure.protobuf.Content();
-      contentMessage.syncMessage = syncMessage;
-
-      const silent = true;
-      return this.sendIndividualProto(
-        myUuid || myNumber,
-        contentMessage,
-        Date.now(),
-        silent,
-        options
-      );
+      syncMessage.read.push(read);
     }
+    const contentMessage = new window.textsecure.protobuf.Content();
+    contentMessage.syncMessage = syncMessage;
 
-    return Promise.resolve();
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+    return this.sendIndividualProto({
+      identifier: myUuid || myNumber,
+      proto: contentMessage,
+      timestamp: Date.now(),
+      contentHint: ContentHint.IMPLICIT,
+      options,
+    });
   }
 
   async syncViewOnceOpen(
-    sender: string,
+    sender: string | undefined,
     senderUuid: string,
     timestamp: number,
     options?: SendOptionsType
-  ) {
+  ): Promise<CallbackResultType | null> {
     const myNumber = window.textsecure.storage.user.getNumber();
     const myUuid = window.textsecure.storage.user.getUuid();
     const myDevice = window.textsecure.storage.user.getDeviceId();
-    if (myDevice === 1 || myDevice === '1') {
+    if (myDevice === 1) {
       return null;
     }
 
     const syncMessage = this.createSyncMessage();
 
     const viewOnceOpen = new window.textsecure.protobuf.SyncMessage.ViewOnceOpen();
-    viewOnceOpen.sender = sender;
-    viewOnceOpen.senderUuid = senderUuid;
-    viewOnceOpen.timestamp = timestamp;
+    viewOnceOpen.sender = sender || null;
+    viewOnceOpen.senderUuid = senderUuid || null;
+    viewOnceOpen.timestamp = timestamp || null;
     syncMessage.viewOnceOpen = viewOnceOpen;
 
     const contentMessage = new window.textsecure.protobuf.Content();
     contentMessage.syncMessage = syncMessage;
 
-    const silent = true;
-    return this.sendIndividualProto(
-      myUuid || myNumber,
-      contentMessage,
-      Date.now(),
-      silent,
-      options
-    );
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+    return this.sendIndividualProto({
+      identifier: myUuid || myNumber,
+      proto: contentMessage,
+      timestamp: Date.now(),
+      contentHint: ContentHint.IMPLICIT,
+      options,
+    });
+  }
+
+  async syncMessageRequestResponse(
+    responseArgs: {
+      threadE164?: string;
+      threadUuid?: string;
+      groupId?: ArrayBuffer;
+      type: number;
+    },
+    options?: SendOptionsType
+  ): Promise<CallbackResultType | null> {
+    const myNumber = window.textsecure.storage.user.getNumber();
+    const myUuid = window.textsecure.storage.user.getUuid();
+    const myDevice = window.textsecure.storage.user.getDeviceId();
+    if (myDevice === 1) {
+      return null;
+    }
+
+    const syncMessage = this.createSyncMessage();
+
+    const response = new window.textsecure.protobuf.SyncMessage.MessageRequestResponse();
+    response.threadE164 = responseArgs.threadE164 || null;
+    response.threadUuid = responseArgs.threadUuid || null;
+    response.groupId = responseArgs.groupId || null;
+    response.type = responseArgs.type;
+    syncMessage.messageRequestResponse = response;
+
+    const contentMessage = new window.textsecure.protobuf.Content();
+    contentMessage.syncMessage = syncMessage;
+
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+    return this.sendIndividualProto({
+      identifier: myUuid || myNumber,
+      proto: contentMessage,
+      timestamp: Date.now(),
+      contentHint: ContentHint.IMPLICIT,
+      options,
+    });
   }
 
   async sendStickerPackSync(
@@ -997,9 +1409,9 @@ export default class MessageSender {
       installed: boolean;
     }>,
     options?: SendOptionsType
-  ) {
+  ): Promise<CallbackResultType | null> {
     const myDevice = window.textsecure.storage.user.getDeviceId();
-    if (myDevice === 1 || myDevice === '1') {
+    if (myDevice === 1) {
       return null;
     }
 
@@ -1012,7 +1424,7 @@ export default class MessageSender {
       const { packId, packKey, installed } = item;
 
       const operation = new window.textsecure.protobuf.SyncMessage.StickerPackOperation();
-      operation.packId = hexStringToArrayBuffer(packId);
+      operation.packId = hexToArrayBuffer(packId);
       operation.packKey = base64ToArrayBuffer(packKey);
       operation.type = installed ? ENUM.INSTALL : ENUM.REMOVE;
 
@@ -1025,14 +1437,17 @@ export default class MessageSender {
     const contentMessage = new window.textsecure.protobuf.Content();
     contentMessage.syncMessage = syncMessage;
 
-    const silent = true;
-    return this.sendIndividualProto(
-      myUuid || myNumber,
-      contentMessage,
-      Date.now(),
-      silent,
-      options
-    );
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+    return this.sendIndividualProto({
+      identifier: myUuid || myNumber,
+      proto: contentMessage,
+      timestamp: Date.now(),
+      contentHint: ContentHint.IMPLICIT,
+      options,
+    });
   }
 
   async syncVerification(
@@ -1041,36 +1456,22 @@ export default class MessageSender {
     state: number,
     identityKey: ArrayBuffer,
     options?: SendOptionsType
-  ) {
+  ): Promise<CallbackResultType | void> {
     const myNumber = window.textsecure.storage.user.getNumber();
     const myUuid = window.textsecure.storage.user.getUuid();
     const myDevice = window.textsecure.storage.user.getDeviceId();
     const now = Date.now();
 
-    if (myDevice === 1 || myDevice === '1') {
+    if (myDevice === 1) {
       return Promise.resolve();
     }
 
+    // Get padding which we can share between null message and verified sync
+    const padding = this.getRandomPadding();
+
     // First send a null message to mask the sync message.
-    const nullMessage = new window.textsecure.protobuf.NullMessage();
-
-    // Generate a random int from 1 and 512
-    const buffer = window.libsignal.crypto.getRandomBytes(1);
-    const paddingLength = (new Uint8Array(buffer)[0] & 0x1ff) + 1;
-
-    // Generate a random padding buffer of the chosen size
-    nullMessage.padding = window.libsignal.crypto.getRandomBytes(paddingLength);
-
-    const contentMessage = new window.textsecure.protobuf.Content();
-    contentMessage.nullMessage = nullMessage;
-
-    // We want the NullMessage to look like a normal outgoing message; not silent
-    const silent = false;
-    const promise = this.sendIndividualProto(
-      destinationUuid || destinationE164,
-      contentMessage,
-      now,
-      silent,
+    const promise = this.sendNullMessage(
+      { uuid: destinationUuid, e164: destinationE164, padding },
       options
     );
 
@@ -1084,7 +1485,7 @@ export default class MessageSender {
         verified.destinationUuid = destinationUuid;
       }
       verified.identityKey = identityKey;
-      verified.nullMessage = nullMessage.padding;
+      verified.nullMessage = padding;
 
       const syncMessage = this.createSyncMessage();
       syncMessage.verified = verified;
@@ -1092,132 +1493,181 @@ export default class MessageSender {
       const secondMessage = new window.textsecure.protobuf.Content();
       secondMessage.syncMessage = syncMessage;
 
-      const innerSilent = true;
-      return this.sendIndividualProto(
-        myUuid || myNumber,
-        secondMessage,
-        now,
-        innerSilent,
-        options
-      );
+      const {
+        ContentHint,
+      } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+      await this.sendIndividualProto({
+        identifier: myUuid || myNumber,
+        proto: secondMessage,
+        timestamp: now,
+        contentHint: ContentHint.IMPLICIT,
+        options,
+      });
     });
   }
 
-  async sendGroupProto(
-    providedIdentifiers: Array<string>,
-    proto: DataMessageClass,
-    timestamp = Date.now(),
-    options = {}
-  ) {
-    const myE164 = window.textsecure.storage.user.getNumber();
-    const myUuid = window.textsecure.storage.user.getUuid();
-    const identifiers = providedIdentifiers.filter(
-      id => id !== myE164 && id !== myUuid
-    );
+  // Sending messages to contacts
 
-    if (identifiers.length === 0) {
-      return Promise.resolve({
-        successfulIdentifiers: [],
-        failoverIdentifiers: [],
-        errors: [],
-        unidentifiedDeliveries: [],
-        dataMessage: proto.toArrayBuffer(),
-      });
+  async sendProfileKeyUpdate(
+    profileKey: ArrayBuffer,
+    recipients: Array<string>,
+    options: SendOptionsType,
+    groupId?: string
+  ): Promise<CallbackResultType> {
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+    return this.sendMessage({
+      messageOptions: {
+        recipients,
+        timestamp: Date.now(),
+        profileKey,
+        flags: window.textsecure.protobuf.DataMessage.Flags.PROFILE_KEY_UPDATE,
+        ...(groupId
+          ? {
+              group: {
+                id: groupId,
+                type: window.textsecure.protobuf.GroupContext.Type.DELIVER,
+              },
+            }
+          : {}),
+      },
+      contentHint: ContentHint.IMPLICIT,
+      groupId: undefined,
+      options,
+    });
+  }
+
+  async sendCallingMessage(
+    recipientId: string,
+    callingMessage: CallingMessageClass,
+    options?: SendOptionsType
+  ): Promise<void> {
+    const recipients = [recipientId];
+    const finalTimestamp = Date.now();
+
+    const contentMessage = new window.textsecure.protobuf.Content();
+    contentMessage.callingMessage = callingMessage;
+
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+    await this.sendMessageProtoAndWait({
+      timestamp: finalTimestamp,
+      recipients,
+      proto: contentMessage,
+      contentHint: ContentHint.DEFAULT,
+      groupId: undefined,
+      options,
+    });
+  }
+
+  async sendDeliveryReceipt({
+    e164,
+    uuid,
+    timestamps,
+    options,
+  }: {
+    e164: string;
+    uuid: string;
+    timestamps: Array<number>;
+    options?: SendOptionsType;
+  }): Promise<CallbackResultType | void> {
+    const myNumber = window.textsecure.storage.user.getNumber();
+    const myUuid = window.textsecure.storage.user.getUuid();
+    const myDevice = window.textsecure.storage.user.getDeviceId();
+    if ((myNumber === e164 || myUuid === uuid) && myDevice === 1) {
+      return Promise.resolve();
     }
 
-    return new Promise((resolve, reject) => {
-      const silent = true;
-      const callback = (res: CallbackResultType) => {
-        res.dataMessage = proto.toArrayBuffer();
-        if (res.errors && res.errors.length > 0) {
-          reject(res);
-        } else {
-          resolve(res);
-        }
-      };
+    const receiptMessage = new window.textsecure.protobuf.ReceiptMessage();
+    receiptMessage.type =
+      window.textsecure.protobuf.ReceiptMessage.Type.DELIVERY;
+    receiptMessage.timestamp = timestamps;
 
-      this.sendMessageProto(
-        timestamp,
-        providedIdentifiers,
-        proto,
-        callback,
-        silent,
-        options
-      );
+    const contentMessage = new window.textsecure.protobuf.Content();
+    contentMessage.receiptMessage = receiptMessage;
+
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+    return this.sendIndividualProto({
+      identifier: uuid || e164,
+      proto: contentMessage,
+      timestamp: Date.now(),
+      contentHint: ContentHint.IMPLICIT,
+      options,
     });
   }
 
-  async getMessageProto(
-    destination: string,
-    body: string,
-    attachments: Array<AttachmentType> | null,
-    quote: any,
-    preview: Array<PreviewType> | null,
-    sticker: any,
-    reaction: any,
-    timestamp: number,
-    expireTimer: number | undefined,
-    profileKey?: string,
-    flags?: number
-  ) {
-    const attributes = {
-      recipients: [destination],
-      destination,
-      body,
-      timestamp,
-      attachments,
-      quote,
-      preview,
-      sticker,
-      reaction,
-      expireTimer,
-      profileKey,
-      flags,
-    };
+  async sendReadReceipts({
+    senderE164,
+    senderUuid,
+    timestamps,
+    options,
+  }: {
+    senderE164: string;
+    senderUuid: string;
+    timestamps: Array<number>;
+    options?: SendOptionsType;
+  }): Promise<CallbackResultType> {
+    const receiptMessage = new window.textsecure.protobuf.ReceiptMessage();
+    receiptMessage.type = window.textsecure.protobuf.ReceiptMessage.Type.READ;
+    receiptMessage.timestamp = timestamps;
 
-    return this.getMessageProtoObj(attributes);
+    const contentMessage = new window.textsecure.protobuf.Content();
+    contentMessage.receiptMessage = receiptMessage;
+
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+    return this.sendIndividualProto({
+      identifier: senderUuid || senderE164,
+      proto: contentMessage,
+      timestamp: Date.now(),
+      contentHint: ContentHint.IMPLICIT,
+      options,
+    });
   }
 
-  async getMessageProtoObj(attributes: MessageOptionsType) {
-    const message = new Message(attributes);
-    await Promise.all([
-      this.uploadAttachments(message),
-      this.uploadThumbnails(message),
-      this.uploadLinkPreviews(message),
-      this.uploadSticker(message),
-    ]);
-
-    return message.toArrayBuffer();
-  }
-
-  async sendMessageToIdentifier(
-    identifier: string,
-    messageText: string,
-    attachments: Array<AttachmentType> | null,
-    quote: any,
-    preview: Array<PreviewType> | null,
-    sticker: any,
-    reaction: any,
-    timestamp: number,
-    expireTimer: number | undefined,
-    profileKey?: string,
+  async sendNullMessage(
+    {
+      uuid,
+      e164,
+      padding,
+    }: { uuid?: string; e164?: string; padding?: ArrayBuffer },
     options?: SendOptionsType
-  ) {
-    return this.sendMessage(
-      {
-        recipients: [identifier],
-        body: messageText,
-        timestamp,
-        attachments,
-        quote,
-        preview,
-        sticker,
-        reaction,
-        expireTimer,
-        profileKey,
-      },
-      options
-    );
+  ): Promise<CallbackResultType> {
+    const nullMessage = new window.textsecure.protobuf.NullMessage();
+
+    const identifier = uuid || e164;
+    if (!identifier) {
+      throw new Error('sendNullMessage: Got neither uuid nor e164!');
+    }
+
+    nullMessage.padding = padding || this.getRandomPadding();
+
+    const contentMessage = new window.textsecure.protobuf.Content();
+    contentMessage.nullMessage = nullMessage;
+
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+    // We want the NullMessage to look like a normal outgoing message
+    const timestamp = Date.now();
+    return this.sendIndividualProto({
+      identifier,
+      proto: contentMessage,
+      timestamp,
+      contentHint: ContentHint.IMPLICIT,
+      options,
+    });
   }
 
   async resetSession(
@@ -1225,330 +1675,276 @@ export default class MessageSender {
     e164: string,
     timestamp: number,
     options?: SendOptionsType
-  ) {
-    window.log.info('resetting secure session');
-    const silent = false;
+  ): Promise<
+    CallbackResultType | void | Array<CallbackResultType | void | Array<void>>
+  > {
+    window.log.info('resetSession: start');
     const proto = new window.textsecure.protobuf.DataMessage();
     proto.body = 'TERMINATE';
     proto.flags = window.textsecure.protobuf.DataMessage.Flags.END_SESSION;
     proto.timestamp = timestamp;
 
-    const identifier = e164 || uuid;
+    const identifier = uuid || e164;
 
     const logError = (prefix: string) => (error: Error) => {
       window.log.error(prefix, error && error.stack ? error.stack : error);
       throw error;
     };
-    const deleteAllSessions = async (targetNumber: string) =>
-      window.textsecure.storage.protocol
-        .getDeviceIds(targetNumber)
-        .then(async deviceIds =>
-          Promise.all(
-            deviceIds.map(async deviceId => {
-              const address = new window.libsignal.SignalProtocolAddress(
-                targetNumber,
-                deviceId
-              );
-              window.log.info('deleting sessions for', address.toString());
-              const sessionCipher = new window.libsignal.SessionCipher(
-                window.textsecure.storage.protocol,
-                address
-              );
-              return sessionCipher.deleteAllSessionsForDevice();
-            })
-          )
-        );
 
-    const sendToContactPromise = deleteAllSessions(identifier)
-      .catch(logError('resetSession/deleteAllSessions1 error:'))
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+    const sendToContactPromise = window.textsecure.storage.protocol
+      .archiveAllSessions(identifier)
+      .catch(logError('resetSession/archiveAllSessions1 error:'))
       .then(async () => {
         window.log.info(
-          'finished closing local sessions, now sending to contact'
+          'resetSession: finished closing local sessions, now sending to contact'
         );
-        return this.sendIndividualProto(
+        return this.sendIndividualProto({
           identifier,
           proto,
           timestamp,
-          silent,
-          options
-        ).catch(logError('resetSession/sendToContact error:'));
+          contentHint: ContentHint.DEFAULT,
+          options,
+        }).catch(logError('resetSession/sendToContact error:'));
       })
       .then(async () =>
-        deleteAllSessions(identifier).catch(
-          logError('resetSession/deleteAllSessions2 error:')
-        )
+        window.textsecure.storage.protocol
+          .archiveAllSessions(identifier)
+          .catch(logError('resetSession/archiveAllSessions2 error:'))
       );
 
     const myNumber = window.textsecure.storage.user.getNumber();
     const myUuid = window.textsecure.storage.user.getUuid();
     // We already sent the reset session to our other devices in the code above!
-    if (e164 === myNumber || uuid === myUuid) {
+    if ((e164 && e164 === myNumber) || (uuid && uuid === myUuid)) {
       return sendToContactPromise;
     }
 
     const buffer = proto.toArrayBuffer();
-    const sendSyncPromise = this.sendSyncMessage(
-      buffer,
+    const sendSyncPromise = this.sendSyncMessage({
+      encodedDataMessage: buffer,
       timestamp,
-      e164,
-      uuid,
-      null,
-      [],
-      [],
-      false,
-      options
-    ).catch(logError('resetSession/sendSync error:'));
+      destination: e164,
+      destinationUuid: uuid,
+      expirationStartTimestamp: null,
+      sentTo: [],
+      unidentifiedDeliveries: [],
+      options,
+    }).catch(logError('resetSession/sendSync error:'));
 
     return Promise.all([sendToContactPromise, sendSyncPromise]);
   }
 
-  async sendMessageToGroup(
-    groupId: string,
-    recipients: Array<string>,
-    messageText: string,
-    attachments: Array<AttachmentType>,
-    quote: any,
-    preview: any,
-    sticker: any,
-    reaction: any,
-    timestamp: number,
+  async sendExpirationTimerUpdateToIdentifier(
+    identifier: string,
     expireTimer: number | undefined,
-    profileKey?: string,
+    timestamp: number,
+    profileKey?: ArrayBuffer,
     options?: SendOptionsType
-  ) {
-    const myE164 = window.textsecure.storage.user.getNumber();
-    const myUuid = window.textsecure.storage.user.getNumber();
-    const attrs = {
-      recipients: recipients.filter(r => r !== myE164 && r !== myUuid),
-      body: messageText,
-      timestamp,
-      attachments,
-      quote,
-      preview,
-      sticker,
-      reaction,
-      expireTimer,
-      profileKey,
-      group: {
-        id: groupId,
-        type: window.textsecure.protobuf.GroupContext.Type.DELIVER,
-      },
-    };
+  ): Promise<CallbackResultType> {
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
 
-    if (recipients.length === 0) {
+    return this.sendMessage({
+      messageOptions: {
+        recipients: [identifier],
+        timestamp,
+        expireTimer,
+        profileKey,
+        flags:
+          window.textsecure.protobuf.DataMessage.Flags.EXPIRATION_TIMER_UPDATE,
+      },
+      contentHint: ContentHint.DEFAULT,
+      groupId: undefined,
+      options,
+    });
+  }
+
+  async sendRetryRequest({
+    options,
+    plaintext,
+    uuid,
+  }: {
+    options?: SendOptionsType;
+    plaintext: PlaintextContent;
+    uuid: string;
+  }): Promise<CallbackResultType> {
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+
+    return this.sendMessageProtoAndWait({
+      timestamp: Date.now(),
+      recipients: [uuid],
+      proto: plaintext,
+      contentHint: ContentHint.IMPLICIT,
+      groupId: undefined,
+      options,
+    });
+  }
+
+  // Group sends
+
+  // No functions should really call this; since most group sends are now via Sender Key
+  async sendGroupProto({
+    recipients,
+    proto,
+    timestamp = Date.now(),
+    contentHint,
+    groupId,
+    options,
+  }: {
+    recipients: Array<string>;
+    proto: ContentClass;
+    timestamp: number;
+    contentHint: number;
+    groupId: string | undefined;
+    options?: SendOptionsType;
+  }): Promise<CallbackResultType> {
+    const dataMessage = proto.dataMessage?.toArrayBuffer();
+
+    const myE164 = window.textsecure.storage.user.getNumber();
+    const myUuid = window.textsecure.storage.user.getUuid();
+    const identifiers = recipients.filter(id => id !== myE164 && id !== myUuid);
+
+    if (identifiers.length === 0) {
       return Promise.resolve({
-        successfulIdentifiers: [],
-        failoverIdentifiers: [],
+        dataMessage,
         errors: [],
+        failoverIdentifiers: [],
+        successfulIdentifiers: [],
         unidentifiedDeliveries: [],
-        dataMessage: await this.getMessageProtoObj(attrs),
       });
     }
 
-    return this.sendMessage(attrs, options);
-  }
-
-  async createGroup(
-    targetIdentifiers: Array<GroupMemberType>,
-    id: string,
-    name: string,
-    avatar: AttachmentType,
-    options?: SendOptionsType
-  ) {
-    const proto = new window.textsecure.protobuf.DataMessage();
-    proto.group = new window.textsecure.protobuf.GroupContext();
-    proto.group.id = stringToArrayBuffer(id);
-
-    proto.group.type = window.textsecure.protobuf.GroupContext.Type.UPDATE;
-    proto.group.members = targetIdentifiers;
-    proto.group.name = name;
-
-    return this.makeAttachmentPointer(avatar).then(async attachment => {
-      if (!proto.group) {
-        throw new Error('createGroup: proto.group was set to null');
-      }
-      proto.group.avatar = attachment;
-      return this.sendGroupProto(
-        targetIdentifiers.map(item => {
-          const identifier = item.uuid || item.e164;
-          if (!identifier) {
-            throw new Error(
-              'SendMessage.createGroup: Provided group member had neither uuid nor e164'
-            );
-          }
-          return identifier;
-        }),
-        proto,
-        Date.now(),
-        options
-      ).then(() => {
-        if (!proto.group) {
-          throw new Error('createGroup: proto.group was set to null');
+    return new Promise((resolve, reject) => {
+      const callback = (res: CallbackResultType) => {
+        res.dataMessage = dataMessage;
+        if (res.errors && res.errors.length > 0) {
+          reject(res);
+        } else {
+          resolve(res);
         }
+      };
 
-        return proto.group.id;
+      this.sendMessageProto({
+        timestamp,
+        recipients: identifiers,
+        proto,
+        contentHint,
+        groupId,
+        callback,
+        options,
       });
     });
   }
 
-  async updateGroup(
-    groupId: string,
-    name: string,
-    avatar: AttachmentType,
-    targetIdentifiers: Array<GroupMemberType>,
-    options?: SendOptionsType
-  ) {
-    const proto = new window.textsecure.protobuf.DataMessage();
-    proto.group = new window.textsecure.protobuf.GroupContext();
-
-    proto.group.id = stringToArrayBuffer(groupId);
-    proto.group.type = window.textsecure.protobuf.GroupContext.Type.UPDATE;
-    proto.group.name = name;
-    proto.group.members = targetIdentifiers;
-
-    return this.makeAttachmentPointer(avatar).then(async attachment => {
-      if (!proto.group) {
-        throw new Error('updateGroup: proto.group was set to null');
-      }
-
-      proto.group.avatar = attachment;
-      return this.sendGroupProto(
-        targetIdentifiers.map(item => {
-          const identifier = item.uuid || item.e164;
-          if (!identifier) {
-            throw new Error(
-              'SendMessage.updateGroup: Provided group member had neither uuid nor e164'
-            );
-          }
-          return identifier;
-        }),
-        proto,
-        Date.now(),
-        options
-      ).then(() => {
-        if (!proto.group) {
-          throw new Error('updateGroup: proto.group was set to null');
-        }
-        return proto.group.id;
-      });
-    });
-  }
-
-  async addIdentifierToGroup(
-    groupId: string,
-    newIdentifiers: Array<GroupMemberType>,
-    options: SendOptionsType
-  ) {
-    const proto = new window.textsecure.protobuf.DataMessage();
-    proto.group = new window.textsecure.protobuf.GroupContext();
-    proto.group.id = stringToArrayBuffer(groupId);
-    proto.group.type = window.textsecure.protobuf.GroupContext.Type.UPDATE;
-    proto.group.members = newIdentifiers;
-    return this.sendGroupProto(
-      newIdentifiers.map(item => {
-        const identifier = item.uuid || item.e164;
-        if (!identifier) {
-          throw new Error(
-            'SendMessage.addIdentifierToGroup: Provided group member had neither uuid nor e164'
-          );
-        }
-        return identifier;
-      }),
-      proto,
-      Date.now(),
-      options
-    );
-  }
-
-  async setGroupName(
-    groupId: string,
-    name: string,
-    groupIdentifiers: Array<GroupMemberType>,
-    options: SendOptionsType
-  ) {
-    const proto = new window.textsecure.protobuf.DataMessage();
-    proto.group = new window.textsecure.protobuf.GroupContext();
-    proto.group.id = stringToArrayBuffer(groupId);
-    proto.group.type = window.textsecure.protobuf.GroupContext.Type.UPDATE;
-    proto.group.name = name;
-    proto.group.members = groupIdentifiers;
-
-    return this.sendGroupProto(
-      groupIdentifiers.map(item => {
-        const identifier = item.uuid || item.e164;
-        if (!identifier) {
-          throw new Error(
-            'SendMessage.setGroupName: Provided group member had neither uuid nor e164'
-          );
-        }
-        return identifier;
-      }),
-      proto,
-      Date.now(),
-      options
-    );
-  }
-
-  async setGroupAvatar(
-    groupId: string,
-    avatar: AttachmentType,
-    groupIdentifiers: Array<GroupMemberType>,
-    options: SendOptionsType
-  ) {
-    const proto = new window.textsecure.protobuf.DataMessage();
-    proto.group = new window.textsecure.protobuf.GroupContext();
-    proto.group.id = stringToArrayBuffer(groupId);
-    proto.group.type = window.textsecure.protobuf.GroupContext.Type.UPDATE;
-    proto.group.members = groupIdentifiers;
-
-    return this.makeAttachmentPointer(avatar).then(async attachment => {
-      if (!proto.group) {
-        throw new Error('setGroupAvatar: proto.group was set to null');
-      }
-
-      proto.group.avatar = attachment;
-      return this.sendGroupProto(
-        groupIdentifiers.map(item => {
-          const identifier = item.uuid || item.e164;
-          if (!identifier) {
-            throw new Error(
-              'SendMessage.setGroupAvatar: Provided group member had neither uuid nor e164'
-            );
-          }
-          return identifier;
-        }),
-        proto,
-        Date.now(),
-        options
+  async getSenderKeyDistributionMessage(
+    distributionId: string
+  ): Promise<SenderKeyDistributionMessage> {
+    const ourUuid = window.textsecure.storage.user.getUuid();
+    if (!ourUuid) {
+      throw new Error(
+        'sendSenderKeyDistributionMessage: Failed to fetch our UUID!'
       );
+    }
+    const ourDeviceId = parseIntOrThrow(
+      window.textsecure.storage.user.getDeviceId(),
+      'sendSenderKeyDistributionMessage'
+    );
+
+    const protocolAddress = ProtocolAddress.new(ourUuid, ourDeviceId);
+    const address = `${ourUuid}.${ourDeviceId}`;
+    const senderKeyStore = new SenderKeys();
+
+    return window.textsecure.storage.protocol.enqueueSenderKeyJob(
+      address,
+      async () =>
+        SenderKeyDistributionMessage.create(
+          protocolAddress,
+          distributionId,
+          senderKeyStore
+        )
+    );
+  }
+
+  // The one group send exception - a message that should never be sent via sender key
+  async sendSenderKeyDistributionMessage(
+    {
+      contentHint,
+      distributionId,
+      groupId,
+      identifiers,
+    }: {
+      contentHint: number;
+      distributionId: string;
+      groupId: string | undefined;
+      identifiers: Array<string>;
+    },
+    options?: SendOptionsType
+  ): Promise<CallbackResultType> {
+    const contentMessage = new window.textsecure.protobuf.Content();
+
+    const senderKeyDistributionMessage = await this.getSenderKeyDistributionMessage(
+      distributionId
+    );
+    contentMessage.senderKeyDistributionMessage = window.dcodeIO.ByteBuffer.wrap(
+      typedArrayToArrayBuffer(senderKeyDistributionMessage.serialize())
+    );
+
+    return this.sendGroupProto({
+      recipients: identifiers,
+      proto: contentMessage,
+      timestamp: Date.now(),
+      contentHint,
+      groupId,
+      options,
     });
   }
+
+  // GroupV1-only functions; not to be used in the future
 
   async leaveGroup(
     groupId: string,
     groupIdentifiers: Array<string>,
     options?: SendOptionsType
-  ) {
+  ): Promise<CallbackResultType> {
     const proto = new window.textsecure.protobuf.DataMessage();
     proto.group = new window.textsecure.protobuf.GroupContext();
     proto.group.id = stringToArrayBuffer(groupId);
     proto.group.type = window.textsecure.protobuf.GroupContext.Type.QUIT;
-    return this.sendGroupProto(groupIdentifiers, proto, Date.now(), options);
+
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+    return this.sendGroupProto({
+      recipients: groupIdentifiers,
+      proto,
+      timestamp: Date.now(),
+      contentHint: ContentHint.DEFAULT,
+      groupId: undefined, // only for GV2 ids
+      options,
+    });
   }
+
   async sendExpirationTimerUpdateToGroup(
     groupId: string,
     groupIdentifiers: Array<string>,
     expireTimer: number | undefined,
     timestamp: number,
-    profileKey?: string,
+    profileKey?: ArrayBuffer,
     options?: SendOptionsType
-  ) {
+  ): Promise<CallbackResultType> {
     const myNumber = window.textsecure.storage.user.getNumber();
     const myUuid = window.textsecure.storage.user.getUuid();
     const recipients = groupIdentifiers.filter(
       identifier => identifier !== myNumber && identifier !== myUuid
     );
-    const attrs = {
+    const messageOptions = {
       recipients,
       timestamp,
       expireTimer,
@@ -1567,32 +1963,169 @@ export default class MessageSender {
         failoverIdentifiers: [],
         errors: [],
         unidentifiedDeliveries: [],
-        dataMessage: await this.getMessageProtoObj(attrs),
+        dataMessage: await this.getDataMessage(messageOptions),
       });
     }
 
-    return this.sendMessage(attrs, options);
+    const {
+      ContentHint,
+    } = window.textsecure.protobuf.UnidentifiedSenderMessage.Message;
+    return this.sendMessage({
+      messageOptions,
+      contentHint: ContentHint.DEFAULT,
+      groupId: undefined, // only for GV2 ids
+      options,
+    });
   }
-  async sendExpirationTimerUpdateToIdentifier(
-    identifier: string,
-    expireTimer: number | undefined,
+
+  // Simple pass-throughs
+
+  async getProfile(
+    number: string,
+    options: {
+      accessKey?: string;
+      profileKeyVersion?: string;
+      profileKeyCredentialRequest?: string;
+    } = {}
+  ): Promise<any> {
+    const { accessKey } = options;
+
+    if (accessKey) {
+      const unauthOptions = {
+        ...options,
+        accessKey,
+      };
+      return this.server.getProfileUnauth(number, unauthOptions);
+    }
+
+    return this.server.getProfile(number, options);
+  }
+
+  async getUuidsForE164s(
+    numbers: Array<string>
+  ): Promise<Dictionary<string | null>> {
+    return this.server.getUuidsForE164s(numbers);
+  }
+
+  async getAvatar(path: string): Promise<any> {
+    return this.server.getAvatar(path);
+  }
+
+  async getSticker(packId: string, stickerId: number): Promise<any> {
+    return this.server.getSticker(packId, stickerId);
+  }
+
+  async getStickerPackManifest(packId: string): Promise<any> {
+    return this.server.getStickerPackManifest(packId);
+  }
+
+  async createGroup(
+    group: Proto.IGroup,
+    options: GroupCredentialsType
+  ): Promise<void> {
+    return this.server.createGroup(group, options);
+  }
+
+  async uploadGroupAvatar(
+    avatar: Uint8Array,
+    options: GroupCredentialsType
+  ): Promise<string> {
+    return this.server.uploadGroupAvatar(avatar, options);
+  }
+
+  async getGroup(options: GroupCredentialsType): Promise<Proto.Group> {
+    return this.server.getGroup(options);
+  }
+
+  async getGroupFromLink(
+    groupInviteLink: string,
+    auth: GroupCredentialsType
+  ): Promise<Proto.GroupJoinInfo> {
+    return this.server.getGroupFromLink(groupInviteLink, auth);
+  }
+
+  async getGroupLog(
+    startVersion: number,
+    options: GroupCredentialsType
+  ): Promise<GroupLogResponseType> {
+    return this.server.getGroupLog(startVersion, options);
+  }
+
+  async getGroupAvatar(key: string): Promise<ArrayBuffer> {
+    return this.server.getGroupAvatar(key);
+  }
+
+  async modifyGroup(
+    changes: Proto.GroupChange.IActions,
+    options: GroupCredentialsType,
+    inviteLinkBase64?: string
+  ): Promise<Proto.IGroupChange> {
+    return this.server.modifyGroup(changes, options, inviteLinkBase64);
+  }
+
+  async sendWithSenderKey(
+    data: ArrayBuffer,
+    accessKeys: ArrayBuffer,
     timestamp: number,
-    profileKey?: string,
-    options?: SendOptionsType
-  ) {
-    return this.sendMessage(
-      {
-        recipients: [identifier],
-        timestamp,
-        expireTimer,
-        profileKey,
-        flags:
-          window.textsecure.protobuf.DataMessage.Flags.EXPIRATION_TIMER_UPDATE,
-      },
-      options
-    );
+    online?: boolean
+  ): Promise<MultiRecipient200ResponseType> {
+    return this.server.sendWithSenderKey(data, accessKeys, timestamp, online);
   }
-  async makeProxiedRequest(url: string, options?: ProxiedRequestOptionsType) {
+
+  async fetchLinkPreviewMetadata(
+    href: string,
+    abortSignal: AbortSignal
+  ): Promise<null | LinkPreviewMetadata> {
+    return this.server.fetchLinkPreviewMetadata(href, abortSignal);
+  }
+
+  async fetchLinkPreviewImage(
+    href: string,
+    abortSignal: AbortSignal
+  ): Promise<null | LinkPreviewImage> {
+    return this.server.fetchLinkPreviewImage(href, abortSignal);
+  }
+
+  async makeProxiedRequest(
+    url: string,
+    options?: ProxiedRequestOptionsType
+  ): Promise<any> {
     return this.server.makeProxiedRequest(url, options);
+  }
+
+  async getStorageCredentials(): Promise<StorageServiceCredentials> {
+    return this.server.getStorageCredentials();
+  }
+
+  async getStorageManifest(
+    options: StorageServiceCallOptionsType
+  ): Promise<ArrayBuffer> {
+    return this.server.getStorageManifest(options);
+  }
+
+  async getStorageRecords(
+    data: ArrayBuffer,
+    options: StorageServiceCallOptionsType
+  ): Promise<ArrayBuffer> {
+    return this.server.getStorageRecords(data, options);
+  }
+
+  async modifyStorageRecords(
+    data: ArrayBuffer,
+    options: StorageServiceCallOptionsType
+  ): Promise<ArrayBuffer> {
+    return this.server.modifyStorageRecords(data, options);
+  }
+
+  async getGroupMembershipToken(
+    options: GroupCredentialsType
+  ): Promise<Proto.GroupExternalCredential> {
+    return this.server.getGroupExternalCredential(options);
+  }
+
+  public async sendChallengeResponse(
+    challengeResponse: ChallengeType
+  ): Promise<void> {
+    return this.server.sendChallengeResponse(challengeResponse);
   }
 }

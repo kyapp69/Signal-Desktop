@@ -1,3 +1,9 @@
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable max-classes-per-file */
+
 import { ByteBufferClass } from '../window.d';
 import { AttachmentType } from './SendMessage';
 
@@ -18,6 +24,7 @@ export type PackedAttachmentType = AttachmentType & {
 
 export class ProtoParser {
   buffer: ByteBufferClass;
+
   protobuf: ProtobufConstructorType;
 
   constructor(arrayBuffer: ArrayBuffer, protobuf: ProtobufConstructorType) {
@@ -28,7 +35,7 @@ export class ProtoParser {
     this.buffer.limit = arrayBuffer.byteLength;
   }
 
-  next() {
+  next(): ProtobufType | undefined | null {
     try {
       if (this.buffer.limit === this.buffer.offset) {
         return undefined; // eof

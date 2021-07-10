@@ -1,9 +1,10 @@
+// Copyright 2017-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /* global Whisper, storage, getAccountManager */
 
 // eslint-disable-next-line func-names
-(function() {
-  'use strict';
-
+(function () {
   window.Whisper = window.Whisper || {};
   const ROTATION_INTERVAL = 48 * 60 * 60 * 1000;
   let timeout;
@@ -70,7 +71,7 @@
   Whisper.RotateSignedPreKeyListener = {
     init(events, newVersion) {
       if (initComplete) {
-        window.log.warn('Rotate signed prekey listener: Already initialized');
+        window.log.info('Rotate signed prekey listener: Already initialized');
         return;
       }
       initComplete = true;

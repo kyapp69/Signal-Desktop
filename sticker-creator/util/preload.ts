@@ -1,30 +1,34 @@
+// Copyright 2019-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { Metadata } from 'sharp';
 
-export type WebpData = {
+declare global {
+  // We want to extend `window`'s properties, so we need an interface.
+  // eslint-disable-next-line no-restricted-syntax
+  interface Window {
+    processStickerImage: ProcessStickerImageFn;
+    encryptAndUpload: EncryptAndUploadFn;
+  }
+}
+
+export type StickerImageData = {
   buffer: Buffer;
   src: string;
   path: string;
-  meta: Metadata & { pages?: number }; // Pages is not currently in the sharp metadata type
+  meta: Metadata;
 };
 
-export type ConvertToWebpFn = (
-  path: string,
-  width?: number,
-  height?: number
-) => Promise<WebpData>;
+type ProcessStickerImageFn = (path: string) => Promise<StickerImageData>;
 
-// @ts-ignore
-export const convertToWebp: ConvertToWebpFn = window.convertToWebp;
-
-export type StickerData = { webp?: WebpData; emoji?: string };
+export type StickerData = { imageData?: StickerImageData; emoji?: string };
 export type PackMetaData = { packId: string; key: string };
 
 export type EncryptAndUploadFn = (
   manifest: { title: string; author: string },
   stickers: Array<StickerData>,
-  cover: WebpData,
+  cover: StickerImageData,
   onProgress?: () => unknown
 ) => Promise<PackMetaData>;
 
-// @ts-ignore
-export const encryptAndUpload: EncryptAndUploadFn = window.encryptAndUpload;
+export const { encryptAndUpload, processStickerImage } = window;

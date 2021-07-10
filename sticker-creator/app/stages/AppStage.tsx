@@ -1,3 +1,6 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import * as React from 'react';
 import * as styles from './AppStage.scss';
 import { history } from '../../util/history';
@@ -32,7 +35,7 @@ const getClassName = ({ noMessage, empty }: Props) => {
   return styles.main;
 };
 
-export const AppStage = (props: Props) => {
+export const AppStage: React.ComponentType<Props> = props => {
   const {
     children,
     next,
@@ -67,7 +70,7 @@ export const AppStage = (props: Props) => {
           </Button>
         ) : null}
         {addMoreCount > 0 ? (
-          <Text secondary={true}>
+          <Text secondary>
             {i18n('StickerCreator--DropStage--addMore', [addMoreCount])}
           </Text>
         ) : null}
@@ -75,7 +78,7 @@ export const AppStage = (props: Props) => {
           <Button
             className={styles.button}
             onClick={onNext || handleNext}
-            primary={true}
+            primary
             disabled={!nextActive}
           >
             {nextText || i18n('StickerCreator--AppStage--next')}

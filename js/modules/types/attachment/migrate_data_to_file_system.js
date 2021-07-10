@@ -1,3 +1,6 @@
+// Copyright 2018-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 const { isArrayBuffer, isFunction, isUndefined, omit } = require('lodash');
 
 // type Context :: {
@@ -32,8 +35,6 @@ exports.migrateDataToFileSystem = async (
 
   const path = await writeNewAttachmentData(data);
 
-  const attachmentWithoutData = omit(Object.assign({}, attachment, { path }), [
-    'data',
-  ]);
+  const attachmentWithoutData = omit({ ...attachment, path }, ['data']);
   return attachmentWithoutData;
 };

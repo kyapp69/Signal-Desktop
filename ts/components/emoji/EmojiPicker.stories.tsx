@@ -1,17 +1,19 @@
-import * as React from 'react';
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 
-// @ts-ignore
-import { setup as setupI18n } from '../../../js/modules/i18n';
-// @ts-ignore
-import enMessages from '../../../_locales/en/messages.json';
+import * as React from 'react';
 
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+
+import { setup as setupI18n } from '../../../js/modules/i18n';
+import enMessages from '../../../_locales/en/messages.json';
+
 import { EmojiPicker } from './EmojiPicker';
 
 const i18n = setupI18n('en', enMessages);
 
-storiesOf('Components/emojis/EmojiPicker', module)
+storiesOf('Components/Emoji/EmojiPicker', module)
   .add('Base', () => {
     return (
       <EmojiPicker

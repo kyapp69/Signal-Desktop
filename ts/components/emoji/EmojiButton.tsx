@@ -1,19 +1,17 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import * as React from 'react';
 import classNames from 'classnames';
 import { get, noop } from 'lodash';
 import { Manager, Popper, Reference } from 'react-popper';
 import { createPortal } from 'react-dom';
-import {
-  EmojiPickDataType,
-  EmojiPicker,
-  Props as EmojiPickerProps,
-} from './EmojiPicker';
+import { EmojiPicker, Props as EmojiPickerProps } from './EmojiPicker';
 import { LocalizerType } from '../../types/Util';
-
-export { EmojiPickDataType };
 
 export type OwnProps = {
   readonly i18n: LocalizerType;
+  readonly onClose?: () => unknown;
 };
 
 export type Props = OwnProps &
@@ -23,10 +21,10 @@ export type Props = OwnProps &
   >;
 
 export const EmojiButton = React.memo(
-  // tslint:disable-next-line:max-func-body-length
   ({
     i18n,
     doSend,
+    onClose,
     onPickEmoji,
     skinTone,
     onSetSkinTone,
@@ -47,7 +45,10 @@ export const EmojiButton = React.memo(
 
     const handleClose = React.useCallback(() => {
       setOpen(false);
-    }, [setOpen]);
+      if (onClose) {
+        onClose();
+      }
+    }, [setOpen, onClose]);
 
     // Create popper root and handle outside clicks
     React.useEffect(() => {
@@ -55,9 +56,11 @@ export const EmojiButton = React.memo(
         const root = document.createElement('div');
         setPopperRoot(root);
         document.body.appendChild(root);
-        const handleOutsideClick = ({ target }: MouseEvent) => {
-          if (!root.contains(target as Node)) {
-            setOpen(false);
+        const handleOutsideClick = (event: MouseEvent) => {
+          if (!root.contains(event.target as Node)) {
+            handleClose();
+            event.stopPropagation();
+            event.preventDefault();
           }
         };
         document.addEventListener('click', handleOutsideClick);
@@ -70,7 +73,7 @@ export const EmojiButton = React.memo(
       }
 
       return noop;
-    }, [open, setOpen, setPopperRoot]);
+    }, [open, setOpen, setPopperRoot, handleClose]);
 
     // Install keyboard shortcut to open emoji picker
     React.useEffect(() => {
@@ -105,18 +108,20 @@ export const EmojiButton = React.memo(
         <Reference>
           {({ ref }) => (
             <button
+              type="button"
               ref={ref}
               onClick={handleClickButton}
               className={classNames({
                 'module-emoji-button__button': true,
                 'module-emoji-button__button--active': open,
               })}
+              aria-label={i18n('EmojiButton__label')}
             />
           )}
         </Reference>
         {open && popperRoot
           ? createPortal(
-              <Popper placement="top-start">
+              <Popper placement="top-start" positionFixed>
                 {({ ref, style }) => (
                   <EmojiPicker
                     ref={ref}

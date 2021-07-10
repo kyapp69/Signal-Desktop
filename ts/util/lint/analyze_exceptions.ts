@@ -1,4 +1,5 @@
-// tslint:disable no-console
+// Copyright 2018-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 
 import { join } from 'path';
 
@@ -26,4 +27,5 @@ const byRuleThenByCategory = fromPairs(
   })
 );
 
+// eslint-disable-next-line no-console
 console.log(JSON.stringify(byRuleThenByCategory, null, '  '));

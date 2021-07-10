@@ -1,3 +1,6 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import React from 'react';
 import { isNumber } from 'lodash';
 
@@ -6,7 +9,7 @@ import { Spinner } from '../Spinner';
 
 export type STATE_ENUM = 'idle' | 'countdown' | 'loading';
 
-type Props = {
+export type Props = {
   state: STATE_ENUM;
   duration?: number;
   expiresAt?: number;
@@ -16,18 +19,15 @@ type Props = {
 const FAKE_DURATION = 1000;
 
 export class TimelineLoadingRow extends React.PureComponent<Props> {
-  public renderContents() {
+  public renderContents(): JSX.Element {
     const { state, duration, expiresAt, onComplete } = this.props;
 
     if (state === 'idle') {
       const fakeExpiresAt = Date.now() - FAKE_DURATION;
 
       return <Countdown duration={FAKE_DURATION} expiresAt={fakeExpiresAt} />;
-    } else if (
-      state === 'countdown' &&
-      isNumber(duration) &&
-      isNumber(expiresAt)
-    ) {
+    }
+    if (state === 'countdown' && isNumber(duration) && isNumber(expiresAt)) {
       return (
         <Countdown
           duration={duration}
@@ -40,7 +40,7 @@ export class TimelineLoadingRow extends React.PureComponent<Props> {
     return <Spinner size="24" svgSize="small" direction="on-background" />;
   }
 
-  public render() {
+  public render(): JSX.Element {
     return (
       <div className="module-timeline-loading-row">{this.renderContents()}</div>
     );

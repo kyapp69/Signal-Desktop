@@ -1,80 +1,44 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { combineReducers } from 'redux';
 
-import {
-  ConversationActionType,
-  ConversationsStateType,
-  reducer as conversations,
-} from './ducks/conversations';
-import {
-  EmojisActionType,
-  EmojisStateType,
-  reducer as emojis,
-} from './ducks/emojis';
-import {
-  ExpirationActionType,
-  ExpirationStateType,
-  reducer as expiration,
-} from './ducks/expiration';
-import {
-  ItemsActionType,
-  ItemsStateType,
-  reducer as items,
-} from './ducks/items';
-import {
-  NetworkActionType,
-  NetworkStateType,
-  reducer as network,
-} from './ducks/network';
-import {
-  reducer as search,
-  SEARCH_TYPES as SearchActionType,
-  SearchStateType,
-} from './ducks/search';
-import {
-  reducer as stickers,
-  StickersActionType,
-  StickersStateType,
-} from './ducks/stickers';
-import {
-  reducer as updates,
-  UpdatesActionType,
-  UpdatesStateType,
-} from './ducks/updates';
-import { reducer as user, UserStateType } from './ducks/user';
+import { reducer as accounts } from './ducks/accounts';
+import { reducer as app } from './ducks/app';
+import { reducer as audioPlayer } from './ducks/audioPlayer';
+import { reducer as calling } from './ducks/calling';
+import { reducer as composer } from './ducks/composer';
+import { reducer as conversations } from './ducks/conversations';
+import { reducer as emojis } from './ducks/emojis';
+import { reducer as expiration } from './ducks/expiration';
+import { reducer as globalModals } from './ducks/globalModals';
+import { reducer as items } from './ducks/items';
+import { reducer as linkPreviews } from './ducks/linkPreviews';
+import { reducer as network } from './ducks/network';
+import { reducer as safetyNumber } from './ducks/safetyNumber';
+import { reducer as search } from './ducks/search';
+import { reducer as stickers } from './ducks/stickers';
+import { reducer as updates } from './ducks/updates';
+import { reducer as user } from './ducks/user';
 
-export type StateType = {
-  conversations: ConversationsStateType;
-  emojis: EmojisStateType;
-  expiration: ExpirationStateType;
-  items: ItemsStateType;
-  network: NetworkStateType;
-  search: SearchStateType;
-  stickers: StickersStateType;
-  updates: UpdatesStateType;
-  user: UserStateType;
-};
-
-export type ActionsType =
-  | EmojisActionType
-  | ExpirationActionType
-  | ConversationActionType
-  | ItemsActionType
-  | NetworkActionType
-  | StickersActionType
-  | SearchActionType
-  | UpdatesActionType;
-
-export const reducers = {
+export const reducer = combineReducers({
+  accounts,
+  app,
+  audioPlayer,
+  calling,
+  composer,
   conversations,
   emojis,
   expiration,
+  globalModals,
   items,
+  linkPreviews,
   network,
+  safetyNumber,
   search,
   stickers,
   updates,
   user,
-};
+});
 
-// @ts-ignore: AnyAction breaks strong type checking inside reducers
-export const reducer = combineReducers<StateType, ActionsType>(reducers);
+export type StateType = ReturnType<typeof reducer>;

@@ -1,25 +1,30 @@
-// @ts-ignore
-import Attachments from '../../app/attachments';
-import { format as formatPhoneNumber } from '../types/PhoneNumber';
+// Copyright 2019-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 
-export interface ContactType {
+import { format as formatPhoneNumber } from './PhoneNumber';
+import { AttachmentType } from './Attachment';
+
+export type ContactType = {
   name?: Name;
   number?: Array<Phone>;
   email?: Array<Email>;
   address?: Array<PostalAddress>;
   avatar?: Avatar;
   organization?: string;
-  signalAccount?: string;
-}
 
-interface Name {
+  // Populated by selector
+  firstNumber?: string;
+  isNumberOnSignal?: boolean;
+};
+
+type Name = {
   givenName?: string;
   familyName?: string;
   prefix?: string;
   suffix?: string;
   middleName?: string;
   displayName?: string;
-}
+};
 
 export enum ContactFormType {
   HOME = 1,
@@ -34,19 +39,19 @@ export enum AddressType {
   CUSTOM = 3,
 }
 
-export interface Phone {
+export type Phone = {
   value: string;
   type: ContactFormType;
   label?: string;
-}
+};
 
-export interface Email {
+export type Email = {
   value: string;
   type: ContactFormType;
   label?: string;
-}
+};
 
-export interface PostalAddress {
+export type PostalAddress = {
   type: AddressType;
   label?: string;
   street?: string;
@@ -56,28 +61,28 @@ export interface PostalAddress {
   region?: string;
   postcode?: string;
   country?: string;
-}
+};
 
-interface Avatar {
-  avatar: Attachment;
+type Avatar = {
+  avatar: AttachmentType;
   isProfile: boolean;
-}
-
-interface Attachment {
-  path?: string;
-  error?: boolean;
-  pending?: boolean;
-}
+};
 
 export function contactSelector(
   contact: ContactType,
   options: {
     regionCode: string;
-    signalAccount?: string;
+    firstNumber?: string;
+    isNumberOnSignal?: boolean;
     getAbsoluteAttachmentPath: (path: string) => string;
   }
-) {
-  const { getAbsoluteAttachmentPath, signalAccount, regionCode } = options;
+): ContactType {
+  const {
+    getAbsoluteAttachmentPath,
+    firstNumber,
+    isNumberOnSignal,
+    regionCode,
+  } = options;
 
   let { avatar } = contact;
   if (avatar && avatar.avatar) {
@@ -98,7 +103,8 @@ export function contactSelector(
 
   return {
     ...contact,
-    signalAccount,
+    firstNumber,
+    isNumberOnSignal,
     avatar,
     number:
       contact.number &&

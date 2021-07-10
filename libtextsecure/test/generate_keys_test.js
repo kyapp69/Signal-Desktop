@@ -1,4 +1,7 @@
-/* global libsignal, textsecure */
+// Copyright 2015-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* global textsecure */
 
 describe('Key generation', function thisNeeded() {
   const count = 10;
@@ -40,11 +43,10 @@ describe('Key generation', function thisNeeded() {
       });
   }
 
-  before(() => {
+  before(async () => {
     localStorage.clear();
-    return libsignal.KeyHelper.generateIdentityKeyPair().then(keyPair =>
-      textsecure.storage.protocol.put('identityKey', keyPair)
-    );
+    const keyPair = window.Signal.Curve.generateKeyPair();
+    await textsecure.storage.protocol.put('identityKey', keyPair);
   });
 
   describe('the first time', () => {

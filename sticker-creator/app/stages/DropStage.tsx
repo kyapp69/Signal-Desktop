@@ -1,3 +1,6 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import * as React from 'react';
 import { AppStage } from './AppStage';
 import * as styles from './DropStage.scss';
@@ -7,7 +10,7 @@ import { StickerGrid } from '../../components/StickerGrid';
 import { stickersDuck } from '../../store';
 import { useI18n } from '../../util/i18n';
 
-export const DropStage = () => {
+export const DropStage: React.ComponentType = () => {
   const i18n = useI18n();
   const stickerPaths = stickersDuck.useStickerOrder();
   const stickersReady = stickersDuck.useStickersReady();
@@ -17,7 +20,7 @@ export const DropStage = () => {
 
   React.useEffect(() => {
     resetStatus();
-  }, []);
+  }, [resetStatus]);
 
   return (
     <AppStage next="/add-emojis" nextActive={stickersReady}>

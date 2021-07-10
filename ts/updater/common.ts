@@ -1,3 +1,7 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* eslint-disable no-console */
 import {
   createWriteStream,
   statSync,
@@ -6,9 +10,7 @@ import {
 import { join, normalize } from 'path';
 import { tmpdir } from 'os';
 
-// @ts-ignore
-import { createParser } from 'dashdash';
-// @ts-ignore
+import { createParser, ParserConfiguration } from 'dashdash';
 import ProxyAgent from 'proxy-agent';
 import { FAILSAFE_SCHEMA, safeLoad } from 'js-yaml';
 import { gt } from 'semver';
@@ -22,10 +24,11 @@ import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 
 import { getTempPath } from '../../app/attachments';
 import { Dialogs } from '../types/Dialogs';
+import { getUserAgent } from '../util/getUserAgent';
 
-// @ts-ignore
 import * as packageJson from '../../package.json';
 import { getSignatureFileName } from './signature';
+import { isPathInside } from '../util/isPathInside';
 
 import { LocaleType } from '../types/I18N';
 import { LoggerType } from '../types/Logging';
@@ -37,8 +40,13 @@ const { platform } = process;
 
 export const ACK_RENDER_TIMEOUT = 10000;
 
+export type UpdaterInterface = {
+  force(): Promise<void>;
+};
+
 export async function checkForUpdates(
-  logger: LoggerType
+  logger: LoggerType,
+  forceUpdate = false
 ): Promise<{
   fileName: string;
   version: string;
@@ -52,8 +60,11 @@ export async function checkForUpdates(
     return null;
   }
 
-  if (isVersionNewer(version)) {
-    logger.info(`checkForUpdates: found newer version ${version}`);
+  if (forceUpdate || isVersionNewer(version)) {
+    logger.info(
+      `checkForUpdates: found newer version ${version} ` +
+        `forceUpdate=${forceUpdate}`
+    );
 
     return {
       fileName: getUpdateFileName(yaml),
@@ -68,10 +79,10 @@ export async function checkForUpdates(
   return null;
 }
 
-export function validatePath(basePath: string, targetPath: string) {
+export function validatePath(basePath: string, targetPath: string): void {
   const normalized = normalize(targetPath);
 
-  if (!normalized.startsWith(basePath)) {
+  if (!isPathInside(normalized, basePath)) {
     throw new Error(
       `validatePath: Path ${normalized} is not under base path ${basePath}`
     );
@@ -105,7 +116,7 @@ export async function downloadUpdate(
     const downloadStream = stream(updateFileUrl, getGotOptions());
     const writeStream = createWriteStream(targetUpdatePath);
 
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       downloadStream.on('error', error => {
         reject(error);
       });
@@ -169,8 +180,6 @@ export function showUpdateDialog(
   performUpdateCallback: () => void
 ): void {
   let ack = false;
-
-  ipcMain.once('start-update', performUpdateCallback);
 
   ipcMain.once('show-update-dialog-ack', () => {
     ack = true;
@@ -252,9 +261,9 @@ export function getUpdatesFileName(): string {
 
   if (platform === 'darwin') {
     return `${prefix}-mac.yml`;
-  } else {
-    return `${prefix}.yml`;
   }
+
+  return `${prefix}.yml`;
 }
 
 const hasBeta = /beta/i;
@@ -268,29 +277,27 @@ function isVersionNewer(newVersion: string): boolean {
   return gt(newVersion, version);
 }
 
-export function getVersion(yaml: string): string | undefined {
+export function getVersion(yaml: string): string | null {
   const info = parseYaml(yaml);
 
-  if (info && info.version) {
-    return info.version;
-  }
-
-  return;
+  return info && info.version;
 }
 
-const validFile = /^[A-Za-z0-9\.\-]+$/;
-export function isUpdateFileNameValid(name: string) {
+const validFile = /^[A-Za-z0-9.-]+$/;
+export function isUpdateFileNameValid(name: string): boolean {
   return validFile.test(name);
 }
 
-export function getUpdateFileName(yaml: string) {
+// Reliant on third party parser that returns any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getUpdateFileName(yaml: string): any {
   const info = parseYaml(yaml);
 
   if (!info || !info.path) {
     throw new Error('getUpdateFileName: No path present in YAML file');
   }
 
-  const path = info.path;
+  const { path } = info;
   if (!isUpdateFileNameValid(path)) {
     throw new Error(
       `getUpdateFileName: Path '${path}' contains invalid characters`
@@ -300,6 +307,8 @@ export function getUpdateFileName(yaml: string) {
   return path;
 }
 
+// Reliant on third party parser that returns any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseYaml(yaml: string): any {
   return safeLoad(yaml, { schema: FAILSAFE_SCHEMA, json: true });
 }
@@ -325,7 +334,7 @@ function getGotOptions(): GotOptions<null> {
     ca,
     headers: {
       'Cache-Control': 'no-cache',
-      'User-Agent': `Signal Desktop ${packageJson.version}`,
+      'User-Agent': getUserAgent(packageJson.version),
     },
     useElectronNet: false,
   };
@@ -336,7 +345,7 @@ function getBaseTempDir() {
   return app ? getTempPath(app.getPath('userData')) : tmpdir();
 }
 
-export async function createTempDir() {
+export async function createTempDir(): Promise<string> {
   const baseTempDir = getBaseTempDir();
   const uniqueName = getGuid();
   const targetDir = join(baseTempDir, uniqueName);
@@ -345,7 +354,7 @@ export async function createTempDir() {
   return targetDir;
 }
 
-export async function deleteTempDir(targetDir: string) {
+export async function deleteTempDir(targetDir: string): Promise<void> {
   const pathInfo = statSync(targetDir);
   if (!pathInfo.isDirectory()) {
     throw new Error(
@@ -354,7 +363,7 @@ export async function deleteTempDir(targetDir: string) {
   }
 
   const baseTempDir = getBaseTempDir();
-  if (!targetDir.startsWith(baseTempDir)) {
+  if (!isPathInside(targetDir, baseTempDir)) {
     throw new Error(
       `deleteTempDir: Cannot delete path '${targetDir}' since it is not within base temp dir`
     );
@@ -363,20 +372,26 @@ export async function deleteTempDir(targetDir: string) {
   await rimrafPromise(targetDir);
 }
 
-export function getPrintableError(error: Error) {
+export function getPrintableError(error: Error | string): Error | string {
+  if (typeof error === 'string') {
+    return error;
+  }
   return error && error.stack ? error.stack : error;
 }
 
-export function getCliOptions<T>(options: any): T {
+export function getCliOptions<T>(options: ParserConfiguration['options']): T {
   const parser = createParser({ options });
   const cliOptions = parser.parse(process.argv);
 
   if (cliOptions.help) {
     const help = parser.help().trimRight();
-    // tslint:disable-next-line:no-console
     console.log(help);
     process.exit(0);
   }
 
-  return cliOptions;
+  return (cliOptions as unknown) as T;
+}
+
+export function setUpdateListener(performUpdateCallback: () => void): void {
+  ipcMain.once('start-update', performUpdateCallback);
 }

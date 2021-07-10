@@ -1,9 +1,10 @@
-import React from 'react';
-import classNames from 'classnames';
+// Copyright 2018-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 
-import { Emojify } from './Emojify';
-import { Avatar } from '../Avatar';
-import { ColorType, LocalizerType } from '../../types/Util';
+import React, { ReactNode } from 'react';
+import Measure from 'react-measure';
+import moment from 'moment';
+import classNames from 'classnames';
 import {
   ContextMenu,
   ContextMenuTrigger,
@@ -11,263 +12,525 @@ import {
   SubMenu,
 } from 'react-contextmenu';
 
-interface TimerOption {
-  name: string;
-  value: number;
+import { Emojify } from './Emojify';
+import { DisappearingTimeDialog } from '../DisappearingTimeDialog';
+import { Avatar, AvatarSize } from '../Avatar';
+import { InContactsIcon } from '../InContactsIcon';
+
+import { LocalizerType } from '../../types/Util';
+import { ConversationType } from '../../state/ducks/conversations';
+import { MuteOption, getMuteOptions } from '../../util/getMuteOptions';
+import * as expirationTimer from '../../util/expirationTimer';
+import { isMuted } from '../../util/isMuted';
+import { missingCaseError } from '../../util/missingCaseError';
+import { isInSystemContacts } from '../../util/isInSystemContacts';
+
+export enum OutgoingCallButtonStyle {
+  None,
+  JustVideo,
+  Both,
+  Join,
 }
 
-export interface PropsData {
-  id: string;
-  name?: string;
-
-  phoneNumber: string;
-  profileName?: string;
-  color?: ColorType;
-  avatarPath?: string;
-
-  isVerified?: boolean;
-  isMe?: boolean;
-  isGroup?: boolean;
-  isArchived?: boolean;
-  leftGroup?: boolean;
-
-  expirationSettingName?: string;
+export type PropsDataType = {
+  conversationTitle?: string;
+  isMissingMandatoryProfileSharing?: boolean;
+  outgoingCallButtonStyle: OutgoingCallButtonStyle;
   showBackButton?: boolean;
-  timerOptions?: Array<TimerOption>;
-}
+  isSMSOnly?: boolean;
+} & Pick<
+  ConversationType,
+  | 'acceptedMessageRequest'
+  | 'avatarPath'
+  | 'canChangeTimer'
+  | 'color'
+  | 'expireTimer'
+  | 'groupVersion'
+  | 'id'
+  | 'isArchived'
+  | 'isMe'
+  | 'isPinned'
+  | 'isVerified'
+  | 'left'
+  | 'markedUnread'
+  | 'muteExpiresAt'
+  | 'name'
+  | 'phoneNumber'
+  | 'profileName'
+  | 'sharedGroupNames'
+  | 'title'
+  | 'type'
+  | 'unblurredAvatarPath'
+>;
 
-export interface PropsActions {
+export type PropsActionsType = {
+  onSetMuteNotifications: (seconds: number) => void;
   onSetDisappearingMessages: (seconds: number) => void;
+  onShowContactModal: (contactId: string) => void;
   onDeleteMessages: () => void;
   onResetSession: () => void;
   onSearchInConversation: () => void;
+  onOutgoingAudioCallInConversation: () => void;
+  onOutgoingVideoCallInConversation: () => void;
+  onSetPin: (value: boolean) => void;
 
+  onShowChatColorEditor: () => void;
+  onShowConversationDetails: () => void;
   onShowSafetyNumber: () => void;
   onShowAllMedia: () => void;
   onShowGroupMembers: () => void;
   onGoBack: () => void;
 
   onArchive: () => void;
+  onMarkUnread: () => void;
   onMoveToInbox: () => void;
-}
+};
 
-export interface PropsHousekeeping {
+export type PropsHousekeepingType = {
   i18n: LocalizerType;
+};
+
+export type PropsType = PropsDataType &
+  PropsActionsType &
+  PropsHousekeepingType;
+
+enum ModalState {
+  NothingOpen,
+  CustomDisappearingTimeout,
 }
 
-export type Props = PropsData & PropsActions & PropsHousekeeping;
+type StateType = {
+  isNarrow: boolean;
+  modalState: ModalState;
+};
 
-export class ConversationHeader extends React.Component<Props> {
-  public showMenuBound: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  public menuTriggerRef: React.RefObject<any>;
+const TIMER_ITEM_CLASS = 'module-ConversationHeader__disappearing-timer__item';
 
-  public constructor(props: Props) {
+export class ConversationHeader extends React.Component<PropsType, StateType> {
+  private showMenuBound: (event: React.MouseEvent<HTMLButtonElement>) => void;
+
+  // Comes from a third-party dependency
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private menuTriggerRef: React.RefObject<any>;
+
+  public constructor(props: PropsType) {
     super(props);
+
+    this.state = { isNarrow: false, modalState: ModalState.NothingOpen };
 
     this.menuTriggerRef = React.createRef();
     this.showMenuBound = this.showMenu.bind(this);
   }
 
-  public showMenu(event: React.MouseEvent<HTMLButtonElement>) {
+  private showMenu(event: React.MouseEvent<HTMLButtonElement>): void {
     if (this.menuTriggerRef.current) {
       this.menuTriggerRef.current.handleContextClick(event);
     }
   }
 
-  public renderBackButton() {
-    const { onGoBack, showBackButton } = this.props;
+  private renderBackButton(): ReactNode {
+    const { i18n, onGoBack, showBackButton } = this.props;
 
     return (
       <button
+        type="button"
         onClick={onGoBack}
         className={classNames(
-          'module-conversation-header__back-icon',
-          showBackButton ? 'module-conversation-header__back-icon--show' : null
+          'module-ConversationHeader__back-icon',
+          showBackButton ? 'module-ConversationHeader__back-icon--show' : null
         )}
         disabled={!showBackButton}
+        aria-label={i18n('goBack')}
       />
     );
   }
 
-  public renderTitle() {
-    const {
-      name,
-      phoneNumber,
-      i18n,
-      isMe,
-      profileName,
-      isVerified,
-    } = this.props;
+  private renderHeaderInfoTitle(): ReactNode {
+    const { name, title, type, i18n, isMe } = this.props;
 
     if (isMe) {
       return (
-        <div className="module-conversation-header__title">
+        <div className="module-ConversationHeader__header__info__title">
           {i18n('noteToSelf')}
         </div>
       );
     }
 
     return (
-      <div className="module-conversation-header__title">
-        {name ? <Emojify text={name} /> : null}
-        {name && phoneNumber ? ' · ' : null}
-        {phoneNumber ? phoneNumber : null}{' '}
-        {profileName && !name ? (
-          <span className="module-conversation-header__title__profile-name">
-            ~<Emojify text={profileName} />
-          </span>
-        ) : null}
-        {isVerified ? ' · ' : null}
-        {isVerified ? (
-          <span>
-            <span className="module-conversation-header__title__verified-icon" />
-            {i18n('verified')}
-          </span>
+      <div className="module-ConversationHeader__header__info__title">
+        <Emojify text={title} />
+        {isInSystemContacts({ name, type }) ? (
+          <InContactsIcon
+            className="module-ConversationHeader__header__info__title__in-contacts-icon"
+            i18n={i18n}
+          />
         ) : null}
       </div>
     );
   }
 
-  public renderAvatar() {
+  private renderHeaderInfoSubtitle(): ReactNode {
+    const expirationNode = this.renderExpirationLength();
+    const verifiedNode = this.renderVerifiedIcon();
+
+    if (expirationNode || verifiedNode) {
+      return (
+        <div className="module-ConversationHeader__header__info__subtitle">
+          {expirationNode}
+          {verifiedNode}
+        </div>
+      );
+    }
+
+    return null;
+  }
+
+  private renderAvatar(): ReactNode {
     const {
+      acceptedMessageRequest,
       avatarPath,
       color,
       i18n,
-      isGroup,
+      type,
       isMe,
       name,
       phoneNumber,
       profileName,
+      sharedGroupNames,
+      title,
+      unblurredAvatarPath,
     } = this.props;
 
-    const conversationType = isGroup ? 'group' : 'direct';
-
     return (
-      <span className="module-conversation-header__avatar">
+      <span className="module-ConversationHeader__header__avatar">
         <Avatar
+          acceptedMessageRequest={acceptedMessageRequest}
           avatarPath={avatarPath}
           color={color}
-          conversationType={conversationType}
+          conversationType={type}
           i18n={i18n}
+          isMe={isMe}
           noteToSelf={isMe}
+          title={title}
           name={name}
           phoneNumber={phoneNumber}
           profileName={profileName}
-          size={28}
+          sharedGroupNames={sharedGroupNames}
+          size={AvatarSize.THIRTY_TWO}
+          unblurredAvatarPath={unblurredAvatarPath}
         />
       </span>
     );
   }
 
-  public renderExpirationLength() {
-    const { expirationSettingName, showBackButton } = this.props;
+  private renderExpirationLength(): ReactNode {
+    const { i18n, expireTimer } = this.props;
 
-    if (!expirationSettingName) {
+    if (!expireTimer) {
       return null;
     }
 
     return (
-      <div
-        className={classNames(
-          'module-conversation-header__expiration',
-          showBackButton
-            ? 'module-conversation-header__expiration--hidden'
-            : null
-        )}
-      >
-        <div className="module-conversation-header__expiration__clock-icon" />
-        <div className="module-conversation-header__expiration__setting">
-          {expirationSettingName}
-        </div>
+      <div className="module-ConversationHeader__header__info__subtitle__expiration">
+        {expirationTimer.format(i18n, expireTimer)}
       </div>
     );
   }
 
-  public renderMoreButton(triggerId: string) {
-    const { showBackButton } = this.props;
+  private renderVerifiedIcon(): ReactNode {
+    const { i18n, isVerified } = this.props;
+
+    if (!isVerified) {
+      return null;
+    }
+
+    return (
+      <div className="module-ConversationHeader__header__info__subtitle__verified">
+        {i18n('verified')}
+      </div>
+    );
+  }
+
+  private renderMoreButton(triggerId: string): ReactNode {
+    const { i18n, showBackButton } = this.props;
 
     return (
       <ContextMenuTrigger id={triggerId} ref={this.menuTriggerRef}>
         <button
+          type="button"
           onClick={this.showMenuBound}
           className={classNames(
-            'module-conversation-header__more-button',
-            showBackButton
-              ? null
-              : 'module-conversation-header__more-button--show'
+            'module-ConversationHeader__button',
+            'module-ConversationHeader__button--more',
+            showBackButton ? null : 'module-ConversationHeader__button--show'
           )}
           disabled={showBackButton}
+          aria-label={i18n('moreInfo')}
         />
       </ContextMenuTrigger>
     );
   }
 
-  public renderSearchButton() {
-    const { onSearchInConversation, showBackButton } = this.props;
+  private renderSearchButton(): ReactNode {
+    const { i18n, onSearchInConversation, showBackButton } = this.props;
 
     return (
       <button
+        type="button"
         onClick={onSearchInConversation}
         className={classNames(
-          'module-conversation-header__search-button',
-          showBackButton
-            ? null
-            : 'module-conversation-header__search-button--show'
+          'module-ConversationHeader__button',
+          'module-ConversationHeader__button--search',
+          showBackButton ? null : 'module-ConversationHeader__button--show'
         )}
         disabled={showBackButton}
+        aria-label={i18n('search')}
       />
     );
   }
 
-  public renderMenu(triggerId: string) {
+  private renderOutgoingCallButtons(): ReactNode {
     const {
       i18n,
-      isMe,
-      isGroup,
+      onOutgoingAudioCallInConversation,
+      onOutgoingVideoCallInConversation,
+      outgoingCallButtonStyle,
+      showBackButton,
+    } = this.props;
+    const { isNarrow } = this.state;
+
+    const videoButton = (
+      <button
+        type="button"
+        onClick={onOutgoingVideoCallInConversation}
+        className={classNames(
+          'module-ConversationHeader__button',
+          'module-ConversationHeader__button--video',
+          showBackButton ? null : 'module-ConversationHeader__button--show'
+        )}
+        disabled={showBackButton}
+        aria-label={i18n('makeOutgoingVideoCall')}
+      />
+    );
+
+    switch (outgoingCallButtonStyle) {
+      case OutgoingCallButtonStyle.None:
+        return null;
+      case OutgoingCallButtonStyle.JustVideo:
+        return videoButton;
+      case OutgoingCallButtonStyle.Both:
+        return (
+          <>
+            {videoButton}
+            <button
+              type="button"
+              onClick={onOutgoingAudioCallInConversation}
+              className={classNames(
+                'module-ConversationHeader__button',
+                'module-ConversationHeader__button--audio',
+                showBackButton
+                  ? null
+                  : 'module-ConversationHeader__button--show'
+              )}
+              disabled={showBackButton}
+              aria-label={i18n('makeOutgoingCall')}
+            />
+          </>
+        );
+      case OutgoingCallButtonStyle.Join:
+        return (
+          <button
+            aria-label={i18n('joinOngoingCall')}
+            type="button"
+            onClick={onOutgoingVideoCallInConversation}
+            className={classNames(
+              'module-ConversationHeader__button',
+              'module-ConversationHeader__button--join-call',
+              showBackButton ? null : 'module-ConversationHeader__button--show'
+            )}
+            disabled={showBackButton}
+          >
+            {isNarrow ? null : i18n('joinOngoingCall')}
+          </button>
+        );
+      default:
+        throw missingCaseError(outgoingCallButtonStyle);
+    }
+  }
+
+  private renderMenu(triggerId: string): ReactNode {
+    const {
+      i18n,
+      acceptedMessageRequest,
+      canChangeTimer,
+      expireTimer,
       isArchived,
-      leftGroup,
+      isMe,
+      isPinned,
+      type,
+      markedUnread,
+      muteExpiresAt,
+      isMissingMandatoryProfileSharing,
+      left,
+      groupVersion,
       onDeleteMessages,
       onResetSession,
       onSetDisappearingMessages,
+      onSetMuteNotifications,
       onShowAllMedia,
+      onShowChatColorEditor,
+      onShowConversationDetails,
       onShowGroupMembers,
       onShowSafetyNumber,
       onArchive,
+      onMarkUnread,
+      onSetPin,
       onMoveToInbox,
-      timerOptions,
     } = this.props;
 
+    const muteOptions: Array<MuteOption> = [];
+    if (isMuted(muteExpiresAt)) {
+      const expires = moment(muteExpiresAt);
+
+      let muteExpirationLabel: string;
+      if (Number(muteExpiresAt) >= Number.MAX_SAFE_INTEGER) {
+        muteExpirationLabel = i18n('muteExpirationLabelAlways');
+      } else {
+        const muteExpirationUntil = moment().isSame(expires, 'day')
+          ? expires.format('hh:mm A')
+          : expires.format('M/D/YY, hh:mm A');
+
+        muteExpirationLabel = i18n('muteExpirationLabel', [
+          muteExpirationUntil,
+        ]);
+      }
+
+      muteOptions.push(
+        ...[
+          {
+            name: muteExpirationLabel,
+            disabled: true,
+            value: 0,
+          },
+          {
+            name: i18n('unmute'),
+            value: 0,
+          },
+        ]
+      );
+    }
+    muteOptions.push(...getMuteOptions(i18n));
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const disappearingTitle = i18n('disappearingMessages') as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const muteTitle = i18n('muteNotificationsTitle') as any;
+    const isGroup = type === 'group';
+
+    const disableTimerChanges = Boolean(
+      !canChangeTimer ||
+        !acceptedMessageRequest ||
+        left ||
+        isMissingMandatoryProfileSharing
+    );
+
+    const hasGV2AdminEnabled = isGroup && groupVersion === 2;
+
+    const isActiveExpireTimer = (value: number): boolean => {
+      if (!expireTimer) {
+        return value === 0;
+      }
+
+      // Custom time...
+      if (value === -1) {
+        return !expirationTimer.DEFAULT_DURATIONS_SET.has(expireTimer);
+      }
+      return value === expireTimer;
+    };
+
+    const expireDurations: ReadonlyArray<ReactNode> = [
+      ...expirationTimer.DEFAULT_DURATIONS_IN_SECONDS,
+      -1,
+    ].map((seconds: number) => {
+      let text: string;
+
+      if (seconds === -1) {
+        text = i18n('customDisappearingTimeOption');
+      } else {
+        text = expirationTimer.format(i18n, seconds, {
+          capitalizeOff: true,
+        });
+      }
+
+      const onDurationClick = () => {
+        if (seconds === -1) {
+          this.setState({
+            modalState: ModalState.CustomDisappearingTimeout,
+          });
+        } else {
+          onSetDisappearingMessages(seconds);
+        }
+      };
+
+      return (
+        <MenuItem key={seconds} onClick={onDurationClick}>
+          <div
+            className={classNames(
+              TIMER_ITEM_CLASS,
+              isActiveExpireTimer(seconds) && `${TIMER_ITEM_CLASS}--active`
+            )}
+          >
+            {text}
+          </div>
+        </MenuItem>
+      );
+    });
 
     return (
       <ContextMenu id={triggerId}>
-        {leftGroup ? null : (
-          <SubMenu title={disappearingTitle}>
-            {(timerOptions || []).map(item => (
-              <MenuItem
-                key={item.value}
-                onClick={() => {
-                  onSetDisappearingMessages(item.value);
-                }}
-              >
-                {item.name}
-              </MenuItem>
-            ))}
-          </SubMenu>
+        {disableTimerChanges ? null : (
+          <SubMenu title={disappearingTitle}>{expireDurations}</SubMenu>
         )}
-        <MenuItem onClick={onShowAllMedia}>{i18n('viewRecentMedia')}</MenuItem>
-        {isGroup ? (
+        <SubMenu title={muteTitle}>
+          {muteOptions.map(item => (
+            <MenuItem
+              key={item.name}
+              disabled={item.disabled}
+              onClick={() => {
+                onSetMuteNotifications(item.value);
+              }}
+            >
+              {item.name}
+            </MenuItem>
+          ))}
+        </SubMenu>
+        {!isGroup ? (
+          <MenuItem onClick={onShowChatColorEditor}>
+            {i18n('showChatColorEditor')}
+          </MenuItem>
+        ) : null}
+        {hasGV2AdminEnabled ? (
+          <MenuItem onClick={onShowConversationDetails}>
+            {i18n('showConversationDetails')}
+          </MenuItem>
+        ) : null}
+        {isGroup && !hasGV2AdminEnabled ? (
           <MenuItem onClick={onShowGroupMembers}>
             {i18n('showMembers')}
           </MenuItem>
         ) : null}
+        <MenuItem onClick={onShowAllMedia}>{i18n('viewRecentMedia')}</MenuItem>
         {!isGroup && !isMe ? (
           <MenuItem onClick={onShowSafetyNumber}>
             {i18n('showSafetyNumber')}
           </MenuItem>
         ) : null}
-        {!isGroup ? (
+        {!isGroup && acceptedMessageRequest ? (
           <MenuItem onClick={onResetSession}>{i18n('resetSession')}</MenuItem>
+        ) : null}
+        <MenuItem divider />
+        {!markedUnread ? (
+          <MenuItem onClick={onMarkUnread}>{i18n('markUnread')}</MenuItem>
         ) : null}
         {isArchived ? (
           <MenuItem onClick={onMoveToInbox}>
@@ -277,28 +540,148 @@ export class ConversationHeader extends React.Component<Props> {
           <MenuItem onClick={onArchive}>{i18n('archiveConversation')}</MenuItem>
         )}
         <MenuItem onClick={onDeleteMessages}>{i18n('deleteMessages')}</MenuItem>
+        {isPinned ? (
+          <MenuItem onClick={() => onSetPin(false)}>
+            {i18n('unpinConversation')}
+          </MenuItem>
+        ) : (
+          <MenuItem onClick={() => onSetPin(true)}>
+            {i18n('pinConversation')}
+          </MenuItem>
+        )}
       </ContextMenu>
     );
   }
 
-  public render() {
-    const { id } = this.props;
-    const triggerId = `conversation-${id}`;
+  private renderHeader(): ReactNode {
+    const {
+      conversationTitle,
+      groupVersion,
+      id,
+      isMe,
+      onShowContactModal,
+      onShowConversationDetails,
+      type,
+    } = this.props;
 
-    return (
-      <div className="module-conversation-header">
-        {this.renderBackButton()}
-        <div className="module-conversation-header__title-container">
-          <div className="module-conversation-header__title-flex">
-            {this.renderAvatar()}
-            {this.renderTitle()}
+    if (conversationTitle !== undefined) {
+      return (
+        <div className="module-ConversationHeader__header">
+          <div className="module-ConversationHeader__header__info">
+            <div className="module-ConversationHeader__header__info__title">
+              {conversationTitle}
+            </div>
           </div>
         </div>
-        {this.renderExpirationLength()}
-        {this.renderSearchButton()}
-        {this.renderMoreButton(triggerId)}
-        {this.renderMenu(triggerId)}
-      </div>
+      );
+    }
+
+    let onClick: undefined | (() => void);
+    switch (type) {
+      case 'direct':
+        onClick = isMe
+          ? undefined
+          : () => {
+              onShowContactModal(id);
+            };
+        break;
+      case 'group': {
+        const hasGV2AdminEnabled = groupVersion === 2;
+        onClick = hasGV2AdminEnabled
+          ? () => {
+              onShowConversationDetails();
+            }
+          : undefined;
+        break;
+      }
+      default:
+        throw missingCaseError(type);
+    }
+
+    const contents = (
+      <>
+        {this.renderAvatar()}
+        <div className="module-ConversationHeader__header__info">
+          {this.renderHeaderInfoTitle()}
+          {this.renderHeaderInfoSubtitle()}
+        </div>
+      </>
+    );
+
+    if (onClick) {
+      return (
+        <button
+          type="button"
+          className="module-ConversationHeader__header module-ConversationHeader__header--clickable"
+          onClick={onClick}
+        >
+          {contents}
+        </button>
+      );
+    }
+
+    return <div className="module-ConversationHeader__header">{contents}</div>;
+  }
+
+  public render(): ReactNode {
+    const {
+      id,
+      isSMSOnly,
+      i18n,
+      onSetDisappearingMessages,
+      expireTimer,
+    } = this.props;
+    const { isNarrow, modalState } = this.state;
+    const triggerId = `conversation-${id}`;
+
+    let modalNode: ReactNode;
+    if (modalState === ModalState.NothingOpen) {
+      modalNode = undefined;
+    } else if (modalState === ModalState.CustomDisappearingTimeout) {
+      modalNode = (
+        <DisappearingTimeDialog
+          i18n={i18n}
+          initialValue={expireTimer}
+          onSubmit={value => {
+            this.setState({ modalState: ModalState.NothingOpen });
+            onSetDisappearingMessages(value);
+          }}
+          onClose={() => this.setState({ modalState: ModalState.NothingOpen })}
+        />
+      );
+    } else {
+      throw missingCaseError(modalState);
+    }
+
+    return (
+      <>
+        {modalNode}
+        <Measure
+          bounds
+          onResize={({ bounds }) => {
+            if (!bounds || !bounds.width) {
+              return;
+            }
+            this.setState({ isNarrow: bounds.width < 500 });
+          }}
+        >
+          {({ measureRef }) => (
+            <div
+              className={classNames('module-ConversationHeader', {
+                'module-ConversationHeader--narrow': isNarrow,
+              })}
+              ref={measureRef}
+            >
+              {this.renderBackButton()}
+              {this.renderHeader()}
+              {!isSMSOnly && this.renderOutgoingCallButtons()}
+              {this.renderSearchButton()}
+              {this.renderMoreButton(triggerId)}
+              {this.renderMenu(triggerId)}
+            </div>
+          )}
+        </Measure>
+      </>
     );
   }
 }

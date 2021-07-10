@@ -1,4 +1,5 @@
-// tslint:disable:react-a11y-anchors
+// Copyright 2018-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 
 import React from 'react';
 import * as GoogleChrome from '../util/GoogleChrome';
@@ -7,28 +8,32 @@ import { AttachmentType } from '../types/Attachment';
 
 import { LocalizerType } from '../types/Util';
 
-interface Props {
+export type Props = {
   attachment: AttachmentType;
   i18n: LocalizerType;
   url: string;
   caption?: string;
   onSave?: (caption: string) => void;
   close?: () => void;
-}
+};
 
-interface State {
+type State = {
   caption: string;
-}
+};
 
 export class CaptionEditor extends React.Component<Props, State> {
   private readonly handleKeyDownBound: (
     event: React.KeyboardEvent<HTMLInputElement>
   ) => void;
+
   private readonly setFocusBound: () => void;
+
   private readonly onChangeBound: (
     event: React.FormEvent<HTMLInputElement>
   ) => void;
+
   private readonly onSaveBound: () => void;
+
   private readonly inputRef: React.RefObject<HTMLInputElement>;
 
   constructor(props: Props) {
@@ -46,14 +51,14 @@ export class CaptionEditor extends React.Component<Props, State> {
     this.inputRef = React.createRef();
   }
 
-  public componentDidMount() {
+  public componentDidMount(): void {
     // Forcing focus after a delay due to some focus contention with ConversationView
     setTimeout(() => {
       this.setFocus();
     }, 200);
   }
 
-  public handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+  public handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>): void {
     const { close, onSave } = this.props;
 
     if (close && event.key === 'Escape') {
@@ -72,13 +77,13 @@ export class CaptionEditor extends React.Component<Props, State> {
     }
   }
 
-  public setFocus() {
+  public setFocus(): void {
     if (this.inputRef.current) {
       this.inputRef.current.focus();
     }
   }
 
-  public onSave() {
+  public onSave(): void {
     const { onSave } = this.props;
     const { caption } = this.state;
 
@@ -87,16 +92,15 @@ export class CaptionEditor extends React.Component<Props, State> {
     }
   }
 
-  public onChange(event: React.FormEvent<HTMLInputElement>) {
-    // @ts-ignore
-    const { value } = event.target;
+  public onChange(event: React.FormEvent<HTMLInputElement>): void {
+    const { value } = event.target as HTMLInputElement;
 
     this.setState({
       caption: value,
     });
   }
 
-  public renderObject() {
+  public renderObject(): JSX.Element {
     const { url, i18n, attachment } = this.props;
     const { contentType } = attachment || { contentType: null };
 
@@ -114,7 +118,7 @@ export class CaptionEditor extends React.Component<Props, State> {
     const isVideoTypeSupported = GoogleChrome.isVideoTypeSupported(contentType);
     if (isVideoTypeSupported) {
       return (
-        <video className="module-caption-editor__video" controls={true}>
+        <video className="module-caption-editor__video" controls>
           <source src={url} />
         </video>
       );
@@ -123,14 +127,16 @@ export class CaptionEditor extends React.Component<Props, State> {
     return <div className="module-caption-editor__placeholder" />;
   }
 
-  public render() {
+  // Events handled by props
+  /* eslint-disable jsx-a11y/click-events-have-key-events */
+  public render(): JSX.Element {
     const { i18n, close } = this.props;
     const { caption } = this.state;
     const onKeyDown = close ? this.handleKeyDownBound : undefined;
 
     return (
       <div
-        role="dialog"
+        role="presentation"
         onClick={this.setFocusBound}
         className="module-caption-editor"
       >
@@ -139,6 +145,8 @@ export class CaptionEditor extends React.Component<Props, State> {
           role="button"
           onClick={close}
           className="module-caption-editor__close-button"
+          tabIndex={0}
+          aria-label={i18n('close')}
         />
         <div className="module-caption-editor__media-container">
           {this.renderObject()}
@@ -157,6 +165,7 @@ export class CaptionEditor extends React.Component<Props, State> {
             />
             {caption ? (
               <button
+                type="button"
                 onClick={this.onSaveBound}
                 className="module-caption-editor__save-button"
               >
@@ -168,4 +177,5 @@ export class CaptionEditor extends React.Component<Props, State> {
       </div>
     );
   }
+  /* eslint-enable jsx-a11y/click-events-have-key-events */
 }

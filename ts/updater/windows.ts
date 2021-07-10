@@ -1,3 +1,6 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { dirname, join } from 'path';
 import { spawn as spawnEmitter, SpawnOptions } from 'child_process';
 import { readdir as readdirCallback, unlink as unlinkCallback } from 'fs';
@@ -12,8 +15,10 @@ import {
   deleteTempDir,
   downloadUpdate,
   getPrintableError,
+  setUpdateListener,
   showCannotUpdateDialog,
   showUpdateDialog,
+  UpdaterInterface,
 } from './common';
 import { LocaleType } from '../types/I18N';
 import { LoggerType } from '../types/Logging';
@@ -27,15 +32,23 @@ const SECOND = 1000;
 const MINUTE = SECOND * 60;
 const INTERVAL = MINUTE * 30;
 
+let fileName: string;
+let version: string;
+let updateFilePath: string;
+let installing: boolean;
+let loggerForQuitHandler: LoggerType;
+
 export async function start(
   getMainWindow: () => BrowserWindow,
   locale: LocaleType,
   logger: LoggerType
-) {
+): Promise<UpdaterInterface> {
   logger.info('windows/start: starting checks...');
 
   loggerForQuitHandler = logger;
   app.once('quit', quitHandler);
+
+  setUpdateListener(createUpdater(getMainWindow, locale, logger));
 
   setInterval(async () => {
     try {
@@ -47,22 +60,23 @@ export async function start(
 
   await deletePreviousInstallers(logger);
   await checkDownloadAndInstall(getMainWindow, locale, logger);
-}
 
-let fileName: string;
-let version: string;
-let updateFilePath: string;
-let installing: boolean;
-let loggerForQuitHandler: LoggerType;
+  return {
+    async force(): Promise<void> {
+      return checkDownloadAndInstall(getMainWindow, locale, logger, true);
+    },
+  };
+}
 
 async function checkDownloadAndInstall(
   getMainWindow: () => BrowserWindow,
   locale: LocaleType,
-  logger: LoggerType
+  logger: LoggerType,
+  force = false
 ) {
   try {
     logger.info('checkDownloadAndInstall: checking for update...');
-    const result = await checkForUpdates(logger);
+    const result = await checkForUpdates(logger, force);
     if (!result) {
       return;
     }
@@ -86,22 +100,11 @@ async function checkDownloadAndInstall(
     }
 
     logger.info('checkDownloadAndInstall: showing dialog...');
-    showUpdateDialog(getMainWindow(), locale, async () => {
-      try {
-        await verifyAndInstall(updateFilePath, version, logger);
-        installing = true;
-      } catch (error) {
-        logger.info(
-          'checkDownloadAndInstall: showing general update failure dialog...'
-        );
-        showCannotUpdateDialog(getMainWindow(), locale);
-
-        throw error;
-      }
-
-      markShouldQuit();
-      app.quit();
-    });
+    showUpdateDialog(
+      getMainWindow(),
+      locale,
+      createUpdater(getMainWindow, locale, logger)
+    );
   } catch (error) {
     logger.error('checkDownloadAndInstall: error', getPrintableError(error));
   }
@@ -151,6 +154,10 @@ async function verifyAndInstall(
   newVersion: string,
   logger: LoggerType
 ) {
+  if (installing) {
+    return;
+  }
+
   const publicKey = hexToBinary(getFromConfig('updatesPublicKey'));
   const verified = await verifySignature(updateFilePath, newVersion, publicKey);
   if (!verified) {
@@ -167,7 +174,7 @@ async function install(filePath: string, logger: LoggerType): Promise<void> {
   const args = ['--updated'];
   const options = {
     detached: true,
-    stdio: 'ignore' as 'ignore', // TypeScript considers this a plain string without help
+    stdio: 'ignore' as const, // TypeScript considers this a plain string without help
   };
 
   try {
@@ -213,7 +220,29 @@ async function spawn(
     emitter.on('error', reject);
     emitter.unref();
 
-    // tslint:disable-next-line no-string-based-set-timeout
     setTimeout(resolve, 200);
   });
+}
+
+function createUpdater(
+  getMainWindow: () => BrowserWindow,
+  locale: LocaleType,
+  logger: LoggerType
+) {
+  return async () => {
+    try {
+      await verifyAndInstall(updateFilePath, version, logger);
+      installing = true;
+    } catch (error) {
+      logger.info(
+        'checkDownloadAndInstall: showing general update failure dialog...'
+      );
+      showCannotUpdateDialog(getMainWindow(), locale);
+
+      throw error;
+    }
+
+    markShouldQuit();
+    app.quit();
+  };
 }

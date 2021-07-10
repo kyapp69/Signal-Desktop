@@ -1,14 +1,17 @@
-/* global libsignal, textsecure, SignalProtocolStore */
+// Copyright 2015-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* global textsecure */
 
 describe('MessageReceiver', () => {
-  textsecure.storage.impl = new SignalProtocolStore();
   const { WebSocket } = window;
   const number = '+19999999999';
   const uuid = 'AAAAAAAA-BBBB-4CCC-9DDD-EEEEEEEEEEEE';
   const deviceId = 1;
-  const signalingKey = libsignal.crypto.getRandomBytes(32 + 20);
+  const signalingKey = window.Signal.Crypto.getRandomBytes(32 + 20);
 
   before(() => {
+    localStorage.clear();
     window.WebSocket = MockSocket;
     textsecure.storage.user.setNumberAndDeviceId(number, deviceId, 'name');
     textsecure.storage.user.setUuidAndDeviceId(uuid, deviceId);
@@ -16,94 +19,77 @@ describe('MessageReceiver', () => {
     textsecure.storage.put('signaling_key', signalingKey);
   });
   after(() => {
+    localStorage.clear();
     window.WebSocket = WebSocket;
   });
 
   describe('connecting', () => {
-    const attrs = {
-      type: textsecure.protobuf.Envelope.Type.CIPHERTEXT,
-      source: number,
-      sourceUuid: uuid,
-      sourceDevice: deviceId,
-      timestamp: Date.now(),
-    };
-    const websocketmessage = new textsecure.protobuf.WebSocketMessage({
-      type: textsecure.protobuf.WebSocketMessage.Type.REQUEST,
-      request: { verb: 'PUT', path: '/messages' },
+    let attrs;
+    let websocketmessage;
+
+    before(() => {
+      attrs = {
+        type: textsecure.protobuf.Envelope.Type.CIPHERTEXT,
+        source: number,
+        sourceUuid: uuid,
+        sourceDevice: deviceId,
+        timestamp: Date.now(),
+        content: window.Signal.Crypto.getRandomBytes(200),
+      };
+      const body = new textsecure.protobuf.Envelope(attrs).toArrayBuffer();
+
+      websocketmessage = new textsecure.protobuf.WebSocketMessage({
+        type: textsecure.protobuf.WebSocketMessage.Type.REQUEST,
+        request: { verb: 'PUT', path: '/api/v1/message', body },
+      });
     });
 
-    before(done => {
-      const signal = new textsecure.protobuf.Envelope(attrs).toArrayBuffer();
-
-      const aesKey = signalingKey.slice(0, 32);
-      const macKey = signalingKey.slice(32, 32 + 20);
-
-      window.crypto.subtle
-        .importKey('raw', aesKey, { name: 'AES-CBC' }, false, ['encrypt'])
-        .then(key => {
-          const iv = libsignal.crypto.getRandomBytes(16);
-          window.crypto.subtle
-            .encrypt({ name: 'AES-CBC', iv: new Uint8Array(iv) }, key, signal)
-            .then(ciphertext => {
-              window.crypto.subtle
-                .importKey(
-                  'raw',
-                  macKey,
-                  { name: 'HMAC', hash: { name: 'SHA-256' } },
-                  false,
-                  ['sign']
-                )
-                .then(innerKey => {
-                  window.crypto.subtle
-                    .sign({ name: 'HMAC', hash: 'SHA-256' }, innerKey, signal)
-                    .then(mac => {
-                      const version = new Uint8Array([1]);
-                      const message = dcodeIO.ByteBuffer.concat([
-                        version,
-                        iv,
-                        ciphertext,
-                        mac,
-                      ]);
-                      websocketmessage.request.body = message.toArrayBuffer();
-                      done();
-                    });
-                });
-            });
-        });
-    });
-
-    it('connects', done => {
-      const mockServer = new MockServer(
-        `ws://localhost:8080/v1/websocket/?login=${encodeURIComponent(
-          uuid
-        )}.1&password=password`
-      );
+    it('generates decryption-error event when it cannot decrypt', done => {
+      const mockServer = new MockServer('ws://localhost:8081/');
 
       mockServer.on('connection', server => {
-        server.send(new Blob([websocketmessage.toArrayBuffer()]));
+        setTimeout(() => {
+          server.send(new Blob([websocketmessage.toArrayBuffer()]));
+        }, 1);
       });
 
-      window.addEventListener('textsecure:message', ev => {
-        const signal = ev.proto;
-        const keys = Object.keys(attrs);
-
-        for (let i = 0, max = keys.length; i < max; i += 1) {
-          const key = keys[i];
-          assert.strictEqual(attrs[key], signal[key]);
-        }
-        assert.strictEqual(signal.message.body, 'hello');
-        mockServer.close();
-
-        done();
-      });
-
-      window.messageReceiver = new textsecure.MessageReceiver(
-        'username',
+      const messageReceiver = new textsecure.MessageReceiver(
+        'oldUsername.2',
+        'username.2',
         'password',
-        'signalingKey'
-        // 'ws://localhost:8080',
-        // window,
+        'signalingKey',
+        {
+          serverTrustRoot: 'AAAAAAAA',
+        }
       );
+
+      messageReceiver.addEventListener('decrytion-error', done());
     });
   });
+
+  // For when we start testing individual MessageReceiver methods
+
+  // describe('methods', () => {
+  //   let messageReceiver;
+  //   let mockServer;
+
+  //   beforeEach(() => {
+  //     // Necessary to populate the server property inside of MockSocket. Without it, we
+  //     //   crash when doing any number of things to a MockSocket instance.
+  //     mockServer = new MockServer('ws://localhost:8081');
+
+  //     messageReceiver = new textsecure.MessageReceiver(
+  //       'oldUsername.3',
+  //       'username.3',
+  //       'password',
+  //       'signalingKey',
+  //       {
+  //         serverTrustRoot: 'AAAAAAAA',
+  //       }
+  //     );
+  //   });
+  //   afterEach(() => {
+  //     mockServer.close();
+  //   });
+  // });
 });

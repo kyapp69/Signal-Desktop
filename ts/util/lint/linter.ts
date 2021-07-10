@@ -1,37 +1,17 @@
-// tslint:disable no-console
+// Copyright 2018-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 
-import { readFileSync } from 'fs';
+/* eslint-disable no-console */
+import * as fs from 'fs';
 import { join, relative } from 'path';
 import normalizePath from 'normalize-path';
-
-import { sync as fgSync } from 'fast-glob';
-import { forEach, some, values } from 'lodash';
+import pMap from 'p-map';
+import FastGlob from 'fast-glob';
 
 import { ExceptionType, REASONS, RuleType } from './types';
 import { ENCODING, loadJSON, sortExceptions } from './util';
 
 const ALL_REASONS = REASONS.join('|');
-const now = new Date();
-
-function getExceptionKey(exception: any) {
-  return `${exception.rule}-${exception.path}-${exception.lineNumber}`;
-}
-
-function createLookup(list: Array<any>) {
-  const lookup = Object.create(null);
-
-  forEach(list, exception => {
-    const key = getExceptionKey(exception);
-
-    if (lookup[key]) {
-      throw new Error(`Duplicate exception found for key ${key}`);
-    }
-
-    lookup[key] = exception;
-  });
-
-  return lookup;
-}
 
 const rulesPath = join(__dirname, 'rules.json');
 const exceptionsPath = join(__dirname, 'exceptions.json');
@@ -39,41 +19,44 @@ const basePath = join(__dirname, '../../..');
 
 const searchPattern = normalizePath(join(basePath, '**/*.{js,ts,tsx}'));
 
-const rules: Array<RuleType> = loadJSON(rulesPath);
-const exceptions: Array<ExceptionType> = loadJSON(exceptionsPath);
-const exceptionsLookup = createLookup(exceptions);
-let scannedCount = 0;
+const excludedFilesRegexps = [
+  '^release/',
+  '^preload.bundle.js(LICENSE.txt|map)?',
+  '^storybook-static/',
 
-const allSourceFiles = fgSync(searchPattern, { onlyFiles: true });
-
-const results: Array<ExceptionType> = [];
-
-const excludedFiles = [
   // Non-distributed files
   '\\.d\\.ts$',
 
   // High-traffic files in our project
-  '^js/models/messages.js',
-  '^js/views/conversation_view.js',
-  '^js/background.js',
+  '^app/.+(ts|js)',
+  '^ts/models/messages.js',
+  '^ts/models/messages.ts',
+  '^ts/models/conversations.js',
+  '^ts/models/conversations.ts',
+  '^ts/views/conversation_view.js',
+  '^ts/views/conversation_view.ts',
+  '^ts/background.js',
+  '^ts/background.ts',
   '^ts/Crypto.js',
   '^ts/Crypto.ts',
   '^ts/textsecure/MessageReceiver.js',
   '^ts/textsecure/MessageReceiver.ts',
+  '^ts/ConversationController.js',
+  '^ts/ConversationController.ts',
+  '^ts/SignalProtocolStore.ts',
+  '^ts/SignalProtocolStore.js',
+  '^ts/textsecure/[^./]+.ts',
+  '^ts/textsecure/[^./]+.js',
 
   // Generated files
   '^js/components.js',
   '^js/curve/',
-  '^js/libtextsecure.js',
   '^js/util_worker.js',
   '^libtextsecure/components.js',
   '^libtextsecure/test/test.js',
   '^sticker-creator/dist/bundle.js',
   '^test/test.js',
-
-  // From libsignal-protocol-javascript project
-  '^js/libsignal-protocol-worker.js',
-  '^libtextsecure/libsignal-protocol.js',
+  '^ts/test[^/]*/.+',
 
   // Copied from dependency
   '^js/Mp3LameEncoder.min.js',
@@ -81,6 +64,9 @@ const excludedFiles = [
   // Test files
   '^libtextsecure/test/.+',
   '^test/.+',
+
+  // Github workflows
+  '^.github/.+',
 
   // Modules we trust
   '^node_modules/core-js-pure/.+',
@@ -117,6 +103,7 @@ const excludedFiles = [
   '^node_modules/@svgr/.+',
   '^node_modules/@types/.+',
   '^node_modules/@webassemblyjs/.+',
+  '^node_modules/@electron/.+',
   '^node_modules/ajv/.+',
   '^node_modules/amdefine/.+',
   '^node_modules/ansi-colors/.+',
@@ -148,6 +135,7 @@ const excludedFiles = [
   '^node_modules/csso/.+',
   '^node_modules/degenerator/.+',
   '^node_modules/detect-port-alt/.+',
+  '^node_modules/dmg-builder/.+',
   '^node_modules/electron-builder/.+',
   '^node_modules/electron-chromedriver/.+',
   '^node_modules/electron-icon-maker/.+',
@@ -160,6 +148,7 @@ const excludedFiles = [
   '^node_modules/es6-shim/.+', // Currently only used in storybook
   '^node_modules/escodegen/.+',
   '^node_modules/eslint.+',
+  '^node_modules/@typescript-eslint.+',
   '^node_modules/esprima/.+',
   '^node_modules/express/.+',
   '^node_modules/file-loader/.+',
@@ -201,6 +190,7 @@ const excludedFiles = [
   '^node_modules/npm-run-all/.+',
   '^node_modules/nsp/.+',
   '^node_modules/nyc/.+',
+  '^node_modules/plist/.+',
   '^node_modules/phantomjs-prebuilt/.+',
   '^node_modules/postcss.+',
   '^node_modules/preserve/.+',
@@ -237,7 +227,6 @@ const excludedFiles = [
   '^node_modules/trough/.+',
   '^node_modules/ts-loader/.+',
   '^node_modules/ts-node/.+',
-  '^node_modules/tslint.+',
   '^node_modules/tweetnacl/.+',
   '^node_modules/typed-scss-modules/.+',
   '^node_modules/typescript/.+',
@@ -260,6 +249,7 @@ const excludedFiles = [
   '^node_modules/@storybook/.+',
   '^node_modules/cosmiconfig/.+',
   '^node_modules/create-emotion/.+',
+  '^node_modules/gzip-size/.+',
   '^node_modules/markdown-to-jsx/.+',
   '^node_modules/mini-css-extract-plugin/.+',
   '^node_modules/polished.+',
@@ -272,20 +262,13 @@ const excludedFiles = [
   '^node_modules/store2/.+',
   '^node_modules/telejson/.+',
 
-  // Used by Styleguidist
-  '^node_modules/cssnano/.+',
-  '^node_modules/gzip-size/.+',
-  '^node_modules/portfinder/.+',
-  '^node_modules/react-group/.+',
-  '^node_modules/react-styleguidist/.+',
-  '^node_modules/react-docgen-displayname-handler/.+',
-
   // Used by Webpack
   '^node_modules/css-select/.+', // Used by html-webpack-plugin
   '^node_modules/dotenv-webpack/.+',
   '^node_modules/follow-redirects/.+', // Used by webpack-dev-server
   '^node_modules/html-webpack-plugin/.+',
-  '^node_modules/node-forge/.+', // Used by webpack-dev-server
+  '^node_modules/selfsigned/.+', // Used by webpack-dev-server
+  '^node_modules/portfinder/.+',
   '^node_modules/renderkid/.+', // Used by html-webpack-plugin
   '^node_modules/spdy-transport/.+', // Used by webpack-dev-server
   '^node_modules/spdy/.+', // Used by webpack-dev-server
@@ -298,10 +281,10 @@ const excludedFiles = [
   '^node_modules/webpack-hot-middleware/.+',
   '^node_modules/webpack-merge/.+',
   '^node_modules/webpack/.+',
-];
+].map(str => new RegExp(str));
 
 function setupRules(allRules: Array<RuleType>) {
-  forEach(allRules, (rule, index) => {
+  allRules.forEach((rule: RuleType, index: number) => {
     if (!rule.name) {
       throw new Error(`Rule at index ${index} is missing a name`);
     }
@@ -310,92 +293,110 @@ function setupRules(allRules: Array<RuleType>) {
       throw new Error(`Rule '${rule.name}' is missing an expression`);
     }
 
+    // eslint-disable-next-line no-param-reassign
     rule.regex = new RegExp(rule.expression, 'g');
   });
 }
 
-setupRules(rules);
+async function main(): Promise<void> {
+  const now = new Date();
 
-forEach(allSourceFiles, file => {
-  const relativePath = relative(basePath, file).replace(/\\/g, '/');
-  if (
-    some(excludedFiles, excluded => {
-      const regex = new RegExp(excluded);
+  const rules: Array<RuleType> = loadJSON(rulesPath);
+  setupRules(rules);
 
-      return regex.test(relativePath);
-    })
-  ) {
-    return;
+  const exceptions: Array<ExceptionType> = loadJSON(exceptionsPath);
+  let unusedExceptions = exceptions;
+
+  const results: Array<ExceptionType> = [];
+  let scannedCount = 0;
+
+  await pMap(
+    await FastGlob(searchPattern, { onlyFiles: true }),
+    async (file: string) => {
+      const relativePath = relative(basePath, file).replace(/\\/g, '/');
+
+      const isFileExcluded = excludedFilesRegexps.some(excludedRegexp =>
+        excludedRegexp.test(relativePath)
+      );
+      if (isFileExcluded) {
+        return;
+      }
+
+      scannedCount += 1;
+
+      const lines = (await fs.promises.readFile(file, ENCODING)).split(/\r?\n/);
+
+      rules.forEach((rule: RuleType) => {
+        const excludedModules = rule.excludedModules || [];
+        if (excludedModules.some(module => relativePath.startsWith(module))) {
+          return;
+        }
+
+        lines.forEach((line: string) => {
+          if (!rule.regex.test(line)) {
+            return;
+          }
+          // recreate this rule since it has g flag, and carries local state
+          if (rule.expression) {
+            // eslint-disable-next-line no-param-reassign
+            rule.regex = new RegExp(rule.expression, 'g');
+          }
+
+          const matchedException = unusedExceptions.find(
+            exception =>
+              exception.rule === rule.name &&
+              exception.path === relativePath &&
+              (line.length < 300
+                ? exception.line === line
+                : exception.line === undefined)
+          );
+
+          if (matchedException) {
+            unusedExceptions = unusedExceptions.filter(
+              exception => exception !== matchedException
+            );
+          } else {
+            results.push({
+              rule: rule.name,
+              path: relativePath,
+              line: line.length < 300 ? line : undefined,
+              reasonCategory: ALL_REASONS,
+              updated: now.toJSON(),
+              reasonDetail: '<optional>',
+            });
+          }
+        });
+      });
+    },
+    // Without this, we may run into "too many open files" errors.
+    { concurrency: 100 }
+  );
+
+  console.log(
+    `${scannedCount} files scanned.`,
+    `${results.length} questionable lines,`,
+    `${unusedExceptions.length} unused exceptions,`,
+    `${exceptions.length} total exceptions.`
+  );
+
+  if (results.length === 0 && unusedExceptions.length === 0) {
+    process.exit();
   }
 
-  scannedCount += 1;
-
-  const fileContents = readFileSync(file, ENCODING);
-  const lines = fileContents.split('\n');
-
-  forEach(rules, (rule: RuleType) => {
-    const excludedModules = rule.excludedModules || [];
-    if (some(excludedModules, module => relativePath.startsWith(module))) {
-      return;
-    }
-
-    forEach(lines, (rawLine, lineIndex) => {
-      const line = rawLine.replace(/\r/g, '');
-      if (!rule.regex.test(line)) {
-        return;
-      }
-
-      const path = relativePath;
-      const lineNumber = lineIndex + 1;
-
-      const exceptionKey = getExceptionKey({
-        rule: rule.name,
-        path: relativePath,
-        lineNumber,
-      });
-
-      const exception = exceptionsLookup[exceptionKey];
-      if (exception && (!exception.line || exception.line === line)) {
-        // tslint:disable-next-line no-dynamic-delete
-        delete exceptionsLookup[exceptionKey];
-
-        return;
-      }
-
-      results.push({
-        rule: rule.name,
-        path,
-        line: line.length < 300 ? line : undefined,
-        lineNumber,
-        reasonCategory: ALL_REASONS,
-        updated: now.toJSON(),
-        reasonDetail: '<optional>',
-      });
-    });
-  });
-});
-
-const unusedExceptions = values(exceptionsLookup);
-
-console.log(
-  `${scannedCount} files scanned.`,
-  `${results.length} questionable lines,`,
-  `${unusedExceptions.length} unused exceptions,`,
-  `${exceptions.length} total exceptions.`
-);
-
-if (results.length === 0 && unusedExceptions.length === 0) {
-  process.exit();
-}
-
-console.log();
-console.log('Questionable lines:');
-console.log(JSON.stringify(sortExceptions(results), null, '  '));
-
-if (unusedExceptions.length) {
   console.log();
-  console.log('Unused exceptions!');
-  console.log(JSON.stringify(sortExceptions(unusedExceptions), null, '  '));
+  console.log('Questionable lines:');
+  console.log(JSON.stringify(sortExceptions(results), null, '  '));
+
+  if (unusedExceptions.length) {
+    console.log();
+    console.log('Unused exceptions!');
+    console.log(JSON.stringify(sortExceptions(unusedExceptions), null, '  '));
+  }
+
+  process.exit(1);
 }
 
-process.exit(1);
+main().catch(err => {
+  console.error(err);
+  process.exit(1);
+});

@@ -1,3 +1,6 @@
+// Copyright 2018-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import React from 'react';
 
 import { DocumentListItem } from './DocumentListItem';
@@ -6,17 +9,18 @@ import { MediaGridItem } from './MediaGridItem';
 import { MediaItemType } from '../../LightboxGallery';
 import { missingCaseError } from '../../../util/missingCaseError';
 import { LocalizerType } from '../../../types/Util';
+import { getMessageTimestamp } from '../../../util/getMessageTimestamp';
 
-interface Props {
+export type Props = {
   i18n: LocalizerType;
   header?: string;
   type: 'media' | 'documents';
   mediaItems: Array<MediaItemType>;
   onItemClick?: (event: ItemClickEvent) => void;
-}
+};
 
 export class AttachmentSection extends React.Component<Props> {
-  public render() {
+  public render(): JSX.Element {
     const { header } = this.props;
 
     return (
@@ -55,7 +59,7 @@ export class AttachmentSection extends React.Component<Props> {
               fileSize={attachment.size}
               shouldShowSeparator={shouldShowSeparator}
               onClick={onClick}
-              timestamp={message.received_at}
+              timestamp={getMessageTimestamp(message)}
             />
           );
         default:

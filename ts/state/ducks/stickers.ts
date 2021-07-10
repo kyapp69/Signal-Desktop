@@ -1,3 +1,6 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { Dictionary, omit, reject } from 'lodash';
 import dataInterface from '../../sql/Client';
 import {
@@ -21,11 +24,22 @@ export type StickerDBType = {
   readonly id: number;
   readonly packId: string;
 
-  readonly emoji: string;
-  readonly isCoverOnly: string;
+  readonly emoji: string | null;
+  readonly isCoverOnly: boolean;
   readonly lastUsed: number;
   readonly path: string;
 };
+
+export const StickerPackStatuses = [
+  'known',
+  'ephemeral',
+  'downloaded',
+  'installed',
+  'pending',
+  'error',
+] as const;
+
+export type StickerPackStatus = typeof StickerPackStatuses[number];
 
 export type StickerPackDBType = {
   readonly id: string;
@@ -38,13 +52,7 @@ export type StickerPackDBType = {
   readonly downloadAttempts: number;
   readonly installedAt: number | null;
   readonly lastUsed: number;
-  readonly status:
-    | 'known'
-    | 'ephemeral'
-    | 'downloaded'
-    | 'installed'
-    | 'pending'
-    | 'error';
+  readonly status: StickerPackStatus;
   readonly stickerCount: number;
   readonly stickers: Dictionary<StickerDBType>;
   readonly title: string;
@@ -67,7 +75,7 @@ export type StickersStateType = {
 export type StickerType = {
   readonly id: number;
   readonly packId: string;
-  readonly emoji: string;
+  readonly emoji: string | null;
   readonly url: string;
 };
 
@@ -80,13 +88,7 @@ export type StickerPackType = {
   readonly cover?: StickerType;
   readonly lastUsed: number;
   readonly attemptedStatus?: 'downloaded' | 'installed' | 'ephemeral';
-  readonly status:
-    | 'known'
-    | 'ephemeral'
-    | 'downloaded'
-    | 'installed'
-    | 'pending'
-    | 'error';
+  readonly status: StickerPackStatus;
   readonly stickers: Array<StickerType>;
   readonly stickerCount: number;
 };
@@ -223,7 +225,6 @@ function downloadStickerPack(
   const { finalStatus } = options || { finalStatus: undefined };
 
   // We're just kicking this off, since it will generate more redux events
-  // tslint:disable-next-line:no-floating-promises
   externalDownloadStickerPack(packId, packKey, { finalStatus });
 
   return {
@@ -371,13 +372,15 @@ function getEmptyState(): StickersStateType {
   };
 }
 
-// tslint:disable-next-line max-func-body-length
 export function reducer(
-  state: StickersStateType = getEmptyState(),
-  action: StickersActionType
+  state: Readonly<StickersStateType> = getEmptyState(),
+  action: Readonly<StickersActionType>
 ): StickersStateType {
   if (action.type === 'stickers/STICKER_PACK_ADDED') {
-    const { payload } = action;
+    // ts complains due to `stickers: {}` being overridden by the payload
+    // but without full confidence that that's the case, `any` and ignore
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { payload } = action as any;
     const newPack = {
       stickers: {},
       ...payload,

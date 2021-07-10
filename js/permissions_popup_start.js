@@ -1,8 +1,9 @@
-/* global $, Whisper, i18n */
+// Copyright 2018-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* global $, i18n */
 
 $(document).on('keydown', e => {
-  'use strict';
-
   if (e.keyCode === 27) {
     window.closePermissionsPopup();
   }
@@ -11,8 +12,6 @@ $(document).on('keydown', e => {
 const $body = $(document.body);
 
 async function applyTheme() {
-  'use strict';
-
   const theme = await window.getThemeSetting();
   $body.removeClass('light-theme');
   $body.removeClass('dark-theme');
@@ -21,22 +20,32 @@ async function applyTheme() {
 
 applyTheme();
 
-window.subscribeToSystemThemeChange(() => {
-  'use strict';
-
+window.SignalContext.nativeThemeListener.subscribe(() => {
   applyTheme();
 });
 
-window.view = new Whisper.ConfirmationDialogView({
-  message: i18n('audioPermissionNeeded'),
+let message;
+if (window.forCalling) {
+  if (window.forCamera) {
+    message = i18n('videoCallingPermissionNeeded');
+  } else {
+    message = i18n('audioCallingPermissionNeeded');
+  }
+} else {
+  message = i18n('audioPermissionNeeded');
+}
+
+window.showConfirmationDialog({
+  confirmStyle: 'affirmative',
+  message,
   okText: i18n('allowAccess'),
   resolve: () => {
-    'use strict';
-
-    window.setMediaPermissions(true);
+    if (!window.forCamera) {
+      window.setMediaPermissions(true);
+    } else {
+      window.setMediaCameraPermissions(true);
+    }
     window.closePermissionsPopup();
   },
   reject: window.closePermissionsPopup,
 });
-
-window.view.$el.appendTo($body);

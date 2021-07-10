@@ -1,19 +1,56 @@
-import React from 'react';
+// Copyright 2018-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+import React, {
+  FunctionComponent,
+  ReactNode,
+  useEffect,
+  useState,
+} from 'react';
 import classNames from 'classnames';
+import { noop } from 'lodash';
+
+import { Spinner } from './Spinner';
 
 import { getInitials } from '../util/getInitials';
-import { ColorType, LocalizerType } from '../types/Util';
+import { LocalizerType } from '../types/Util';
+import { AvatarColorType } from '../types/Colors';
+import * as log from '../logging/log';
+import { assert } from '../util/assert';
+import { shouldBlurAvatar } from '../util/shouldBlurAvatar';
 
-export interface Props {
+export enum AvatarBlur {
+  NoBlur,
+  BlurPicture,
+  BlurPictureWithClickToView,
+}
+
+export enum AvatarSize {
+  TWENTY_EIGHT = 28,
+  THIRTY_TWO = 32,
+  FIFTY_TWO = 52,
+  EIGHTY = 80,
+  NINETY_SIX = 96,
+  ONE_HUNDRED_TWELVE = 112,
+}
+
+export type Props = {
   avatarPath?: string;
-  color?: ColorType;
+  blur?: AvatarBlur;
+  color?: AvatarColorType;
+  loading?: boolean;
 
+  acceptedMessageRequest: boolean;
   conversationType: 'group' | 'direct';
-  noteToSelf?: boolean;
+  isMe: boolean;
   name?: string;
+  noteToSelf?: boolean;
   phoneNumber?: string;
   profileName?: string;
-  size: 28 | 32 | 52 | 80;
+  sharedGroupNames: Array<string>;
+  size: AvatarSize;
+  title: string;
+  unblurredAvatarPath?: string;
 
   onClick?: () => unknown;
 
@@ -21,157 +58,159 @@ export interface Props {
   innerRef?: React.Ref<HTMLDivElement>;
 
   i18n: LocalizerType;
-}
+} & Pick<React.HTMLProps<HTMLDivElement>, 'className'>;
 
-interface State {
-  imageBroken: boolean;
-  lastAvatarPath?: string;
-}
+const getDefaultBlur = (
+  ...args: Parameters<typeof shouldBlurAvatar>
+): AvatarBlur =>
+  shouldBlurAvatar(...args) ? AvatarBlur.BlurPicture : AvatarBlur.NoBlur;
 
-export class Avatar extends React.Component<Props, State> {
-  public handleImageErrorBound: () => void;
+export const Avatar: FunctionComponent<Props> = ({
+  acceptedMessageRequest,
+  avatarPath,
+  className,
+  color,
+  conversationType,
+  i18n,
+  isMe,
+  innerRef,
+  loading,
+  noteToSelf,
+  onClick,
+  sharedGroupNames,
+  size,
+  title,
+  unblurredAvatarPath,
+  blur = getDefaultBlur({
+    acceptedMessageRequest,
+    avatarPath,
+    isMe,
+    sharedGroupNames,
+    unblurredAvatarPath,
+  }),
+}) => {
+  const [imageBroken, setImageBroken] = useState(false);
 
-  public constructor(props: Props) {
-    super(props);
+  useEffect(() => {
+    setImageBroken(false);
+  }, [avatarPath]);
 
-    this.handleImageErrorBound = this.handleImageError.bind(this);
+  useEffect(() => {
+    if (!avatarPath) {
+      return noop;
+    }
 
-    this.state = {
-      lastAvatarPath: props.avatarPath,
-      imageBroken: false,
+    const image = new Image();
+    image.src = avatarPath;
+    image.onerror = () => {
+      log.warn('Avatar: Image failed to load; failing over to placeholder');
+      setImageBroken(true);
     };
-  }
 
-  public static getDerivedStateFromProps(props: Props, state: State): State {
-    if (props.avatarPath !== state.lastAvatarPath) {
-      return {
-        ...state,
-        lastAvatarPath: props.avatarPath,
-        imageBroken: false,
-      };
-    }
+    return () => {
+      image.onerror = noop;
+    };
+  }, [avatarPath]);
 
-    return state;
-  }
+  const initials = getInitials(title);
+  const hasImage = !noteToSelf && avatarPath && !imageBroken;
+  const shouldUseInitials =
+    !hasImage && conversationType === 'direct' && Boolean(initials);
 
-  public handleImageError() {
-    // tslint:disable-next-line no-console
-    console.log('Avatar: Image failed to load; failing over to placeholder');
-    this.setState({
-      imageBroken: true,
-    });
-  }
-
-  public renderImage() {
-    const { avatarPath, i18n, name, phoneNumber, profileName } = this.props;
-    const { imageBroken } = this.state;
-
-    if (!avatarPath || imageBroken) {
-      return null;
-    }
-
-    const title = `${name || phoneNumber}${
-      !name && profileName ? ` ~${profileName}` : ''
-    }`;
-
-    return (
-      <img
-        onError={this.handleImageErrorBound}
-        alt={i18n('contactAvatarAlt', [title])}
-        src={avatarPath}
-      />
-    );
-  }
-
-  public renderNoImage() {
-    const {
-      conversationType,
-      name,
-      noteToSelf,
-      profileName,
-      size,
-    } = this.props;
-
-    const initials = getInitials(name || profileName);
-    const isGroup = conversationType === 'group';
-
-    if (noteToSelf) {
-      return (
-        <div
-          className={classNames(
-            'module-avatar__icon',
-            'module-avatar__icon--note-to-self',
-            `module-avatar__icon--${size}`
-          )}
+  let contents: ReactNode;
+  if (loading) {
+    const svgSize = size < 40 ? 'small' : 'normal';
+    contents = (
+      <div className="module-Avatar__spinner-container">
+        <Spinner
+          size={`${size - 8}px`}
+          svgSize={svgSize}
+          direction="on-avatar"
         />
-      );
-    }
-
-    if (!isGroup && initials) {
-      return (
-        <div
-          className={classNames(
-            'module-avatar__label',
-            `module-avatar__label--${size}`
-          )}
-        >
-          {initials}
-        </div>
-      );
-    }
-
-    return (
-      <div
-        className={classNames(
-          'module-avatar__icon',
-          `module-avatar__icon--${conversationType}`,
-          `module-avatar__icon--${size}`
-        )}
-      />
-    );
-  }
-
-  public render() {
-    const {
-      avatarPath,
-      color,
-      innerRef,
-      noteToSelf,
-      onClick,
-      size,
-    } = this.props;
-    const { imageBroken } = this.state;
-
-    const hasImage = !noteToSelf && avatarPath && !imageBroken;
-
-    if (![28, 32, 52, 80].includes(size)) {
-      throw new Error(`Size ${size} is not supported!`);
-    }
-
-    let contents;
-
-    if (onClick) {
-      contents = (
-        <button className="module-avatar-button" onClick={onClick}>
-          {hasImage ? this.renderImage() : this.renderNoImage()}
-        </button>
-      );
-    } else {
-      contents = hasImage ? this.renderImage() : this.renderNoImage();
-    }
-
-    return (
-      <div
-        className={classNames(
-          'module-avatar',
-          `module-avatar--${size}`,
-          hasImage ? 'module-avatar--with-image' : 'module-avatar--no-image',
-          !hasImage ? `module-avatar--${color}` : null
-        )}
-        ref={innerRef}
-      >
-        {contents}
       </div>
     );
+  } else if (hasImage) {
+    assert(avatarPath, 'avatarPath should be defined here');
+
+    assert(
+      blur !== AvatarBlur.BlurPictureWithClickToView || size >= 100,
+      'Rendering "click to view" for a small avatar. This may not render correctly'
+    );
+
+    const isBlurred =
+      blur === AvatarBlur.BlurPicture ||
+      blur === AvatarBlur.BlurPictureWithClickToView;
+    contents = (
+      <>
+        <div
+          className="module-Avatar__image"
+          style={{
+            backgroundImage: `url('${encodeURI(avatarPath)}')`,
+            ...(isBlurred ? { filter: `blur(${Math.ceil(size / 2)}px)` } : {}),
+          }}
+        />
+        {blur === AvatarBlur.BlurPictureWithClickToView && (
+          <div className="module-Avatar__click-to-view">{i18n('view')}</div>
+        )}
+      </>
+    );
+  } else if (noteToSelf) {
+    contents = (
+      <div
+        className={classNames(
+          'module-Avatar__icon',
+          'module-Avatar__icon--note-to-self'
+        )}
+      />
+    );
+  } else if (shouldUseInitials) {
+    contents = (
+      <div
+        aria-hidden="true"
+        className="module-Avatar__label"
+        style={{ fontSize: Math.ceil(size * 0.5) }}
+      >
+        {initials}
+      </div>
+    );
+  } else {
+    contents = (
+      <div
+        className={classNames(
+          'module-Avatar__icon',
+          `module-Avatar__icon--${conversationType}`
+        )}
+      />
+    );
   }
-}
+
+  if (onClick) {
+    contents = (
+      <button className="module-Avatar__button" type="button" onClick={onClick}>
+        {contents}
+      </button>
+    );
+  }
+
+  return (
+    <div
+      aria-label={i18n('contactAvatarAlt', [title])}
+      className={classNames(
+        'module-Avatar',
+        hasImage ? 'module-Avatar--with-image' : 'module-Avatar--no-image',
+        {
+          [`module-Avatar--${color}`]: !hasImage,
+        },
+        className
+      )}
+      style={{
+        minWidth: size,
+        width: size,
+        height: size,
+      }}
+      ref={innerRef}
+    >
+      {contents}
+    </div>
+  );
+};

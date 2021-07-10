@@ -1,3 +1,6 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { StickerPackType } from '../../state/ducks/stickers';
 
 // This function exists to force stickers to be counted consistently wherever
@@ -7,7 +10,7 @@ export function countStickers(o: {
   blessedPacks: ReadonlyArray<StickerPackType>;
   installedPacks: ReadonlyArray<StickerPackType>;
   receivedPacks: ReadonlyArray<StickerPackType>;
-}) {
+}): number {
   return (
     o.knownPacks.length +
     o.blessedPacks.length +

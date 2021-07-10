@@ -1,3 +1,6 @@
+<!-- Copyright 2015-2020 Signal Messenger, LLC -->
+<!-- SPDX-License-Identifier: AGPL-3.0-only -->
+
 # Contributor Guidelines
 
 ## Advice for new contributors
@@ -22,12 +25,11 @@ you can just run `nvm use` in the project directory and it will switch to the pr
 desired Node.js version. [nvm for windows](https://github.com/coreybutler/nvm-windows) is
 still useful, but it doesn't support `.nvmrc` files.
 
-Then you need `git`, if you don't have that yet: https://git-scm.com/
+Then you need [`git`](https://git-scm.com/) and [`git-lfs`](https://github.com/git-lfs/git-lfs/wiki/Installation), if you don't have those yet.
 
 ### macOS
 
-1.  Install the [Xcode Command-Line Tools](http://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/).
-2.  Ensure [git-lfs](https://github.com/git-lfs/git-lfs/wiki/Installation) is installed. You'll need it to to checkout and install the node requirements. Install with `brew install git-lfs`
+Install the [Xcode Command-Line Tools](http://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/).
 
 ### Windows
 
@@ -36,15 +38,16 @@ Then you need `git`, if you don't have that yet: https://git-scm.com/
       https://www.microsoft.com/en-us/download/details.aspx?id=40773
     - Install Windows SDK version 8.1: https://developer.microsoft.com/en-us/windows/downloads/sdk-archive
 1.  Install _Windows Build Tools_: Open the [Command Prompt (`cmd.exe`) as Administrator](<https://technet.microsoft.com/en-us/library/cc947813(v=ws.10).aspx>)
-    and run: `npm install --global --production --add-python-to-path windows-build-tools`
+    and run: `npm install --vs2015 --global --production --add-python-to-path windows-build-tools`
 
 ### Linux
 
 1.  Pick your favorite package manager.
-1.  Install `python`
+1.  Install `python` (Python 2.7+)
 1.  Install `gcc`
 1.  Install `g++`
 1.  Install `make`
+1.  Install `git-lfs`
 
 ### All platforms
 
@@ -53,6 +56,7 @@ Now, run these commands in your preferred terminal in a good directory for devel
 ```
 git clone https://github.com/signalapp/Signal-Desktop.git
 cd Signal-Desktop
+git-lfs install                # Setup Git LFS.
 npm install --global yarn      # (only if you don’t already have `yarn`)
 yarn install --frozen-lockfile # Install and build dependencies (this will take a while)
 yarn grunt                     # Generate final JS and CSS assets
@@ -76,6 +80,8 @@ while you make changes:
 ```
 yarn grunt dev # runs until you stop it, re-generating built assets on file changes
 ```
+
+If you miss the `git-lfs` step, run `yarn cache clean` and remove `node_modules` before trying again.
 
 ### webpack
 
@@ -113,14 +119,15 @@ Sadly, this default setup results in no contacts and no message history, an enti
 empty application. But you can use the information from your production install of Signal
 Desktop to populate your testing application!
 
-First, find your application data:
+First, exit both production and development apps (In macOS - literally quit the apps).
+Second, find your application data:
 
 - macOS: `~/Library/Application Support/Signal`
 - Linux: `~/.config/Signal`
 - Windows 10: `C:\Users\<YourName>\AppData\Roaming\Signal`
 
-Now make a copy of this production data directory in the same place, and call it
-`Signal-development`. Now start up the development version of the app as normal,
+Now make a copy of this production data directory in the same directory (a sibling of the Signal
+directory), and call it `Signal-development`. Now start up the development version of the app as normal,
 and you'll see all of your contacts and messages!
 
 You'll notice a prompt to re-link, because your production credentials won't work on
@@ -176,10 +183,10 @@ Please write tests! Our testing framework is
 The easiest way to run all tests at once is `yarn test`.
 
 You can browse tests from the command line with `grunt unit-tests` or in an
-interactive session with `NODE_ENV=test yarn run start`. The `libtextsecure` tests are run
-similarly: `grunt lib-unit-tests` and `NODE_ENV=test-lib yarn run start`. You can tweak
-the appropriate `test.html` for both of these runs to get code coverage numbers via
-`blanket.js` (it's shown at the bottom of the web page when the run is complete).
+interactive session with `NODE_ENV=test yarn run start`.
+
+If you want to run the `libtextsecure` tests, you can run `yarn run test-electron`,
+which also runs the unit tests.
 
 To run Node.js tests, you can run `yarn test-server` from the command line. You can get
 code coverage numbers for this kind of run via `yarn test-server-coverage`, then display
@@ -251,27 +258,15 @@ and [iOS](https://github.com/signalapp/Signal-iOS/blob/master/BUILDING.md) proje
 
 Then you can set up your development build of Signal Desktop as normal. If you've already
 set up as a standalone install, you can switch by opening the DevTools (View -> Toggle
-Developer Tools) and entering this into the Console and pressing enter: `window.owsDesktopApp.appView.openInstaller();`
+Developer Tools) and entering this into the Console and pressing enter: `window.reduxActions.app.openInstaller();`
 
 ## Changing to production
 
 If you're completely sure that your changes will have no impact to the production servers,
 you can connect your development build to the production server by putting a file called
-`local-development.json` in the `config` directory with the same contents as
-`production.json`, except that you should also remove the `updatesEnabled` setting so that
-the auto update infrastructure doesn't kick in while you are developing.
-`local-development.json` should look something like this:
-
-```json
-{
-  "serverUrl": "https://textsecure-service.whispersystems.org",
-  "serverTrustRoot": "SOME_ALPHANUMERIC_STRING_MATCHING_PRODUCTION_JSON",
-  "cdn": {
-    "0": "https://cdn.signal.org",
-    "2": "https://cdn2.signal.org"
-  }
-}
-```
+`local-development.json` in the `config` directory. It should be a copy of
+`production.json`, but you should set `updatesEnabled` to `false` so that the auto-update
+infrastructure doesn't kick in while you're developing.
 
 **Beware:** Setting up standalone with your primary phone number when connected to the
 production servers will _unregister_ your mobile device! All messages from your contacts

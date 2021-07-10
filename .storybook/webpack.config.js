@@ -1,3 +1,6 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 module.exports = ({ config }) => {
   config.entry.unshift(
     '!!style-loader!css-loader!sanitize.css',
@@ -21,6 +24,10 @@ module.exports = ({ config }) => {
   );
 
   config.resolve.extensions = ['.tsx', '.ts', '.jsx', '.js'];
+
+  config.externals = {
+    net: 'net',
+  };
 
   return config;
 };

@@ -1,9 +1,8 @@
+// Copyright 2018-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import React from 'react';
 
-import {
-  isImageTypeSupported,
-  isVideoTypeSupported,
-} from '../../util/GoogleChrome';
 import { Image } from './Image';
 import { StagedGenericAttachment } from './StagedGenericAttachment';
 import { StagedPlaceholderAttachment } from './StagedPlaceholderAttachment';
@@ -12,105 +11,104 @@ import {
   areAllAttachmentsVisual,
   AttachmentType,
   getUrl,
+  isImageAttachment,
   isVideoAttachment,
 } from '../../types/Attachment';
 
-interface Props {
+export type Props = {
   attachments: Array<AttachmentType>;
   i18n: LocalizerType;
-  // onError: () => void;
-  onClickAttachment: (attachment: AttachmentType) => void;
+  onAddAttachment?: () => void;
+  onClickAttachment?: (attachment: AttachmentType) => void;
+  onClose?: () => void;
   onCloseAttachment: (attachment: AttachmentType) => void;
-  onAddAttachment: () => void;
-  onClose: () => void;
-}
+};
 
 const IMAGE_WIDTH = 120;
 const IMAGE_HEIGHT = 120;
 
-export class AttachmentList extends React.Component<Props> {
-  // tslint:disable-next-line max-func-body-length */
-  public render() {
-    const {
-      attachments,
-      i18n,
-      onAddAttachment,
-      onClickAttachment,
-      onCloseAttachment,
-      onClose,
-    } = this.props;
+// This is a 1x1 black square.
+const BLANK_VIDEO_THUMBNAIL =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQAAAAA3bvkkAAAACklEQVR42mNiAAAABgADm78GJQAAAABJRU5ErkJggg==';
 
-    if (!attachments.length) {
-      return null;
-    }
+export const AttachmentList = ({
+  attachments,
+  i18n,
+  onAddAttachment,
+  onClickAttachment,
+  onCloseAttachment,
+  onClose,
+}: Props): JSX.Element | null => {
+  if (!attachments.length) {
+    return null;
+  }
 
-    const allVisualAttachments = areAllAttachmentsVisual(attachments);
+  const allVisualAttachments = areAllAttachmentsVisual(attachments);
 
-    return (
-      <div className="module-attachments">
-        {attachments.length > 1 ? (
-          <div className="module-attachments__header">
-            <button
-              onClick={onClose}
-              className="module-attachments__close-button"
-            />
-          </div>
-        ) : null}
-        <div className="module-attachments__rail">
-          {(attachments || []).map((attachment, index) => {
-            const { contentType } = attachment;
-            if (
-              isImageTypeSupported(contentType) ||
-              isVideoTypeSupported(contentType)
-            ) {
-              const imageKey =
-                getUrl(attachment) || attachment.fileName || index;
-              const clickCallback =
-                attachments.length > 1 ? onClickAttachment : undefined;
+  return (
+    <div className="module-attachments">
+      {onClose && attachments.length > 1 ? (
+        <div className="module-attachments__header">
+          <button
+            type="button"
+            onClick={onClose}
+            className="module-attachments__close-button"
+            aria-label={i18n('close')}
+          />
+        </div>
+      ) : null}
+      <div className="module-attachments__rail">
+        {(attachments || []).map((attachment, index) => {
+          const url = getUrl(attachment);
 
-              return (
-                <Image
-                  key={imageKey}
-                  alt={i18n('stagedImageAttachment', [
-                    getUrl(attachment) || attachment.fileName,
-                  ])}
-                  i18n={i18n}
-                  attachment={attachment}
-                  softCorners={true}
-                  playIconOverlay={isVideoAttachment(attachment)}
-                  height={IMAGE_HEIGHT}
-                  width={IMAGE_WIDTH}
-                  url={getUrl(attachment)}
-                  closeButton={true}
-                  onClick={clickCallback}
-                  onClickClose={onCloseAttachment}
-                  onError={() => {
-                    onCloseAttachment(attachment);
-                  }}
-                />
-              );
-            }
+          const key = url || attachment.fileName || index;
 
-            const genericKey =
-              getUrl(attachment) || attachment.fileName || index;
+          const isImage = isImageAttachment(attachment);
+          const isVideo = isVideoAttachment(attachment);
+
+          if (isImage || isVideo) {
+            const clickCallback =
+              attachments.length > 1 ? onClickAttachment : undefined;
+
+            const imageUrl =
+              isVideo && !attachment.screenshot ? BLANK_VIDEO_THUMBNAIL : url;
 
             return (
-              <StagedGenericAttachment
-                key={genericKey}
-                attachment={attachment}
+              <Image
+                key={key}
+                alt={i18n('stagedImageAttachment', [
+                  attachment.fileName || url || index.toString(),
+                ])}
                 i18n={i18n}
-                onClose={onCloseAttachment}
+                attachment={attachment}
+                softCorners
+                playIconOverlay={isVideo}
+                height={IMAGE_HEIGHT}
+                width={IMAGE_WIDTH}
+                url={imageUrl}
+                closeButton
+                onClick={clickCallback}
+                onClickClose={onCloseAttachment}
+                onError={() => {
+                  onCloseAttachment(attachment);
+                }}
               />
             );
-          })}
-          {allVisualAttachments ? (
-            <StagedPlaceholderAttachment
-              onClick={onAddAttachment}
+          }
+
+          return (
+            <StagedGenericAttachment
+              key={key}
+              attachment={attachment}
               i18n={i18n}
+              onClose={onCloseAttachment}
             />
-          ) : null}
-        </div>
+          );
+        })}
+        {allVisualAttachments && onAddAttachment ? (
+          <StagedPlaceholderAttachment onClick={onAddAttachment} i18n={i18n} />
+        ) : null}
       </div>
-    );
-  }
-}
+    </div>
+  );
+};

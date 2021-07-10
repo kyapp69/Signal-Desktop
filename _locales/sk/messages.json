@@ -1,7 +1,19 @@
 {
+    "softwareAcknowledgments": {
+        "message": "Použitý softvér",
+        "description": "Shown in the about box for the link to software acknowledgments"
+    },
+    "privacyPolicy": {
+        "message": "Podmienky a Ochrana osobných údajov",
+        "description": "Shown in the about box for the link to https://signal.org/legal"
+    },
     "copyErrorAndQuit": {
         "message": "Kopírovať a ukončiť",
         "description": "Shown in the top-level error popup, allowing user to copy the error text and close the app"
+    },
+    "unknownContact": {
+        "message": "Neznámy kontakt",
+        "description": "Shown as the name of a contact if we don't have any displayable information about them"
     },
     "unknownGroup": {
         "message": "Neznáma skupina",
@@ -13,7 +25,7 @@
     },
     "deleteAndRestart": {
         "message": "Vymazať všetky dáta a reštartovať",
-        "description": "Shown in a popup if the database cannot start up properly; allows user to dalete database and restart"
+        "description": "Shown in a popup if the database cannot start up properly; allows user to delete database and restart"
     },
     "mainMenuFile": {
         "message": "&Súbor",
@@ -42,6 +54,10 @@
     "mainMenuSettings": {
         "message": "Nastavenia...",
         "description": "The label that is used for the Preferences menu in the program main menu. This should be consistent with the standard naming for ‘Preferences’ on the operating system."
+    },
+    "appMenuServices": {
+        "message": "Služby",
+        "description": "Application menu item for macOS 'Services'"
     },
     "appMenuHide": {
         "message": "Skryť",
@@ -89,7 +105,7 @@
     },
     "editMenuSelectAll": {
         "message": "Vybrať všetko",
-        "description": "Edit menu comand to select all of the text in selected text box"
+        "description": "Edit menu command to select all of the text in selected text box"
     },
     "editMenuStartSpeaking": {
         "message": "Začať hovoriť",
@@ -113,7 +129,7 @@
     },
     "windowMenuBringAllToFront": {
         "message": "Priviesť všetko do popredia",
-        "description": "Window menu command to bring all windows of current applicatinon to front"
+        "description": "Window menu command to bring all windows of current application to front"
     },
     "viewMenuResetZoom": {
         "message": "Skutočná veľkosť",
@@ -143,9 +159,17 @@
         "message": "Nastaviť ako Samostatné Zariadenie",
         "description": "Only available on development modes, menu option to open up the standalone device setup sequence"
     },
+    "messageContextMenuButton": {
+        "message": "Viac akcií",
+        "description": "Label for context button next to each message"
+    },
     "contextMenuCopyLink": {
         "message": "Kopírovať odkaz",
         "description": "Shown in the context menu for a link to indicate that the user can copy the link"
+    },
+    "contextMenuCopyImage": {
+        "message": "Skopírovať obrázok",
+        "description": "Shown in the context menu for an image to indicate that the user can copy the image"
     },
     "contextMenuNoSuggestions": {
         "message": "Žiadne návrhy",
@@ -153,6 +177,10 @@
     },
     "avatarMenuViewArchive": {
         "message": "Zobraziť archív",
+        "description": "One of the menu options available in the Avatar Popup menu"
+    },
+    "avatarMenuChatColors": {
+        "message": "Farba chatu",
         "description": "One of the menu options available in the Avatar Popup menu"
     },
     "loading": {
@@ -177,17 +205,41 @@
         "message": "Archivované konverzácie",
         "description": "Shown in place of the search box when showing archived conversation list"
     },
+    "LeftPane--pinned": {
+        "message": "Pripnuté",
+        "description": "Shown as a header for pinned conversations in the left pane"
+    },
+    "LeftPane--chats": {
+        "message": "Chat",
+        "description": "Shown as a header for non-pinned conversations in the left pane"
+    },
     "archiveHelperText": {
         "message": "Tieto konverzácie sú archivované a v priečinku s doručenými správami sa objavia iba po prijatí nových správ.",
-        "description": "Shown at the top of the archived converations list in the left pane"
+        "description": "Shown at the top of the archived conversations list in the left pane"
     },
     "archiveConversation": {
-        "message": "Archivovať konverzáciu",
+        "message": "Archív",
         "description": "Shown in menu for conversation, and moves conversation out of main conversation list"
     },
+    "markUnread": {
+        "message": "Označ ako neprečítané",
+        "description": "Shown in menu for conversation, and marks conversation as unread"
+    },
     "moveConversationToInbox": {
-        "message": "Presunúť konverzáciu do doručených",
+        "message": "Vybrať z archívu",
         "description": "Undoes Archive Conversation action, and moves archived conversation back to the main conversation list"
+    },
+    "pinConversation": {
+        "message": "Pripnúť konverzáciu",
+        "description": "Shown in menu for conversation, and pins the conversation to the top of the conversation list"
+    },
+    "unpinConversation": {
+        "message": "Odopnúť konverzáciu",
+        "description": "Undoes Archive Conversation action, and unpins the conversation from the top of the conversation list"
+    },
+    "pinnedConversationsFull": {
+        "message": "Môžete pripnúť najviac 4 chaty",
+        "description": ""
     },
     "chooseDirectory": {
         "message": "Zvoľte priečinok",
@@ -264,8 +316,12 @@
         "description": "Used as a label on a button allowing user to see more information"
     },
     "youLeftTheGroup": {
-        "message": "You left the group.",
+        "message": "Už nie ste členom tejto skupiny.",
         "description": "Displayed when a user can't send a message because they have left the group"
+    },
+    "invalidConversation": {
+        "message": "Táto skupina je neplatná. Prosím, vytvorte novú skupinu.",
+        "description": "Displayed when a user can't send a message because something has gone wrong in the conversation."
     },
     "scrollDown": {
         "message": "Späť na koniec",
@@ -337,50 +393,34 @@
         "message": "Vaše bezpečnostné čísla sa s týmito členmi skupiny od posledného overenia zmenili. Kliknite na člena skupiny pre zobrazenie nového bezpečnostného čísla. ",
         "description": "When there are multiple previously-verified group members with safety number changes, a banner will be shown. The list of contacts with safety number changes is shown, and this text introduces that list."
     },
-    "changedSinceVerifiedMultiple": {
-        "message": "Vaše bezpečnostné čísla sa s viacerými členmi skupiny od posledného overenia zmenili. Môže to znamenať, že sa niekto snaží odpočúvať vašu komunikáciu, alebo si len znovu nainštalovali Signal. ",
-        "description": "Shown on confirmation dialog when user attempts to send a message"
-    },
-    "changedSinceVerified": {
-        "message": "Vaše bezpečnostné číslo s $name$ sa od posledného overenia zmenilo. Môže to znamenať, že sa niekto snaží odpočúvať vašu komunikáciu, alebo si len $name$ znovu nainštaloval/a Signal.",
-        "description": "Shown on confirmation dialog when user attempts to send a message",
-        "placeholders": {
-            "name": {
-                "content": "$1",
-                "example": "Bob"
-            }
-        }
-    },
     "changedRightAfterVerify": {
-        "message": "Bezpečnostné číslo ktoré sa chystáte overiť sa zmenilo. Prosím, skontrolujte vaše nové bezpečnostné číslo s $name$. Táto zmena môže znamenať, že sa niekto snaží odpočúvať vašu komunikáciu, alebo si len $name$ znovu nainštaloval/a Signal.",
+        "message": "Bezpečnostné číslo ktoré sa chystáte overiť sa zmenilo. Prosím, skontrolujte vaše nové bezpečnostné číslo s $name1$. Táto zmena môže znamenať, že sa niekto snaží odpočúvať vašu komunikáciu, alebo si len $name2$ znovu nainštaloval/a Signal.",
         "description": "Shown on the safety number screen when the user has selected to verify/unverify a contact's safety number, and we immediately discover a safety number change",
         "placeholders": {
-            "name": {
+            "name1": {
                 "content": "$1",
+                "example": "Bob"
+            },
+            "name2": {
+                "content": "$2",
                 "example": "Bob"
             }
         }
     },
-    "changedRecentlyMultiple": {
-        "message": "Vaše bezpečnostné čísla sa s viacerými členmi skupiny nedávno zmenili. Môže to znamenať, že sa niekto snaží odpočúvať vašu komunikáciu, alebo si len znovu nainštalovali Signal.",
+    "changedVerificationWarning": {
+        "message": "Nasledujúce osoby si možno preinštalovali alebo zmenili zariadenia. Overte si s nimi vaše bezpečnostné číslo pre zaistenie súkromia.",
         "description": "Shown on confirmation dialog when user attempts to send a message"
     },
-    "changedRecently": {
-        "message": "Vaše bezpečnostné číslo s $name$ sa nedávno zmenilo. Môže to znamenať, že sa niekto snaží odpočúvať vašu komunikáciu, alebo si len $name$ znovu nainštaloval/a Signal. ",
-        "description": "Shown on confirmation dialog when user attempts to send a message",
-        "placeholders": {
-            "name": {
-                "content": "$1",
-                "example": "Bob"
-            }
-        }
-    },
     "identityKeyErrorOnSend": {
-        "message": "Vaše bezpečnostné číslo s $name$ sa zmenilo. Môže to znamenať, že sa niekto snaží odpočúvať vašu komunikáciu, alebo si $name$ len znovu nainštaloval/a Signal. V prípade potreby bezpečnostné číslo opätovne overte.",
+        "message": "Vaše bezpečnostné číslo s $name1$ sa zmenilo. Môže to znamenať, že sa niekto snaží odpočúvať vašu komunikáciu, alebo si len $name2$ znovu nainštaloval/a Signal. V prípade potreby bezpečnostné číslo tohto kontaktu znovu overte.",
         "description": "Shown when user clicks on a failed recipient in the message detail view after an identity key change",
         "placeholders": {
-            "name": {
+            "name1": {
                 "content": "$1",
+                "example": "Bob"
+            },
+            "name2": {
+                "content": "$2",
                 "example": "Bob"
             }
         }
@@ -389,9 +429,17 @@
         "message": "Napriek tomu poslať",
         "description": "Used on a warning dialog to make it clear that it might be risky to send the message."
     },
+    "callAnyway": {
+        "message": "Aj tak zavolať",
+        "description": "Used on a warning dialog to make it clear that it might be risky to call the conversation."
+    },
+    "continueCall": {
+        "message": "Pokračovať v hovore",
+        "description": "Used on a warning dialog to make it clear that it might be risky to continue the group call."
+    },
     "noLongerVerified": {
         "message": "Vaše bezpečnosné číslo s $name$ sa zmenilo, a už nie je overené. Kliknite pre zobrazenie. ",
-        "description": "Shown in converation banner when user's safety number has changed, but they were previously verified.",
+        "description": "Shown in conversation banner when user's safety number has changed, but they were previously verified.",
         "placeholders": {
             "name": {
                 "content": "$1",
@@ -410,6 +458,18 @@
     "debugLogError": {
         "message": "Pri nahrávaní sa stala chyba! Prosím, zvážte manuálne pridanie logu do hlásenia o chybe.",
         "description": ""
+    },
+    "debugLogCopy": {
+        "message": "Kopírovať",
+        "description": "Shown as the text for the copy button on the debug log screen"
+    },
+    "debugLogCopyAlt": {
+        "message": "Skopírovať odkaz do schránky",
+        "description": "Shown as the alt text for the copy button on the debug log screen"
+    },
+    "debugLogLinkCopied": {
+        "message": "Odkaz bol skopírovaný do schránky",
+        "description": "Shown in a toast to let the user know that the link to the debug log has been copied to their clipboard"
     },
     "reportIssue": {
         "message": "Nahlásiť problém",
@@ -478,6 +538,10 @@
     "mediaEmptyState": {
         "message": "Táto konverzácia neobsahuje žiadne médiá",
         "description": "Message shown to user in the media gallery when there are no messages with media attachments (images or video)"
+    },
+    "allMedia": {
+        "message": "Všetky médiá",
+        "description": "Header for the media gallery"
     },
     "documents": {
         "message": "Dokumenty",
@@ -561,7 +625,7 @@
         "message": "Ak príloha neobsahuje obrázok, limit je jedna príloha na správu.",
         "description": "An error popup when the user has attempted to add an attachment"
     },
-    "cannotMixImageAdnNonImageAttachments": {
+    "cannotMixImageAndNonImageAttachments": {
         "message": "V jednej správe nemôže byť súčasne príloha s obrázkom a príloha bez obrázku.",
         "description": "An error popup when the user has attempted to add an attachment"
     },
@@ -613,6 +677,10 @@
         "message": "Ukázať klávesové skratky",
         "description": "Item under the help menu, pops up a screen showing the application's keyboard shortcuts"
     },
+    "contactUs": {
+        "message": "Kontaktujte nás",
+        "description": "Item under the help menu, takes you to the contact us support page"
+    },
     "goToReleaseNotes": {
         "message": "Navštíviť Poznámky k Vydaniu",
         "description": "Item under the help menu, takes you to GitHub page for release notes"
@@ -625,9 +693,9 @@
         "message": "Navštíviť Stránku Podpory",
         "description": "Item under the Help menu, takes you to the support page"
     },
-    "menuReportIssue": {
-        "message": "Nahlásiť Problém",
-        "description": "Item under the Help menu, takes you to GitHub new issue form (title case)"
+    "joinTheBeta": {
+        "message": "Vyskúšať Beta verziu",
+        "description": "Item under the Help menu, takes you to an article describing how to install the beta release of Signal Desktop"
     },
     "signalDesktopPreferences": {
         "message": "Nastavenia Signal Desktop",
@@ -640,6 +708,10 @@
     "aboutSignalDesktop": {
         "message": "O aplikácii Signal Desktop",
         "description": "Item under the Help menu, which opens a small about window"
+    },
+    "screenShareWindow": {
+        "message": "Zdieľaná obrazovka",
+        "description": "Title for screen sharing window"
     },
     "speech": {
         "message": "Reč",
@@ -665,6 +737,10 @@
         "message": "Hľadať",
         "description": "Placeholder text in the search input"
     },
+    "clearSearch": {
+        "message": "Vyčistiť vyhľadávanie",
+        "description": "Aria label for clear search button"
+    },
     "searchIn": {
         "message": "Hľadať v $conversationName$",
         "description": "Shown in the search box before text is entered when searching in a specific conversation",
@@ -685,11 +761,19 @@
             }
         }
     },
+    "noSearchResults--sms-only": {
+        "message": "Kontakty pre SMS/MMS nie sú k dispozícii na Signal Desktop.",
+        "description": "Shown in the search left pane when no results were found and primary device has SMS/MMS handling enabled"
+    },
     "noSearchResultsInConversation": {
         "message": "Žiadne výsledky pre „$searchTerm$“ v $conversationName$",
         "description": "Shown in the search left pane when no results were found",
         "placeholders": {
             "searchTerm": {
+                "content": "$1",
+                "example": "dog"
+            },
+            "conversationName": {
                 "content": "$2",
                 "example": "Friends"
             }
@@ -701,6 +785,10 @@
     },
     "contactsHeader": {
         "message": "Kontakty",
+        "description": "Shown to separate the types of search results"
+    },
+    "groupsHeader": {
+        "message": "Skupiny",
         "description": "Shown to separate the types of search results"
     },
     "messagesHeader": {
@@ -717,7 +805,11 @@
     },
     "typingAlt": {
         "message": "Animácia písania pre túto konverzáciu",
-        "description": "Used as the 'title' attibute for the typing animation"
+        "description": "Used as the 'title' attribute for the typing animation"
+    },
+    "contactInAddressBook": {
+        "message": "Táto osoba je vo vašich kontaktoch.",
+        "description": "Description of icon denoting that contact is from your address book"
     },
     "contactAvatarAlt": {
         "message": "Avatar kontaktu $name$",
@@ -831,11 +923,19 @@
     },
     "audioPermissionNeeded": {
         "message": "Pre posielanie zvukových správ, povoľte aplikácii Signal Desktop prístup k mikrofónu.",
-        "description": "Shown if the user attempts to send an audio message without audio permssions turned on"
+        "description": "Shown if the user attempts to send an audio message without audio permissions turned on"
+    },
+    "audioCallingPermissionNeeded": {
+        "message": "Pre volania musíte programu Signal Desktop povoliť prístup k mikrofónu.",
+        "description": "Shown if the user attempts access the microphone for calling without audio permissions turned on"
+    },
+    "videoCallingPermissionNeeded": {
+        "message": "Pre videohovory musíte programu Signal Desktop povoliť prístup ku kamere.",
+        "description": "Shown if the user attempts access the camera for video calling without video permissions turned on"
     },
     "allowAccess": {
         "message": "Povoliť prístup",
-        "description": "Button shown in popup asking to enable microphon/video permissions to send audio messages"
+        "description": "Button shown in popup asking to enable microphone/video permissions to send audio messages"
     },
     "showSettings": {
         "message": "Otvoriť nastavenia",
@@ -909,9 +1009,25 @@
         "message": "Vymazať",
         "description": ""
     },
-    "deleteWarning": {
-        "message": "Ste si istý? Kliknutím na \"Zmazať\" natrvalo odstránite túto správu iba z tohto zariadenia.",
+    "accept": {
+        "message": "Potvrdiť",
         "description": ""
+    },
+    "on": {
+        "message": "Zapnuté",
+        "description": "Label for when something is turned on"
+    },
+    "off": {
+        "message": "Vypnuté",
+        "description": "Label for when something is turned off"
+    },
+    "deleteWarning": {
+        "message": "Táto správa bude z tohto zariadenia zmazaná.",
+        "description": "Text shown in the confirmation dialog for deleting a message locally"
+    },
+    "deleteForEveryoneWarning": {
+        "message": "Táto správa sa vymaže všetkým v chate, čo používajú modernú verziu aplikácie Signal. Členovia budú vidieť, že ste vymazali správu.",
+        "description": "Text shown in the confirmation dialog for deleting a message for everyone"
     },
     "deleteThisMessage": {
         "message": "Vymazať túto správu",
@@ -957,8 +1073,8 @@
         "message": "Zobraziť bezpečnostné číslo",
         "description": ""
     },
-    "viewAllMedia": {
-        "message": "Zobraziť médiá",
+    "viewRecentMedia": {
+        "message": "Zobraziť nedávne médiá",
         "description": "This is a menu item for viewing all media (images + video) in a conversation, using the imperative case, as in a command."
     },
     "verifyHelp": {
@@ -975,20 +1091,36 @@
         "message": "S týmto kontaktom ste si ešte nevymenili žiadne správy. Bezpečnostné číslo bude dostupné po doručení prvej správy.",
         "description": ""
     },
+    "back": {
+        "message": "Späť",
+        "description": "Generic label for back"
+    },
+    "goBack": {
+        "message": "Ísť naspäť",
+        "description": "Label for back button in a conversation"
+    },
     "moreInfo": {
-        "message": "Viac informácii...",
+        "message": "Viac informácii",
         "description": "Shown on the drop-down menu for an individual message, takes you to message detail screen"
     },
     "retrySend": {
         "message": "Odoslať znovu",
-        "description": "Shown on the drop-down menu for an indinvidaul message, but only if it is an outgoing message that failed to send"
+        "description": "Shown on the drop-down menu for an individual message, but only if it is an outgoing message that failed to send"
+    },
+    "forwardMessage": {
+        "message": "Preposlať správu",
+        "description": "Shown on the drop-down menu for an individual message, forwards a message"
     },
     "deleteMessage": {
-        "message": "Vymazať správu",
+        "message": "Vymazať správu pre mňa",
         "description": "Shown on the drop-down menu for an individual message, deletes single message"
     },
+    "deleteMessageForEveryone": {
+        "message": "Vymazať správu pre všetkých",
+        "description": "Shown on the drop-down menu for an individual message, deletes single message for everyone"
+    },
     "deleteMessages": {
-        "message": "Zmazať správy",
+        "message": "Vymazať",
         "description": "Menu item for deleting messages, title case."
     },
     "deleteConversationConfirmation": {
@@ -998,6 +1130,54 @@
     "sessionEnded": {
         "message": "Zabezpečené spojenie bolo obnovené",
         "description": "This is a past tense, informational message. In other words, your secure session has been reset."
+    },
+    "ChatRefresh--notification": {
+        "message": "Chatové stretnutie obnovené",
+        "description": "Shown in timeline when a error happened, and the session was automatically reset."
+    },
+    "ChatRefresh--learnMore": {
+        "message": "Dozvedieť sa viac",
+        "description": "Shown in timeline when session is automatically reset, to provide access to a popup info dialog"
+    },
+    "ChatRefresh--summary": {
+        "message": "Signal používa koncové šifrovanie a občas môže potrebovať obnoviť vašu chatovú reláciu. Toto nemá vplyv na bezpečnosť vášho chatu, ale mohla by vám uniknúť správa od tohto kontaktu a môžete používateľa požiadať, aby vám ju poslal znovu.",
+        "description": "Shown on explainer dialog available from chat session refreshed timeline events"
+    },
+    "ChatRefresh--contactSupport": {
+        "message": "Kontaktovať zákaznícku podporu",
+        "description": "Shown on explainer dialog available from chat session refreshed timeline events"
+    },
+    "DeliveryIssue--preview": {
+        "message": "Problém s doručením",
+        "description": "Shown in left pane preview when message delivery issue happens"
+    },
+    "DeliveryIssue--notification": {
+        "message": "Správu od $sender$ sa nepodarilo doručiť",
+        "description": "Shown in timeline when message delivery issue happens",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "DeliveryIssue--learnMore": {
+        "message": "Dozvedieť sa viac",
+        "description": "Shown in timeline when message delivery issue happens, to provide access to a popup info dialog"
+    },
+    "DeliveryIssue--title": {
+        "message": "Problém s doručením",
+        "description": "Shown on explainer dialog available from delivery issue timeline events"
+    },
+    "DeliveryIssue--summary": {
+        "message": "Správu, nálepku, reakciu, potvrdenie o prečítaní, alebo médium od $sender$ vám nebolo možné doručiť. Možno sa vám pokúsili poslať ho priamo, alebo v skupine.",
+        "description": "Shown on explainer dialog available from delivery issue timeline events",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
     },
     "quoteThumbnailAlt": {
         "message": "Náhľad obrázku z citovanej správy.",
@@ -1021,11 +1201,11 @@
     },
     "addACaption": {
         "message": "Pridaj popis...",
-        "description": ""
+        "description": "Used as the placeholder text in the caption editor text field"
     },
     "save": {
         "message": "Uložiť",
-        "description": ""
+        "description": "Used as a 'commit changes' button in the Caption Editor for outgoing image attachments"
     },
     "fileIconAlt": {
         "message": "Ikona súboru",
@@ -1041,7 +1221,7 @@
     },
     "linkYourPhone": {
         "message": "Pripojte svoj mobilný telefón k Signal Desktop",
-        "description": "Shown on the front page when the application first starst, above the QR code"
+        "description": "Shown on the front page when the application first starts, above the QR code"
     },
     "signalSettings": {
         "message": "Nastavenia Signal",
@@ -1083,20 +1263,282 @@
         "message": "Máte prepojených príliš veľa zariadení. Skúste odstrániť niektoré z nich.",
         "description": ""
     },
-    "settings": {
-        "message": "Nastavenia",
-        "description": "Menu item and header for global settings"
+    "installTooOld": {
+        "message": "Na prepojenie s telefónom si aktualizujte Signal na tomto zariadení.",
+        "description": ""
+    },
+    "installErrorHeader": {
+        "message": "Niekde sa stala chyba!",
+        "description": ""
+    },
+    "installTryAgain": {
+        "message": "Skúsiť znova",
+        "description": ""
     },
     "theme": {
         "message": "Motív",
         "description": "Header for theme settings"
+    },
+    "calling": {
+        "message": "Uskutočňovanie hovorov",
+        "description": "Header for calling options on the settings screen"
+    },
+    "calling__start": {
+        "message": "Začať hovor",
+        "description": "Button label in the call lobby for starting a call"
+    },
+    "calling__join": {
+        "message": "Pripojiť sa k hovoru",
+        "description": "Button label in the call lobby for joining a call"
+    },
+    "calling__return": {
+        "message": "Vrátiť sa k hovoru",
+        "description": "Button label in the call lobby for returning to a call"
+    },
+    "calling__call-is-full": {
+        "message": "Hovor je plne obsadený",
+        "description": "Button label in the call lobby when you can't join because the call is full"
+    },
+    "calling__button--video-disabled": {
+        "message": "Kamera vypnutá",
+        "description": "Button tooltip label when the camera is disabled"
+    },
+    "calling__button--video-off": {
+        "message": "Vypnúť kameru",
+        "description": "Button tooltip label for turning off the camera"
+    },
+    "calling__button--video-on": {
+        "message": "Zapnúť kameru",
+        "description": "Button tooltip label for turning on the camera"
+    },
+    "calling__button--audio-disabled": {
+        "message": "Mikrofón vypnutý",
+        "description": "Button tooltip label when the microphone is disabled"
+    },
+    "calling__button--audio-off": {
+        "message": "Stlmiť mikrofón",
+        "description": "Button tooltip label for turning off the microphone"
+    },
+    "calling__button--audio-on": {
+        "message": "Zapnúť mikrofón",
+        "description": "Button tooltip label for turning on the microphone"
+    },
+    "calling__button--presenting-disabled": {
+        "message": "Prezentácia je zakázaná",
+        "description": "Button tooltip label for when screen sharing is disabled"
+    },
+    "calling__button--presenting-on": {
+        "message": "Začať prezentovať",
+        "description": "Button tooltip label for starting to share screen"
+    },
+    "calling__button--presenting-off": {
+        "message": "Prestať prezentovať",
+        "description": "Button tooltip label for stopping screen sharing"
+    },
+    "calling__your-video-is-off": {
+        "message": "Váš fotoaparát je vypnutý",
+        "description": "Label in the calling lobby indicating that your camera is off"
+    },
+    "calling__lobby-summary--zero": {
+        "message": "Nikto iný tu nie je",
+        "description": "Shown in the calling lobby to describe who is in the call"
+    },
+    "calling__lobby-summary--single": {
+        "message": "$first$ sa účastní tohto hovoru",
+        "description": "Shown in the calling lobby to describe who is in the call",
+        "placeholders": {
+            "first": {
+                "content": "$1",
+                "example": "Sam"
+            }
+        }
+    },
+    "calling__lobby-summary--self": {
+        "message": "Jedno z vašich ďalších zariadení sa účastní tohto hovoru",
+        "description": "Shown in the calling lobby to describe when it is just you"
+    },
+    "calling__lobby-summary--double": {
+        "message": "$first$ a $second$ sa účastnia tohto hovoru",
+        "description": "Shown in the calling lobby to describe who is in the call",
+        "placeholders": {
+            "first": {
+                "content": "$1",
+                "example": "Sam"
+            },
+            "second": {
+                "content": "$2",
+                "example": "Cayce"
+            }
+        }
+    },
+    "calling__lobby-summary--triple": {
+        "message": "$first$, $second$, a $third$ sa účastnia tohto hovoru",
+        "description": "Shown in the calling lobby to describe who is in the call",
+        "placeholders": {
+            "first": {
+                "content": "$1",
+                "example": "Sam"
+            },
+            "second": {
+                "content": "$2",
+                "example": "Cayce"
+            },
+            "third": {
+                "content": "$3",
+                "example": "April"
+            }
+        }
+    },
+    "calling__lobby-summary--many": {
+        "message": "$first$, $second$, a $others$ ďalších sa účastní tohto hovoru",
+        "description": "Shown in the calling lobby to describe who is in the call",
+        "placeholders": {
+            "first": {
+                "content": "$1",
+                "example": "Sam"
+            },
+            "second": {
+                "content": "$2",
+                "example": "Cayce"
+            },
+            "others": {
+                "content": "$3",
+                "example": "5"
+            }
+        }
+    },
+    "calling__in-this-call--zero": {
+        "message": "Nikto iný tu nie je",
+        "description": "Shown in the participants list to describe how many people are in the call"
+    },
+    "calling__in-this-call--one": {
+        "message": "V tomto hovore · 1 osoba",
+        "description": "Shown in the participants list to describe how many people are in the call"
+    },
+    "calling__in-this-call--many": {
+        "message": "V tomto hovore · $people$ ľudia",
+        "description": "Shown in the participants list to describe how many people are in the call",
+        "placeholders": {
+            "people": {
+                "content": "$1",
+                "example": "15"
+            }
+        }
+    },
+    "calling__you-have-blocked": {
+        "message": "Zablokovali ste $name$",
+        "description": "when you block someone and cannot view their video",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Henry Richard"
+            }
+        }
+    },
+    "calling__block-info": {
+        "message": "Od tohto používateľa nebudete prijímať zvuk a video a ani on neprijme od vás.",
+        "description": "Shown in the modal dialog to describe how blocking works in a gorup call"
+    },
+    "calling__overflow__scroll-up": {
+        "message": "Posunúť nahor",
+        "description": "Label for the \"scroll up\" button in a call's overflow area"
+    },
+    "calling__overflow__scroll-down": {
+        "message": "Posunúť nadol",
+        "description": "Label for the \"scroll down\" button in a call's overflow area"
+    },
+    "calling__presenting--notification-title": {
+        "message": "Prezentujete všetkým.",
+        "description": "Title for the share screen notification"
+    },
+    "calling__presenting--notification-body": {
+        "message": "Keď budete pripravení ukončiť prezentovanie, kliknutím sem a vrátite sa k hovoru.",
+        "description": "Body text for the share screen notification"
+    },
+    "calling__presenting--info": {
+        "message": "Signal zdieľa $window$.",
+        "description": "Text that appears in the screen sharing controller to inform person that they are presenting",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Application"
+            }
+        }
+    },
+    "calling__presenting--stop": {
+        "message": "Prestať zdieľať",
+        "description": "Button for stopping screen sharing"
+    },
+    "calling__presenting--you-stopped": {
+        "message": "Prestali ste prezentovať",
+        "description": "Toast that appears when someone stops presenting"
+    },
+    "calling__presenting--person-ongoing": {
+        "message": "$name$ prezentuje",
+        "description": "Title of call when someone is presenting",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Maddie"
+            }
+        }
+    },
+    "calling__presenting--person-stopped": {
+        "message": "$name$ prestal prezentovať",
+        "description": "Toast that appears when someone stops presenting",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Maddie"
+            }
+        }
+    },
+    "calling__presenting--permission-title": {
+        "message": "Je potrebné povolenie",
+        "description": "Shown as the title for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--macos-permission-description": {
+        "message": "Signal vyžaduje povolenie na prístup k záznamu obrazovky vášho počítača.",
+        "description": "Shown as the description for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--permission-instruction-step1": {
+        "message": "Prejdite na Predvoľby systému.",
+        "description": "Shown as the description for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--permission-instruction-step2": {
+        "message": "Kliknite na ikonu zámku v ľavom dolnom rohu a zadajte heslo svojho počítača.",
+        "description": "Shown as the description for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--permission-instruction-step3": {
+        "message": "Vpravo začiarknite políčko vedľa položky Signal. Ak Signal v zozname nevidíte, pridajte ho kliknutím na +.",
+        "description": "Shown as the description for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--permission-open": {
+        "message": "Otvorte Predvoľby systému",
+        "description": "The button that opens your system preferences for the needs screen record permissions modal"
+    },
+    "calling__presenting--permission-cancel": {
+        "message": "Zrušiť",
+        "description": "The cancel button for the needs screen record permissions modal"
+    },
+    "alwaysRelayCallsDescription": {
+        "message": "Vždy presmerovať hovory",
+        "description": "Description of the always relay calls setting"
+    },
+    "alwaysRelayCallsDetail": {
+        "message": "Smerovať všetky hovory cez server Signal pre zabránenie odhaleniu vašej IP adresy kontaktu. Zapnutie zníži kvalitu hovoru.",
+        "description": "Details describing the always relay calls setting"
     },
     "permissions": {
         "message": "Povolenia",
         "description": "Header for permissions section of settings"
     },
     "mediaPermissionsDescription": {
-        "message": "Povoliť prústup ku kamere a mikrofónu",
+        "message": "Povoliť prístup k mikrofónu",
+        "description": "Description of the media permission description"
+    },
+    "mediaCameraPermissionsDescription": {
+        "message": "Povoliť prístup ku kamere",
         "description": "Description of the media permission description"
     },
     "general": {
@@ -1104,8 +1546,8 @@
         "description": "Header for general options on the settings screen"
     },
     "spellCheckDescription": {
-        "message": "Povoliť kontrolu pravopisu textu zadaného do textového poľa",
-        "description": "Description of the media permission description"
+        "message": "Povoliť kontrolu pravopisu",
+        "description": "Description of the spell check setting"
     },
     "spellCheckWillBeEnabled": {
         "message": "Kontrola pravopisu bude zapnutá po nasledujúcom štarte Signalu.",
@@ -1114,6 +1556,10 @@
     "spellCheckWillBeDisabled": {
         "message": "Kontrola pravopisu bude vypnutá po nasledujúcom štarte Signalu.",
         "description": "Shown when the user disables spellcheck to indicate that they must restart Signal."
+    },
+    "autoLaunchDescription": {
+        "message": "Otvoriť pri prihlásení do počítača",
+        "description": "Description for the automatic launch setting"
     },
     "clearDataHeader": {
         "message": "Mazanie dát",
@@ -1143,6 +1589,14 @@
         "message": "Odpojovanie a mazanie dát",
         "description": "Message shown to user when app is disconnected and data deleted"
     },
+    "deleteOldIndexedDBData": {
+        "message": "Toto zariadenie obsahuje staré dáta z predošlej inštalácie Signalu. Ak budete pokračovať, zmažú sa a začnete s čistým štítom.",
+        "description": "Shown if user last ran Signal Desktop before October 2018"
+    },
+    "deleteOldData": {
+        "message": "Zmazať staré dáta",
+        "description": "Button to make the delete happen"
+    },
     "notifications": {
         "message": "Upozornenia",
         "description": "Header for notification settings"
@@ -1156,11 +1610,11 @@
         "description": "Label for disabling notifications"
     },
     "nameAndMessage": {
-        "message": "Meno a správu",
+        "message": "Meno, obsah a akcie",
         "description": "Label for setting notifications to display name and message text"
     },
     "noNameOrMessage": {
-        "message": "Neukázať meno ani správu",
+        "message": "Bez mena a obsahu",
         "description": "Label for setting notifications to display no name and no message text"
     },
     "nameOnly": {
@@ -1171,38 +1625,22 @@
         "message": "Nová správa",
         "description": "Displayed in notifications for only 1 message"
     },
-    "newMessages": {
-        "message": "Nové správy",
-        "description": "Displayed in notifications for multiple messages"
-    },
-    "notificationMostRecentFrom": {
-        "message": "Najnovšie od:",
-        "description": "Displayed in notifications when setting is 'name only' and more than one message is waiting"
-    },
-    "notificationFrom": {
-        "message": "Od:",
-        "description": "Displayed in notifications when setting is 'name only' and one message is waiting"
-    },
-    "notificationMostRecent": {
-        "message": "Najnovšie:",
-        "description": "Displayed in notifications when setting is 'name and message' and more than one message is waiting"
-    },
-    "notificationReaction": {
-        "message": "$sender$ reagoval/a $emoji$ na vašu správu.",
-        "description": "",
+    "notificationSenderInGroup": {
+        "message": "$sender$ v $group$",
+        "description": "Displayed in notifications for messages in a group",
         "placeholders": {
             "sender": {
                 "content": "$1",
                 "example": "John"
             },
-            "emoji": {
-                "content": "$2",
-                "example": "👍"
+            "group": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
             }
         }
     },
-    "notificationReactionMostRecent": {
-        "message": "Najnovšie:$sender$ reagoval/a $emoji$ na vašu správu.",
+    "notificationReaction": {
+        "message": "$sender$ reagoval/a $emoji$ na vašu správu.",
         "description": "",
         "placeholders": {
             "sender": {
@@ -1233,27 +1671,17 @@
             }
         }
     },
-    "notificationReactionMessageMostRecent": {
-        "message": "Najnovšie:$sender$ reagoval/a $emoji$ na: $message$",
-        "description": "",
-        "placeholders": {
-            "sender": {
-                "content": "$1",
-                "example": "John"
-            },
-            "emoji": {
-                "content": "$2",
-                "example": "👍"
-            },
-            "message": {
-                "content": "$3",
-                "example": "Sounds good."
-            }
-        }
-    },
     "sendFailed": {
         "message": "Odoslanie zlyhalo",
         "description": "Shown on outgoing message if it fails to send"
+    },
+    "sendPaused": {
+        "message": "Odoslanie pozastavené",
+        "description": "Shown on outgoing message if it cannot be sent immediately"
+    },
+    "partiallySent": {
+        "message": "Čiastočne odoslané, kliknite pre detaily",
+        "description": "Shown on outgoing message if it is partially sent"
     },
     "showMore": {
         "message": "Podrobnosti",
@@ -1360,7 +1788,7 @@
         "description": "Brief message shown when trying to message a blocked group"
     },
     "youChangedTheTimer": {
-        "message": "Nastavili ste časovač miznúcich správ na $time$",
+        "message": "Nastavili ste časovač miznúcich správ na $time$.",
         "description": "Message displayed when you change the message expiration timer in a conversation.",
         "placeholders": {
             "time": {
@@ -1370,7 +1798,7 @@
         }
     },
     "timerSetOnSync": {
-        "message": "Časovač miznúcich správ nastavený na $time$",
+        "message": "Časovač miznúcich správ nastavený na $time$.",
         "description": "Message displayed when timer is set on initial link of desktop device.",
         "placeholders": {
             "time": {
@@ -1379,8 +1807,18 @@
             }
         }
     },
+    "timerSetByMember": {
+        "message": "Člen nastavil časovač miznúcich správ na $time$.",
+        "description": "Message displayed when timer is by an unknown group member.",
+        "placeholders": {
+            "time": {
+                "content": "$1",
+                "example": "10m"
+            }
+        }
+    },
     "theyChangedTheTimer": {
-        "message": "$name$ nastavil/a časovač miznúcich správ na $time$",
+        "message": "$name$ nastavil/a časovač miznúcich správ na $time$.",
         "description": "Message displayed when someone else changes the message expiration timer in a conversation.",
         "placeholders": {
             "name": {
@@ -1393,112 +1831,24 @@
             }
         }
     },
-    "timerOption_0_seconds": {
+    "disappearingMessages__off": {
         "message": "vypnuté",
         "description": "Label for option to turn off message expiration in the timer menu"
     },
-    "timerOption_5_seconds": {
-        "message": "5 sekúnd",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_10_seconds": {
-        "message": "10 sekúnd",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_30_seconds": {
-        "message": "30 sekúnd",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_1_minute": {
-        "message": "1 minúta",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_5_minutes": {
-        "message": "5 minút",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_30_minutes": {
-        "message": "30 minút",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_1_hour": {
-        "message": "1 hodina",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_6_hours": {
-        "message": "6 hodín",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_12_hours": {
-        "message": "12 hodín",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_1_day": {
-        "message": "1 deň",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_1_week": {
-        "message": "1 týždeň",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
     "disappearingMessages": {
         "message": "Miznúce správy",
-        "description": "Conversation menu option to enable disappearing messages"
-    },
-    "timerOption_0_seconds_abbreviated": {
-        "message": "vypnutý",
-        "description": "Short format indicating current timer setting in the conversation list snippet"
-    },
-    "timerOption_5_seconds_abbreviated": {
-        "message": "5s",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_10_seconds_abbreviated": {
-        "message": "10s",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_30_seconds_abbreviated": {
-        "message": "30s",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_1_minute_abbreviated": {
-        "message": "1m",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_5_minutes_abbreviated": {
-        "message": "5m",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_30_minutes_abbreviated": {
-        "message": "30m",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_1_hour_abbreviated": {
-        "message": "1h",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_6_hours_abbreviated": {
-        "message": "6h",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_12_hours_abbreviated": {
-        "message": "12h",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_1_day_abbreviated": {
-        "message": "1d",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_1_week_abbreviated": {
-        "message": "1t",
-        "description": "Very short format indicating current timer setting in the conversation header"
+        "description": "Conversation menu option to enable disappearing messages. Title of the settings section for Disappearing Messages"
     },
     "disappearingMessagesDisabled": {
         "message": "Miznúce správy vypnuté",
         "description": "Displayed in the left pane when the timer is turned off"
     },
+    "disappearingMessagesDisabledByMember": {
+        "message": "Člen vypol miznúce správy.",
+        "description": "Displayed in the left pane when the timer is turned off"
+    },
     "disabledDisappearingMessages": {
-        "message": "$name$ vypol/la miznúce správy",
+        "message": "$name$ vypol/la miznúce správy.",
         "description": "Displayed in the conversation list when the timer is turned off",
         "placeholders": {
             "name": {
@@ -1508,7 +1858,7 @@
         }
     },
     "youDisabledDisappearingMessages": {
-        "message": "Vypli ste miznúce správy",
+        "message": "Vypli ste miznúce správy.",
         "description": "Displayed in the conversation list when the timer is turned off"
     },
     "timerSetTo": {
@@ -1525,9 +1875,57 @@
         "message": "Prehrať zvuk upozornenia",
         "description": "Description for audio notification setting"
     },
+    "callRingtoneNotificationDescription": {
+        "message": "Prehrávať zvuky pri príchodzom hovore",
+        "description": "Description for call ringtone notification setting"
+    },
+    "callSystemNotificationDescription": {
+        "message": "Ukázať upozornenie pri príchodzom hovore",
+        "description": "Description for call notification setting"
+    },
+    "incomingCallNotificationDescription": {
+        "message": "Povoliť prichádzajúce hovory",
+        "description": "Description for incoming calls setting"
+    },
+    "contactChangedProfileName": {
+        "message": "$sender$ zmenil/a názov svojho profilu z $oldProfile$ na $newProfile$.",
+        "description": "Description for incoming calls setting",
+        "placeholders": {
+            "sender": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "oldProfile": {
+                "content": "$2",
+                "example": ".x8Skillz8x."
+            },
+            "newProfile": {
+                "content": "$3",
+                "example": "Bob Smith"
+            }
+        }
+    },
+    "changedProfileName": {
+        "message": "$oldProfile$ zmenil/a názov svojho profilu na $newProfile$.",
+        "description": "Shown when a contact not in your address book changes their profile name",
+        "placeholders": {
+            "oldProfile": {
+                "content": "$2",
+                "example": ".x8Skillz8x."
+            },
+            "newProfile": {
+                "content": "$3",
+                "example": "Bob Smith"
+            }
+        }
+    },
     "safetyNumberChanged": {
         "message": "Zmenilo sa bezpečnosné číslo",
         "description": "A notification shown in the conversation when a contact reinstalls"
+    },
+    "safetyNumberChanges": {
+        "message": "Zmeny bezpečnostného čísla",
+        "description": "Title for safety number changed modal"
     },
     "safetyNumberChangedGroup": {
         "message": "Vaše bezpečnosné číslo s $name$ sa zmenilo",
@@ -1543,11 +1941,15 @@
         "message": "Overiť bezpečnostné číslo",
         "description": "Label on button included with safety number change notification in the conversation"
     },
+    "cannotGenerateSafetyNumber": {
+        "message": "Tento používateľ nemôže byť overený kým neodošlete prvú správu.",
+        "description": "Shown on the safety number screen if you have never exchanged messages with that contact"
+    },
     "yourSafetyNumberWith": {
-        "message": "Vaše bezpečnostné číslo s $name$:",
+        "message": "Vaše bezpečnostné číslo s $name1$:",
         "description": "Heading for safety number view",
         "placeholders": {
-            "name": {
+            "name1": {
                 "content": "$1",
                 "example": "John"
             }
@@ -1569,6 +1971,14 @@
         "message": "Poznámka pre seba",
         "description": "Name for the conversation with your own phone number"
     },
+    "noteToSelfHero": {
+        "message": "V tejto konverzácii si môžete pridávať poznámky. Ak máte vo vašom účte nejaké pripojené zariadenia, nové poznámky sa budú synchronizovať.",
+        "description": "Description for the Note to Self conversation"
+    },
+    "notificationDrawAttention": {
+        "message": "Zvýrazniť toto okno, keď príde oznámenie",
+        "description": "Label text for the setting that controls whether new notifications draw attention to the window"
+    },
     "hideMenuBar": {
         "message": "Skryť ponuku",
         "description": "Label text for menu bar visibility setting"
@@ -1576,6 +1986,116 @@
     "startConversation": {
         "message": "Začať nový rozhovor…",
         "description": "Label underneath number a user enters that is not an existing contact"
+    },
+    "newConversation": {
+        "message": "Nová konverzácia",
+        "description": "Label for header when starting a new conversation"
+    },
+    "contactSearchPlaceholder": {
+        "message": "Hľadať podľa mena alebo čísla",
+        "description": "Placeholder to use when searching for contacts in the composer"
+    },
+    "noContactsFound": {
+        "message": "Žiadne kontakty sa nenašli",
+        "description": "Label shown when there are no contacts to compose to"
+    },
+    "noConversationsFound": {
+        "message": "Nenašli sa žiadne konverzácie",
+        "description": "Label shown when there are no conversations to compose to"
+    },
+    "chooseGroupMembers__title": {
+        "message": "Vybrať členov",
+        "description": "The title for the 'choose group members' left pane screen"
+    },
+    "chooseGroupMembers__back-button": {
+        "message": "Späť",
+        "description": "Used as alt-text of the back button on the 'choose group members' left pane screen"
+    },
+    "chooseGroupMembers__skip": {
+        "message": "Preskočiť",
+        "description": "The 'skip' button text in the 'choose group members' left pane screen"
+    },
+    "chooseGroupMembers__next": {
+        "message": "Ďalší",
+        "description": "The 'next' button text in the 'choose group members' left pane screen"
+    },
+    "chooseGroupMembers__maximum-group-size__title": {
+        "message": "Dosiahnutá maximálna veľkosť skupiny",
+        "description": "Shown in the alert when you add the maximum number of group members"
+    },
+    "chooseGroupMembers__maximum-group-size__body": {
+        "message": "Signal skupiny môžu mať maximálne $max$ členov.",
+        "description": "Shown in the alert when you add the maximum number of group members",
+        "placeholders": {
+            "max": {
+                "content": "$1",
+                "example": "1000"
+            }
+        }
+    },
+    "chooseGroupMembers__maximum-recommended-group-size__title": {
+        "message": "Dosiahli ste odporúčaný limit počtu členov",
+        "description": "Shown in the alert when you add the maximum recommended number of group members"
+    },
+    "chooseGroupMembers__maximum-recommended-group-size__body": {
+        "message": "Signal skupiny najlepšie fungujú s $max$ členmi alebo menej. Pridanie ďalších členov spôsobí oneskorenia v posielaní a prijímaní správ.",
+        "description": "Shown in the alert when you add the maximum recommended number of group members",
+        "placeholders": {
+            "max": {
+                "content": "$1",
+                "example": "150"
+            }
+        }
+    },
+    "chooseGroupMembers__cant-add-member__title": {
+        "message": "Nemožno pridať člena",
+        "description": "Shown in the alert when you try to add someone who can't be added to a group"
+    },
+    "chooseGroupMembers__cant-add-member__body": {
+        "message": "\"$name$\" nemôže byť pridaný/á to tejto skupiny, pretože používa starú verziu aplikácie Signal. Do skupiny ho/ju môžete pridať, keď si aktualizuje Signal.",
+        "description": "Shown in the alert when you try to add someone who can't be added to a group",
+        "placeholders": {
+            "max": {
+                "content": "$1",
+                "example": "Jane Doe"
+            }
+        }
+    },
+    "setGroupMetadata__title": {
+        "message": "Pomenujte túto skupinu",
+        "description": "The title for the 'set group metadata' left pane screen"
+    },
+    "setGroupMetadata__back-button": {
+        "message": "Naspäť k výberu členov",
+        "description": "Used as alt-text of the back button on the 'set group metadata' left pane screen"
+    },
+    "setGroupMetadata__group-name-placeholder": {
+        "message": "Názov skupiny (povinné)",
+        "description": "The placeholder for the group name placeholder"
+    },
+    "setGroupMetadata__group-description-placeholder": {
+        "message": "Popis",
+        "description": "The placeholder for the group description"
+    },
+    "setGroupMetadata__create-group": {
+        "message": "Vytvoriť",
+        "description": "The 'create group' button text in the 'set group metadata' left pane screen"
+    },
+    "setGroupMetadata__members-header": {
+        "message": "Členovia",
+        "description": "The header for the members list in the 'set group metadata' left pane screen"
+    },
+    "setGroupMetadata__error-message": {
+        "message": "Skupinu sa nepodarilo vytvoriť. Skontrolujte svoje pripojenie na internet a skúste znovu.",
+        "description": "Shown in the modal when we can't create a group"
+    },
+    "updateGroupAttributes__title": {
+        "message": "Upraviť skupinu",
+        "description": "Shown in the modal when we want to update a group"
+    },
+    "updateGroupAttributes__error-message": {
+        "message": "Aktualizácia skupiny zlyhala. Skontrolujte svoje pripojenie na internet a skúste znova.",
+        "description": "Shown in the modal when we can't update a group"
     },
     "notSupportedSMS": {
         "message": "SMS/MMS správy nie sú podporované.",
@@ -1622,7 +2142,7 @@
         "description": ""
     },
     "leftTheGroup": {
-        "message": "$name$ left the group.",
+        "message": "$name$ opustil/a skupinu.",
         "description": "Shown in the conversation history when a single person leaves the group",
         "placeholders": {
             "name": {
@@ -1632,7 +2152,7 @@
         }
     },
     "multipleLeftTheGroup": {
-        "message": "$name$ left the group.",
+        "message": "$name$ opustil/a skupinu.",
         "description": "Shown in the conversation history when multiple people leave the group",
         "placeholders": {
             "name": {
@@ -1642,7 +2162,7 @@
         }
     },
     "updatedTheGroup": {
-        "message": "$name$ updated the group.",
+        "message": "$name$ aktualizoval/a skupinu.",
         "description": "Shown in the conversation history when someone updates the group",
         "placeholders": {
             "name": {
@@ -1656,11 +2176,11 @@
         "description": "Shown in the conversation history when you update a group"
     },
     "updatedGroupAvatar": {
-        "message": "Group avatar was updated.",
+        "message": "Obrázok skupiny bol aktualizovaný.",
         "description": "Shown in the conversation history when someone updates the group"
     },
     "titleIsNow": {
-        "message": "Group name is now '$name$'.",
+        "message": "Názov skupiny je teraz '$name$'.",
         "description": "Shown in the conversation history when someone changes the title of the group",
         "placeholders": {
             "name": {
@@ -1674,7 +2194,7 @@
         "description": "Shown in the conversation history when you are added to a group."
     },
     "joinedTheGroup": {
-        "message": "$name$ joined the group.",
+        "message": "$name$sa pripojil/a k skupine. ",
         "description": "Shown in the conversation history when a single person joins the group",
         "placeholders": {
             "name": {
@@ -1684,7 +2204,7 @@
         }
     },
     "multipleJoinedTheGroup": {
-        "message": "$names$ joined the group.",
+        "message": "$names$ sa pripojii k skupine. ",
         "description": "Shown in the conversation history when more than one person joins the group",
         "placeholders": {
             "names": {
@@ -1693,13 +2213,55 @@
             }
         }
     },
+    "ConversationListItem--message-request": {
+        "message": "Žiadosť o správu",
+        "description": "Preview shown for conversation if the user has not yet accepted an incoming message request"
+    },
     "ConversationListItem--draft-prefix": {
         "message": "Koncept:",
         "description": "Prefix shown in italic in conversation view when a draft is saved"
     },
+    "message--getNotificationText--gif": {
+        "message": "GIF",
+        "description": "Shown in notifications and in the left pane when a GIF is received."
+    },
+    "message--getNotificationText--photo": {
+        "message": "Fotka",
+        "description": "Shown in notifications and in the left pane when a photo is received."
+    },
+    "message--getNotificationText--video": {
+        "message": "Video",
+        "description": "Shown in notifications and in the left pane when a video is received."
+    },
+    "message--getNotificationText--voice-message": {
+        "message": "Hlasová správa",
+        "description": "Shown in notifications and in the left pane when a voice message is received."
+    },
+    "message--getNotificationText--audio-message": {
+        "message": "Audio správa",
+        "description": "Shown in notifications and in the left pane when an audio message is received."
+    },
+    "message--getNotificationText--file": {
+        "message": "Súbor",
+        "description": "Shown in notifications and in the left pane when a generic file is received."
+    },
     "message--getNotificationText--stickers": {
         "message": "Správa s nálepkou",
         "description": "Shown in notifications and in the left pane instead of sticker image."
+    },
+    "message--getNotificationText--text-with-emoji": {
+        "message": "$emoji$ $text$",
+        "description": "Shown in notifications and in the left pane when text has an emoji. Probably always [emoji] [text] on LTR languages and [text] [emoji] on RTL languages.",
+        "placeholders": {
+            "emoji": {
+                "content": "$1",
+                "example": "📷"
+            },
+            "text": {
+                "content": "$2",
+                "example": "Photo"
+            }
+        }
     },
     "message--getDescription--unsupported-message": {
         "message": "Nepodporovaná správa",
@@ -1707,15 +2269,19 @@
     },
     "message--getDescription--disappearing-media": {
         "message": "Médiá na jedno zobrazenie",
-        "description": "Shown in notifications and in the left pane after view-once message is deleted."
+        "description": "Shown in notifications and in the left pane after view-once message is deleted. Also shown when quoting a view once media."
     },
     "message--getDescription--disappearing-photo": {
         "message": "Fotka na jedno zobrazenie",
-        "description": "Shown in notifications and in the left pane when a message is a view once photo."
+        "description": "Shown in notifications and in the left pane when a message is a view once photo. Also shown when quoting a view once photo."
     },
     "message--getDescription--disappearing-video": {
         "message": "Video na jedno zobrazenie",
-        "description": "Shown in notifications and in the left pane when a message is a view once video."
+        "description": "Shown in notifications and in the left pane when a message is a view once video. Also shown when quoting a view once video."
+    },
+    "message--deletedForEveryone": {
+        "message": "Táto správa bola zmazaná.",
+        "description": "Shown in a message's bubble when the message has been deleted for everyone."
     },
     "stickers--toast--InstallFailed": {
         "message": "Nepodarilo sa nainštalovať balík nálepiek",
@@ -1769,6 +2335,26 @@
         "message": "Prečo používať slová, keď môžete používať nálepky?",
         "description": "Shown as the body on a tooltip when the user upgrades to a version of Signal supporting stickers."
     },
+    "stickers--StickerPicker--Open": {
+        "message": "Otvoriť výber nálepiek",
+        "description": "Label for the open button for the sticker picker"
+    },
+    "stickers--StickerPicker--AddPack": {
+        "message": "Pridať balík nálepiek",
+        "description": "Label for the add pack button in the sticker picker"
+    },
+    "stickers--StickerPicker--NextPage": {
+        "message": "Ďalšia strana",
+        "description": "Label for the next page button in the sticker picker"
+    },
+    "stickers--StickerPicker--PrevPage": {
+        "message": "Predošlá strana",
+        "description": "Label for the previous page button in the sticker picker"
+    },
+    "stickers--StickerPicker--Recents": {
+        "message": "Nedávne nálepky",
+        "description": "Label for the recent stickers button in the sticker picker"
+    },
     "stickers--StickerPicker--DownloadError": {
         "message": "Niektoré nálepky sa nepodarilo stiahnuť.",
         "description": "Shown in the sticker picker when one or more stickers could not be downloaded."
@@ -1819,6 +2405,42 @@
             }
         }
     },
+    "EmojiPicker__button--recents": {
+        "message": "Nedávno použité",
+        "description": "Label for recents emoji picker button"
+    },
+    "EmojiPicker__button--emoji": {
+        "message": "Emotikony",
+        "description": "Label for emoji emoji picker button"
+    },
+    "EmojiPicker__button--animal": {
+        "message": "Zviera",
+        "description": "Label for animal emoji picker button"
+    },
+    "EmojiPicker__button--food": {
+        "message": "Jedlo",
+        "description": "Label for food emoji picker button"
+    },
+    "EmojiPicker__button--activity": {
+        "message": "Aktivita",
+        "description": "Label for activity emoji picker button"
+    },
+    "EmojiPicker__button--travel": {
+        "message": "Cestovanie",
+        "description": "Label for travel emoji picker button"
+    },
+    "EmojiPicker__button--object": {
+        "message": "Objekt",
+        "description": "Label for object emoji picker button"
+    },
+    "EmojiPicker__button--symbol": {
+        "message": "Symbol",
+        "description": "Label for symbol emoji picker button"
+    },
+    "EmojiPicker__button--flag": {
+        "message": "Vlajka",
+        "description": "Label for flag emoji picker button"
+    },
     "confirmation-dialog--Cancel": {
         "message": "Zrušiť",
         "description": "Appears on the cancel button in confirmation dialogs."
@@ -1861,7 +2483,7 @@
     },
     "Message--tap-to-view--outgoing": {
         "message": "Médiá",
-        "description": "Text shown on outgoing messages with with individual timers (inaccessble)"
+        "description": "Text shown on outgoing messages with with individual timers (inaccessible)"
     },
     "Message--tap-to-view--incoming--expired-toast": {
         "message": "Túto správu ste už videli.",
@@ -1919,6 +2541,10 @@
         "message": "Otvorí možnosti konverzácie",
         "description": "Shown in the shortcuts guide"
     },
+    "Keyboard--new-conversation": {
+        "message": "Začať novú konverzáciu",
+        "description": "Shown in the shortcuts guide"
+    },
     "Keyboard--archive-conversation": {
         "message": "Archivovať konverzáciu",
         "description": "Shown in the shortcuts guide"
@@ -1968,7 +2594,7 @@
         "description": "Shown in the shortcuts guide"
     },
     "Keyboard--toggle-reaction-picker": {
-        "message": "Zobrazí možnosti reakcie na vybranú správu",
+        "message": "Zobrazí možnosti reakcie emotikonou na vybranú správu",
         "description": "Shown in the shortcuts guide"
     },
     "Keyboard--save-attachment": {
@@ -2003,6 +2629,10 @@
         "message": "Odstráni všetky prílohy z rozpísanej správy",
         "description": "Shown in the shortcuts guide"
     },
+    "Keyboard--conversation-by-index": {
+        "message": "Preskočiť na konverzáciu",
+        "description": "A shortcut allowing direct navigation to conversations 1 to 9 in list"
+    },
     "Keyboard--Key--ctrl": {
         "message": "Ctrl",
         "description": "Key shown in shortcut combination in shortcuts guide"
@@ -2022,6 +2652,14 @@
     "Keyboard--Key--enter": {
         "message": "Enter",
         "description": "Key shown in shortcut combination in shortcuts guide"
+    },
+    "Keyboard--Key--tab": {
+        "message": "Tabulátor",
+        "description": "Key shown in shortcut combination in shortcuts guide"
+    },
+    "Keyboard--Key--one-to-nine-range": {
+        "message": "1 až 9",
+        "description": "Expresses that 1, 2, 3, up to 9 are available shortcut keys"
     },
     "Keyboard--header": {
         "message": "Klávesové skratky",
@@ -2051,6 +2689,18 @@
         "message": "Zavrieť práve používanú konverzáciu",
         "description": "Shown in the shortcuts guide"
     },
+    "Keyboard--calling-header": {
+        "message": "Uskutočňovanie hovorov",
+        "description": "Header of the keyboard shortcuts guide - calling section"
+    },
+    "Keyboard--toggle-audio": {
+        "message": "Zapnúť/vypnúť stíšenie",
+        "description": "Shown in the shortcuts guide"
+    },
+    "Keyboard--toggle-video": {
+        "message": "Zapnúť/Vypnúť video",
+        "description": "Shown in the shortcuts guide"
+    },
     "close-popup": {
         "message": "Zatvoriť vyskakujúce okno",
         "description": "Used as alt text for any button closing a popup"
@@ -2074,6 +2724,10 @@
     "conversationReturnedToInbox": {
         "message": "Konverzácia bola presunutá do prijatých správ",
         "description": "A toast that shows up when the user unarchives a conversation"
+    },
+    "conversationMarkedUnread": {
+        "message": "Konverzácia označená ako neprečítaná",
+        "description": "A toast that shows up when user marks a conversation as unread"
     },
     "StickerCreator--title": {
         "message": "Nástroj na vytváranie nálepiek",
@@ -2128,7 +2782,7 @@
         "description": "Title for the drop stage of the sticker creator"
     },
     "StickerCreator--DropStage--help": {
-        "message": "Nálepky musia byť vo formáte PNG alebo WebP s priehľadným pozadím rozmeru 512x512 pixelov. Doporučený okraj je 16 px.",
+        "message": "Nálepky musia byť vo formáte PNG, APNG alebo WebP s priehľadným pozadím a rozmeru 512x512 pixelov. Doporučený okraj je 16 px.",
         "description": "Help text for the drop stage of the sticker creator"
     },
     "StickerCreator--DropStage--showMargins": {
@@ -2257,7 +2911,23 @@
     },
     "StickerCreator--Toasts--errorProcessing": {
         "message": "Chyba pri spracovaní obrázku",
-        "description": "Text for the toast when an image cannot be processed was dropped on the sticker creator"
+        "description": "Text for the toast when an image cannot be processed was dropped on the sticker creator with a generic error"
+    },
+    "StickerCreator--Toasts--APNG--notSquare": {
+        "message": "Animované PNG nálepky musia byť štvorcové.",
+        "description": "Text for the toast when someone tries to upload a non-square APNG"
+    },
+    "StickerCreator--Toasts--mustLoopForever": {
+        "message": "Animované nálepky sa musia donekonečna opakovať.",
+        "description": "Text for the toast when an image in the sticker creator does not animate forever"
+    },
+    "StickerCreator--Toasts--APNG--dimensionsTooLarge": {
+        "message": "Rozmery PNG nálepky sú príliš veľké",
+        "description": "Text for the toast when an APNG image in the sticker creator is too large"
+    },
+    "StickerCreator--Toasts--APNG--dimensionsTooSmall": {
+        "message": "Rozmery PNG nálepky sú príliš malé",
+        "description": "Text for the toast when an APNG image in the sticker creator is too small"
     },
     "StickerCreator--Toasts--errorUploading": {
         "message": "Prekážka v nahratí nálepiek: $message$",
@@ -2289,12 +2959,2666 @@
         "message": "Nepodarilo sa mi odoslať reakciu. Skúste to prosím znovu",
         "description": "Shown when a reaction fails to send"
     },
+    "ReactionsViewer--more": {
+        "message": "Viac",
+        "description": "Use in the reaction picker as the alt text for the 'more' button"
+    },
     "ReactionsViewer--all": {
         "message": "Všetko",
         "description": "Shown in reaction viewer as the title for the 'all' category"
     },
-    "privacyPolicy": {
-        "message": "Podmienky a Ochrana osobných údajov",
-        "description": "Shown in the about box for the link to https://signal.org/legal"
+    "MessageRequests--message-direct": {
+        "message": "Povoliť používateľovi $name$, aby vám posielal správy a zdieľať s ním vaše meno a fotku? Kým s tým nebudete súhlasiť, nebude vedieť, že ste jeho správu videli.",
+        "description": "Shown as the message for a message request in a direct message",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce"
+            }
+        }
+    },
+    "MessageRequests--message-direct-blocked": {
+        "message": "Povoliť používateľovi $name$, aby vám posielal správy a zdieľať s ním vaše meno a fotku? Kým ho neodblokujete, nepríjmete od neho žiadne správy.",
+        "description": "Shown as the message for a message request in a direct message with a blocked account",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce"
+            }
+        }
+    },
+    "MessageRequests--message-group": {
+        "message": "Pridať sa do tejto skupiny a zdieľať vaše meno a foto s jej členmi? Kým s tým nebudete súhlasiť, členovia skupiny nebudú vedieť, že ste ich správy videli.",
+        "description": "Shown as the message for a message request in a group",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--message-group-blocked": {
+        "message": "Odblokovať túto skupinu a zdieľať vaše meno a foto s jej členmi? Kým ju neodblokujete, nepríjmete z nej žiadne správy.",
+        "description": "Shown as the message for a message request in a blocked group"
+    },
+    "MessageRequests--block": {
+        "message": "Blokovať",
+        "description": "Shown as a button to let the user block a message request"
+    },
+    "MessageRequests--unblock": {
+        "message": "Odblokovať",
+        "description": "Shown as a button to let the user unblock a message request"
+    },
+    "MessageRequests--unblock-confirm-title": {
+        "message": "Odblokovať $name$?",
+        "description": "Shown as a button to let the user unblock a message request",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--unblock-direct-confirm-body": {
+        "message": "Budete si môcť volať a písať.",
+        "description": "Shown as the body in the confirmation modal for unblocking a private message request",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--unblock-group-confirm-body": {
+        "message": "Členovia skupiny vás budú môcť do tejto skupiny znovu pridať.",
+        "description": "Shown as the body in the confirmation modal for unblocking a group message request",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--block-and-report-spam": {
+        "message": "Nahlásiť spam a blokovať",
+        "description": "Shown as a button to let the user block a message request and report spam"
+    },
+    "MessageRequests--block-and-report-spam-success-toast": {
+        "message": "Nahlásené ako spam a blokované.",
+        "description": "Shown in a toast when you successfully block a user and report them as spam"
+    },
+    "MessageRequests--block-direct-confirm-title": {
+        "message": "Zablokovať $name$?",
+        "description": "Shown as the title in the confirmation modal for blocking a private message request",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--block-direct-confirm-body": {
+        "message": "Zablokované osoby vám nebudú môcť volať ani posielať správy.",
+        "description": "Shown as the body in the confirmation modal for blocking a private message request"
+    },
+    "MessageRequests--block-group-confirm-title": {
+        "message": "Zablokovať a opustiť $group$?",
+        "description": "Shown as the title in the confirmation modal for blocking a group message request",
+        "placeholders": {
+            "group": {
+                "content": "$1",
+                "example": "Friends 🌿"
+            }
+        }
+    },
+    "MessageRequests--block-group-confirm-body": {
+        "message": "Od tejto skupiny už nebudete dostávať správy ani aktualizácie a členovia vás nebudú môcť znovu pridať.",
+        "description": "Shown as the body in the confirmation modal for blocking a group message request"
+    },
+    "MessageRequests--delete": {
+        "message": "Vymazať",
+        "description": "Shown as a button to let the user delete any message request"
+    },
+    "MessageRequests--delete-direct-confirm-title": {
+        "message": "Vymazať konverzáciu?",
+        "description": "Shown as the title in the confirmation modal for deleting a private message request"
+    },
+    "MessageRequests--delete-direct-confirm-body": {
+        "message": "Táto konverzácia sa vymaže zo všetkých vašich zariadení.",
+        "description": "Shown as the body in the confirmation modal for deleting a private message request"
+    },
+    "MessageRequests--delete-group-confirm-title": {
+        "message": "Vymazať a opustiť $group$?",
+        "description": "Shown as the title in the confirmation modal for deleting a group message request",
+        "placeholders": {
+            "group": {
+                "content": "$1",
+                "example": "Friends 🌿"
+            }
+        }
+    },
+    "MessageRequests--delete-direct": {
+        "message": "Vymazať",
+        "description": "Shown as a button to let the user delete a direct message request"
+    },
+    "MessageRequests--delete-group": {
+        "message": "Vymazať a opustiť",
+        "description": "Shown as a button to let the user delete a group message request"
+    },
+    "MessageRequests--delete-group-confirm-body": {
+        "message": "Opustíte túto skupinu a vymažete ju zo všetkých vašich zariadení.",
+        "description": "Shown as the body in the confirmation modal for deleting a group message request"
+    },
+    "MessageRequests--accept": {
+        "message": "Potvrdiť",
+        "description": "Shown as a button to let the user accept a message request"
+    },
+    "MessageRequests--continue": {
+        "message": "Pokračovať",
+        "description": "Shown as a button to share your profile, necessary to continue messaging in a conversation"
+    },
+    "MessageRequests--profile-sharing--group": {
+        "message": "Pokračovať v chate v tejto skupine a zdieľať vaše meno a fotku s jej členmi? $learnMore$",
+        "description": "Shown when user hasn't shared their profile in a group yet",
+        "placeholders": {
+            "learnMore": {
+                "content": "$1",
+                "example": "Learn More."
+            }
+        }
+    },
+    "MessageRequests--profile-sharing--direct": {
+        "message": "Pokračovať v chate s používateľom $firstName$ a zdieľať s ním vaše meno a fotku? $learnMore$",
+        "description": "Shown when user hasn't shared their profile in a 1:1 conversation yet",
+        "placeholders": {
+            "firstName": {
+                "content": "$1",
+                "example": "Alice"
+            },
+            "learnMore": {
+                "content": "$2",
+                "example": "Learn More."
+            }
+        }
+    },
+    "MessageRequests--learn-more": {
+        "message": "Dozvedieť sa viac.",
+        "description": "Shown at the end of profile sharing messages as a link."
+    },
+    "ConversationHero--members": {
+        "message": "$count$ členov",
+        "description": "Specifies the number of members in a group conversation",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "22"
+            }
+        }
+    },
+    "ConversationHero--members-1": {
+        "message": "1 člen",
+        "description": "Specifies the number of members in a group conversation when there is one member",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "22"
+            }
+        }
+    },
+    "member-of-1-group": {
+        "message": "Člen $group$",
+        "description": "Shown in the conversation hero to indicate this user is a member of a mutual group",
+        "placeholders": {
+            "group": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
+            }
+        }
+    },
+    "member-of-2-groups": {
+        "message": "Člen $group1$ a $group2$",
+        "description": "Shown in the conversation hero to indicate this user is a member of at least two mutual groups",
+        "placeholders": {
+            "group1": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
+            },
+            "group2": {
+                "content": "$2",
+                "example": "Dinner Party"
+            }
+        }
+    },
+    "member-of-3-groups": {
+        "message": "Člen $group1$, $group2$ a $group3$",
+        "description": "Shown in the conversation hero to indicate this user is a member of at least three mutual groups",
+        "placeholders": {
+            "group1": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
+            },
+            "group2": {
+                "content": "$2",
+                "example": "Dinner Party"
+            },
+            "group3": {
+                "content": "$3",
+                "example": "Friends 🌿"
+            }
+        }
+    },
+    "member-of-more-than-3-groups": {
+        "message": "Člen $group1$, $group2$, $group3$ a $remainingCount$ ďalších",
+        "description": "Shown in the conversation hero to indicate this user is a member of at least three mutual groups",
+        "placeholders": {
+            "group1": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
+            },
+            "group2": {
+                "content": "$2",
+                "example": "Dinner Party"
+            },
+            "group3": {
+                "content": "$3",
+                "example": "Friends 🌿"
+            },
+            "remainingCount": {
+                "content": "$4",
+                "example": "3"
+            }
+        }
+    },
+    "ConversationHero--membership-added": {
+        "message": "$name$ vás pridal/a do skupiny.",
+        "description": "Shown Indicates that you were added to a group by a given individual.",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Jeff Smith"
+            }
+        }
+    },
+    "no-groups-in-common": {
+        "message": "Žiadne spoločné skupiny",
+        "description": "Shown to indicate this user is not a member of any groups"
+    },
+    "no-groups-in-common-warning": {
+        "message": "Žiadne spoločné skupiny. Žiadosti starostlivo skontrolujte.",
+        "description": "When a user has no common groups, show this warning"
+    },
+    "acceptCall": {
+        "message": "Odpovedať",
+        "description": "Shown in tooltip for the button to accept a call (audio or video)"
+    },
+    "acceptCallWithoutVideo": {
+        "message": "Prijať bez videa",
+        "description": "Shown in tooltip for the button to accept a video call without video"
+    },
+    "declineCall": {
+        "message": "Odmietnuť",
+        "description": "Shown in tooltip for the button to decline a call (audio or video)"
+    },
+    "declinedIncomingAudioCall": {
+        "message": "Odmietli ste hlasový hovor",
+        "description": "Shown in conversation history when you declined an incoming audio call"
+    },
+    "declinedIncomingVideoCall": {
+        "message": "Odmietli ste videohovor",
+        "description": "Shown in conversation history when you declined an incoming video call"
+    },
+    "acceptedIncomingAudioCall": {
+        "message": "Prichádzajúci hlasový hovor",
+        "description": "Shown in conversation history when you accepted an incoming audio call"
+    },
+    "acceptedIncomingVideoCall": {
+        "message": "Prichádzajúci videohovor",
+        "description": "Shown in conversation history when you accepted an incoming video call"
+    },
+    "missedIncomingAudioCall": {
+        "message": "Prichádzajúci hlasový hovor",
+        "description": "Shown in conversation history when you missed an incoming audio call"
+    },
+    "missedIncomingVideoCall": {
+        "message": "Prichádzajúci videohovor",
+        "description": "Shown in conversation history when you missed an incoming video call"
+    },
+    "acceptedOutgoingAudioCall": {
+        "message": "Odchádzajúci hlasový hovor",
+        "description": "Shown in conversation history when you made an outgoing audio call"
+    },
+    "acceptedOutgoingVideoCall": {
+        "message": "Odchádzajúci videohovor",
+        "description": "Shown in conversation history when you made an outgoing video call"
+    },
+    "missedOrDeclinedOutgoingAudioCall": {
+        "message": "Neprijatý hlasový hovor",
+        "description": "Shown in conversation history when your audio call is missed or declined"
+    },
+    "missedOrDeclinedOutgoingVideoCall": {
+        "message": "Neprijatý videohovor",
+        "description": "Shown in conversation history when your video call is missed or declined"
+    },
+    "incomingAudioCall": {
+        "message": "Prichádzajúci hlasový hovor...",
+        "description": "Shown in both the incoming call bar and notification for an incoming audio call"
+    },
+    "incomingVideoCall": {
+        "message": "Prichádzajúci videohovor...",
+        "description": "Shown in both the incoming call bar and notification for an incoming video call"
+    },
+    "outgoingCallPrering": {
+        "message": "Uskutočňovanie hovoru...",
+        "description": "Shown in the call screen when placing an outgoing call that isn't ringing yet"
+    },
+    "outgoingCallRinging": {
+        "message": "Zvoní...",
+        "description": "Shown in the call screen when placing an outgoing call that is now ringing"
+    },
+    "makeOutgoingCall": {
+        "message": "Začať hovor",
+        "description": "Title for the call button in a conversation"
+    },
+    "makeOutgoingVideoCall": {
+        "message": "Začať videohovor",
+        "description": "Title for the video call button in a conversation"
+    },
+    "joinOngoingCall": {
+        "message": "Pridať sa",
+        "description": "Text that appears in a group when a call is active"
+    },
+    "callNeedPermission": {
+        "message": "$title$ od vás dostane žiadosť prostredníctvom správy. Keď bude táto žiadosť schválená, budete môcť volať.",
+        "description": "Shown when a call is rejected because the other party hasn't approved the message/call request",
+        "placeholders": {
+            "title": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "callReconnecting": {
+        "message": "Pripájanie...",
+        "description": "Shown in the call screen when the call is reconnecting due to network issues"
+    },
+    "callDuration": {
+        "message": "Signal $duration$",
+        "description": "Shown in the call screen to indicate how long the call has been connected",
+        "placeholders": {
+            "duration": {
+                "content": "$1",
+                "example": "00:01"
+            }
+        }
+    },
+    "callingDeviceSelection__settings": {
+        "message": "Nastavenia",
+        "description": "Title for device selection settings"
+    },
+    "calling__participants": {
+        "message": "$people$ v hovore",
+        "description": "Title for participants list toggle",
+        "placeholders": {
+            "people": {
+                "content": "$1",
+                "example": "16"
+            }
+        }
+    },
+    "calling__call-notification__ended": {
+        "message": "Skupinový hovor bol ukončený",
+        "description": "Notification message when a group call has ended"
+    },
+    "calling__call-notification__started-by-someone": {
+        "message": "Skupinový hovor sa začal",
+        "description": "Notification message when a group call has started, but we don't know who started it"
+    },
+    "calling__call-notification__started-by-you": {
+        "message": "Zahájili ste skupinový hovor",
+        "description": "Notification message when a group call has started by you"
+    },
+    "calling__call-notification__started": {
+        "message": "$name$ začal skupinový hovor",
+        "description": "Notification message when a group call has started",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "calling__call-notification__button__in-another-call-tooltip": {
+        "message": "Už ste v hovore",
+        "description": "Tooltip in disabled notification button when you're on another call"
+    },
+    "calling__call-notification__button__call-full-tooltip": {
+        "message": "Hovor dosiahol maximálnej kapacity $max$ účastníkov",
+        "description": "Tooltip in disabled notification button when the call is full",
+        "placeholders": {
+            "max": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "calling__pip--on": {
+        "message": "Minimalizovať hovor",
+        "description": "Title for picture-in-picture toggle"
+    },
+    "calling__pip--off": {
+        "message": "Hovor na celú obrazovku",
+        "description": "Title for picture-in-picture toggle"
+    },
+    "calling__switch-view--to-grid": {
+        "message": "Prepnúť na zobrazenie v mriežke",
+        "description": "Title for grid/speaker view toggle when on a call"
+    },
+    "calling__switch-view--to-speaker": {
+        "message": "Prepnúť na zobrazenie rečníka",
+        "description": "Title for grid/speaker view toggle when on a call"
+    },
+    "calling__hangup": {
+        "message": "Opustiť hovor",
+        "description": "Title for hang up button"
+    },
+    "calling__SelectPresentingSourcesModal--title": {
+        "message": "Zdieľať svoju obrazovku",
+        "description": "Title for the select your screen sharing sources modal"
+    },
+    "calling__SelectPresentingSourcesModal--confirm": {
+        "message": "Zdieľať obrazovku",
+        "description": "Confirm button for sharing screen modal"
+    },
+    "calling__SelectPresentingSourcesModal--entireScreen": {
+        "message": "Celá obrazovka",
+        "description": "Title for the select your screen sharing sources modal and 'Entire Screen' source"
+    },
+    "calling__SelectPresentingSourcesModal--screen": {
+        "message": "Obrazovka $id$",
+        "description": "Title for `Screen #N` source in screen sharing sources modal and overlay",
+        "placeholders": {
+            "id": {
+                "content": "$1",
+                "example": "1"
+            }
+        }
+    },
+    "calling__SelectPresentingSourcesModal--window": {
+        "message": "Okno",
+        "description": "Title for the select your screen sharing sources modal"
+    },
+    "callingDeviceSelection__label--video": {
+        "message": "Video",
+        "description": "Label for video input selector"
+    },
+    "callingDeviceSelection__label--audio-input": {
+        "message": "Mikrofón",
+        "description": "Label for audio input selector"
+    },
+    "callingDeviceSelection__label--audio-output": {
+        "message": "Reproduktory",
+        "description": "Label for audio output selector"
+    },
+    "callingDeviceSelection__select--no-device": {
+        "message": "Žiadne dostupné zariadenia",
+        "description": "Message for when there are no available devices to select for input/output audio or video"
+    },
+    "callingDeviceSelection__select--default": {
+        "message": "Predvolená",
+        "description": "Shown when the device is the default device"
+    },
+    "muteNotificationsTitle": {
+        "message": "Stlmiť upozornenia",
+        "description": "Label for the mute notifications drop-down selector"
+    },
+    "muteHour": {
+        "message": "Stlmiť na hodinu",
+        "description": "Label for muting the conversation"
+    },
+    "muteEightHours": {
+        "message": "Stlmiť na osem hodín",
+        "description": "Label for muting the conversation"
+    },
+    "muteDay": {
+        "message": "Stlmiť na deň",
+        "description": "Label for muting the conversation"
+    },
+    "muteWeek": {
+        "message": "Stlmiť na týždeň",
+        "description": "Label for muting the conversation"
+    },
+    "muteAlways": {
+        "message": "Stlmiť vždy",
+        "description": "Label for muting the conversation"
+    },
+    "unmute": {
+        "message": "Zrušiť stlmenie",
+        "description": "Label for unmuting the conversation"
+    },
+    "muteExpirationLabelAlways": {
+        "message": "Stlmené vždy",
+        "description": "Shown in the mute notifications submenu whenever a conversation has been muted"
+    },
+    "muteExpirationLabel": {
+        "message": "Stíšené na $duration$",
+        "description": "Shown in the mute notifications submenu whenever a conversation has been muted",
+        "placeholders": {
+            "duration": {
+                "content": "$1",
+                "example": "10/23/2023, 7:10 PM"
+            }
+        }
+    },
+    "EmojiButton__label": {
+        "message": "Emotikony",
+        "description": "Label for emoji button"
+    },
+    "ErrorModal--title": {
+        "message": "Niekde sa stala chyba!",
+        "description": "Title of pop-up dialog when user-initiated task has gone wrong"
+    },
+    "ErrorModal--description": {
+        "message": "Prosím, skúste znovu alebo kontaktujte podporu.",
+        "description": "Description text in pop-up dialog when user-initiated task has gone wrong"
+    },
+    "Confirmation--confirm": {
+        "message": "OK",
+        "description": "Button to dismiss pop-up dialog when user-initiated task has gone wrong"
+    },
+    "unknown-sgnl-link": {
+        "message": "Prepáčte, ten odkaz sgnl:// nedával zmysel!",
+        "description": "Shown if you click on a sgnl:// link not currently supported by Desktop"
+    },
+    "GroupV2--join--invalid-link--title": {
+        "message": "Neplatný odkaz",
+        "description": "Shown if we are unable to parse a group link"
+    },
+    "GroupV2--join--invalid-link": {
+        "message": "Toto nie je platný odkaz do skupiny. Uistite sa, že je celý odkaz správny a v poriadku pred tým, ako sa pokúsite pridať.",
+        "description": "Shown if we are unable to parse a group link"
+    },
+    "GroupV2--join--prompt": {
+        "message": "Chcete sa pridať do tejto skupiny a zdieľať vaše meno a foto s jej členmi?",
+        "description": "Shown when you click on a group link to confirm"
+    },
+    "GroupV2--join--already-in-group": {
+        "message": "Už ste v tejto skupine.",
+        "description": "Shown if you click a group link for a group where you're already a member"
+    },
+    "GroupV2--join--already-awaiting-approval": {
+        "message": "O schválenie na pripojenie k tejto skupine ste už požiadali.",
+        "description": "Shown if you click a group link for a group where you've already requested approval'"
+    },
+    "GroupV2--join--unknown-link-version--title": {
+        "message": "Neznáma verzia odkazu",
+        "description": "This group link is no longer valid."
+    },
+    "GroupV2--join--unknown-link-version": {
+        "message": "Táto verzia servera Signal Desktop nepodporuje tento odkaz.",
+        "description": "Shown if you click a group link and we can't get information about it"
+    },
+    "GroupV2--join--link-revoked--title": {
+        "message": "Nie je možné pridať sa do skupiny",
+        "description": "Shown if you click a group link and we can't get information about it"
+    },
+    "GroupV2--join--link-revoked": {
+        "message": "Tento odkaz do skupiny už nie je platný.",
+        "description": "Shown if you click a group link and we can't get information about it"
+    },
+    "GroupV2--join--prompt-with-approval": {
+        "message": "Pred pripojením do tejto skupiny musí správca tejto skupiny schváliť vašu žiadosť. Ak bude schválené, vaše meno a fotografia budú zdieľané s jej členmi.",
+        "description": "Shown when you click on a group link to confirm, if it requires admin approval"
+    },
+    "GroupV2--join--join-button": {
+        "message": "Pridať sa",
+        "description": "The button to join the group"
+    },
+    "GroupV2--join--request-to-join-button": {
+        "message": "Požiadať o vstup",
+        "description": "The button to join the group, if approval is required"
+    },
+    "GroupV2--join--cancel-request-to-join": {
+        "message": "Zrušiť žiadosť",
+        "description": "The button to cancel request to join the group"
+    },
+    "GroupV2--join--cancel-request-to-join--confirmation": {
+        "message": "Zrušiť vašu žiadosť o členstvo v tejto skupine?",
+        "description": "A confirmation message that shows after you click the button"
+    },
+    "GroupV2--join--cancel-request-to-join--yes": {
+        "message": "Áno",
+        "description": "Choosing to continue in the cancel join confirmation dialog"
+    },
+    "GroupV2--join--cancel-request-to-join--no": {
+        "message": "Nie",
+        "description": "Choosing not to continue in the cancel join confirmation dialog"
+    },
+    "GroupV2--join--member-count--single": {
+        "message": "1 člen",
+        "description": "Shown in the metadata section if group has just one member"
+    },
+    "GroupV2--join--member-count--multiple": {
+        "message": "$count$ členov",
+        "description": "Shown in the metadata section if group has more than one member",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "12"
+            }
+        }
+    },
+    "GroupV2--join--group-metadata": {
+        "message": "Skupina · $memberCount$",
+        "description": "A holder for two pieces of information - the type of conversation, and the member count",
+        "placeholders": {
+            "memberCount": {
+                "content": "$1",
+                "example": "12 members"
+            }
+        }
+    },
+    "GroupV2--join--requested": {
+        "message": "Vaša žiadosť o členstvo bola odoslaná administrátorovi skupiny. Keď na ňu zareaguje, dostanete oznámenie.",
+        "description": "Shown in composition area when you've requested to join a group"
+    },
+    "GroupV2--join--general-join-failure--title": {
+        "message": "Chyba odkazu",
+        "description": "Shown if something went wrong when you try to join via a group link"
+    },
+    "GroupV2--join--general-join-failure": {
+        "message": "Pripojenie cez tento odkaz zlyhalo. Skúste sa pripojiť znova neskôr.",
+        "description": "Shown if something went wrong when you try to join via a group link"
+    },
+    "GroupV2--admin": {
+        "message": "Admin",
+        "description": "Label for a group administrator"
+    },
+    "GroupV2--only-admins": {
+        "message": "Len administrátori",
+        "description": "Label for group administrators -- used in drop-downs to select permissions that apply to admins"
+    },
+    "GroupV2--all-members": {
+        "message": "Všetci členovia",
+        "description": "Label for describing the general non-privileged members of a group"
+    },
+    "updating": {
+        "message": "Aktualizuje sa...",
+        "description": "Shown along with a spinner when an update operation takes longer than one second"
+    },
+    "GroupV2--create--you": {
+        "message": "Vytvorili ste skupinu.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--create--other": {
+        "message": "$memberName$ vytvoril/a skupinu.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--create--unknown": {
+        "message": "Skupina bola vytvorená.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--title--change--other": {
+        "message": "$memberName$ zmenil/a názov skupiny na \"$newTitle$\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "newTitle": {
+                "content": "$2",
+                "example": "Saturday Hiking"
+            }
+        }
+    },
+    "GroupV2--title--change--you": {
+        "message": "Zmenili ste názov skupiny na \"$newTitle$\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "newTitle": {
+                "content": "$1",
+                "example": "Saturday Hiking"
+            }
+        }
+    },
+    "GroupV2--title--change--unknown": {
+        "message": "Člen zmenil názov skupiny na \"$newTitle$\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "newTitle": {
+                "content": "$1",
+                "example": "Saturday Hiking"
+            }
+        }
+    },
+    "GroupV2--title--remove--other": {
+        "message": "$memberName$ odstránil/a názov skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--title--remove--you": {
+        "message": "Odstránili ste názov skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--title--remove--unknown": {
+        "message": "Člen odstránil názov skupiny",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--avatar--change--other": {
+        "message": "$memberName$ zmenil/a avatara skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--avatar--change--you": {
+        "message": "Zmenili ste profilový obrázok skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--avatar--change--unknown": {
+        "message": "Člen zmenil obrázok skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--avatar--remove--other": {
+        "message": "$memberName$ odstránil/a avatara skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--avatar--remove--you": {
+        "message": "Odstránili ste avatara skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--avatar--remove--unknown": {
+        "message": "Člen odstránil avatara skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-attributes--admins--other": {
+        "message": "$adminName$ zmenil/a, kto môže upravovať informácie o skupine na \"Iba administrátori\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--access-attributes--admins--you": {
+        "message": "Zmenili ste, kto môže upravovať informácie o skupine na \"Iba administrátori\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-attributes--admins--unknown": {
+        "message": "Administrátor zmenil, kto môže upravovať informácie o skupine na \"Iba administrátori\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-attributes--all--other": {
+        "message": "$adminName$ zmenil/a, kto môže upravovať informácie o skupine na \"Všetci členovia\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--access-attributes--all--you": {
+        "message": "Zmenili ste, kto môže upravovať informácie o skupine na \"Všetci členovia\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-attributes--all--unknown": {
+        "message": "Administrátor zmenil, kto môže upravovať informácie o skupine na \"Všetci členovia\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-members--admins--other": {
+        "message": "$adminName$ zmenil/a, kto môže upraviť členstvo v skupine na \"Iba administrátori\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--access-members--admins--you": {
+        "message": "Zmenili ste, kto môže upraviť členstvo v skupine na \"Iba administrátori\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-members--admins--unknown": {
+        "message": "Administrátor zmenil, kto môže upraviť členstvo v skupine na \"Iba administrátori\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-members--all--other": {
+        "message": "$adminName$ zmenil/a, kto môže upraviť členstvo v skupine na \"Všetci členovia\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--access-members--all--you": {
+        "message": "Zmenili ste, kto môže upraviť členstvo v skupine na \"Všetci členovia\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-members--all--unknown": {
+        "message": "Administrátor zmenil, kto môže upraviť členstvo v skupine na \"Všetci členovia\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-invite-link--disabled--you": {
+        "message": "Zakázali ste schválenie správcom pre odkaz na skupinu.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-invite-link--disabled--other": {
+        "message": "$adminName$ zakázal schválenie správcom pre odkaz do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--access-invite-link--disabled--unknown": {
+        "message": "Nutnosť schvaľovania správcom pre tento odkaz do skupiny bolo zakázané.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-invite-link--enabled--you": {
+        "message": "Povolili ste schválenie správcom pre odkaz na skupinu.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-invite-link--enabled--other": {
+        "message": "$adminName$ povolil schválenie správcom pre odkaz do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--access-invite-link--enabled--unknown": {
+        "message": "Nutnosť schvaľovania správcom pre tento odkaz do skupiny bolo povolené.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add--invited--you": {
+        "message": "Pridali ste pozvaného člena $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add--invited--other": {
+        "message": "$memberName$ pridal/a pozvaného člena $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Alice"
+            },
+            "inviteeName": {
+                "content": "$2",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--invited--unknown": {
+        "message": "Člen pridal pozvaného člena $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add--from-invite--other": {
+        "message": "$inviteeName$ prijal/a pozvanie do skupiny od $inviterName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Alice"
+            },
+            "inviterName": {
+                "content": "$2",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--from-invite--other-no-from": {
+        "message": "$inviteeName$ prijal/a pozvanie do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add--from-invite--you": {
+        "message": "Prijali ste pozvanie do skupiny od $inviterName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviterName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--from-invite--you-no-from": {
+        "message": "Prijali ste pozvanie do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add--from-invite--from-you": {
+        "message": "$inviteeName$ prijal/a vaše pozvanie do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--other--other": {
+        "message": "$adderName$ pridal/a $addeeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adderName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "addeeName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add--other--you": {
+        "message": "Pridali ste $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--other--unknown": {
+        "message": "Člen pridal $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--you--other": {
+        "message": "$memberName$ vás pridal/a do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--you--you": {
+        "message": "Pridali ste sa do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add--you--unknown": {
+        "message": "Boli ste pridaný/á do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add-from-link--you--you": {
+        "message": "Pridali ste sa do skupiny prostredníctvom odkazu do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add-from-link--other": {
+        "message": "$memberName$ sa k skupine pripojil prostredníctvom odkazu na skupinu.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add-from-admin-approval--you--other": {
+        "message": "$adminName$ schválil vašu žiadosť o pripojenie sa k skupine.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add-from-admin-approval--you--unknown": {
+        "message": "Vaša žiadosť o členstvo v skupine bola schválená.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add-from-admin-approval--other--you": {
+        "message": "Schválili ste žiadosť o pripojenie sa k skupine od $joinerName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add-from-admin-approval--other--other": {
+        "message": "$adminName$ schválil žiadosť o pripojenie sa k skupine od $joinerName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add-from-admin-approval--other--unknown": {
+        "message": "Žiadosť o pripojenie sa k skupine od používateľa $joinerName$ bola schválená.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-remove--other--other": {
+        "message": "$adminName$ odstránil/a $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-remove--other--self": {
+        "message": "$memberName$ opustil/a skupinu.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-remove--other--you": {
+        "message": "Odstránili ste $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-remove--other--unknown": {
+        "message": "Člen odstránil $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-remove--you--other": {
+        "message": "$adminName$ vás odstránil/a.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-remove--you--you": {
+        "message": "Opustili ste skupinu.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-remove--you--unknown": {
+        "message": "Odstránili vás zo skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-privilege--promote--other--other": {
+        "message": "$adminName$ spravil administrátora z $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-privilege--promote--other--you": {
+        "message": "Spravili ste $memberName$ administrátorom.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--promote--other--unknown": {
+        "message": "Administrátor spravil z $memberName$ administrátora.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--promote--you--other": {
+        "message": "$adminName$ z vás spravil administrátora.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--promote--you--unknown": {
+        "message": "Administrátor z vás spravil administrátora.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-privilege--demote--other--other": {
+        "message": "$adminName$ odobral/a administrátorské práva používateľovi $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-privilege--demote--other--you": {
+        "message": "Odobrali ste administrátorské práva používateľovi $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--demote--other--unknown": {
+        "message": "Administrátor odobral administrátorské práva používateľovi $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-privilege--demote--you--other": {
+        "message": "$adminName$ zrušil/a vaše administrátorské práva.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--demote--you--unknown": {
+        "message": "Administrátor zrušil vaše administrátorské práva.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--pending-add--one--other--other": {
+        "message": "$memberName$ pozval/a do skupiny 1 osobu.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-add--one--other--you": {
+        "message": "Pozvali ste $inviteeName$ do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-add--one--other--unknown": {
+        "message": "Jedna osoba bola pozvaná do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-add--one--you--other": {
+        "message": "$memberName$ vás pozval/a do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-add--one--you--unknown": {
+        "message": "Pozvali vás do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--pending-add--many--other": {
+        "message": "$memberName$ pozval/a do skupiny $count$ ľudí.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "count": {
+                "content": "$2",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-add--many--you": {
+        "message": "Pozvali ste do skupiny $count$ ľudí.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-add--many--unknown": {
+        "message": "$count$ ľudia boli pozvaní do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--decline--other": {
+        "message": "1 osoba, ktorú pozval/a $memberName$, odmietla pozvanie do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--decline--you": {
+        "message": "$inviteeName$ odmietol/la vaše pozvanie do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--decline--from-you": {
+        "message": "Odmietli ste pozvánku do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--pending-remove--decline--unknown": {
+        "message": "1 osoba odmietla svoje pozvanie do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--pending-remove--revoke--one--other": {
+        "message": "$memberName$ odvolal/a pozvanie do skupiny 1 osobe.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--one--you": {
+        "message": "Odvolali ste pozvanie do skupiny 1 osobe.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-own--to-you": {
+        "message": "$inviterName$ odvolal/a svoje pozvanie smerované vám.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviterName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-own--unknown": {
+        "message": "$inviterName$ odvolal/a svoje pozvanie 1 osobe.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviterName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--one--unknown": {
+        "message": "Administrátor odvolal pozvanie do skupiny 1 osobe.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--many--other": {
+        "message": "$memberName$ odvolal/a pozvania do skupiny $count$ ľuďom.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "count": {
+                "content": "$2",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--many--you": {
+        "message": "Odvolali ste pozvania do skupiny $count$ ľuďom.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--many--unknown": {
+        "message": "Administrátor odvolal pozvania do skupiny $count$ ľuďom.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--one--other": {
+        "message": "$adminName$ odvolal/a pozvanie do skupiny 1 osobe pozvanej používateľom $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--one--you": {
+        "message": "Odvolali ste pozvanie do skupiny 1 osobe pozvanej používateľom $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--one--unknown": {
+        "message": "Administrátor odvolal pozvanie do skupiny 1 osobe pozvanej používateľom $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--one--other": {
+        "message": "$adminName$ odvolal/a pozvanie do skupiny, ktoré ste poslali používateľovi $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--one--you": {
+        "message": "Zrušili ste pozvanie pre $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--one--unknown": {
+        "message": "Administrátor odvolal pozvanie do skupiny, ktoré ste poslali používateľovi $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--many--other": {
+        "message": "$adminName$ odvolal/a pozvania do skupiny pre $count$ ľudí pozvaných používateľom $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--many--you": {
+        "message": "Odvolali ste pozvania do skupiny pre $count$ ľudí pozvaných používateľom $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--many--unknown": {
+        "message": "Administrátor odvolal pozvania do skupiny pre $count$ ľudí pozvaných používateľom $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--many--other": {
+        "message": "$adminName$ odvolal/a pozvania do skupiny, ktoré ste poslali $count$ ľuďom.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "count": {
+                "content": "$2",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--many--you": {
+        "message": "Zrušili ste svoje pozvanie pre $count$ ľudí.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--many--unknown": {
+        "message": "Administrátor odvolal pozvania do skupiny, ktoré ste poslali $count$ ľuďom.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--admin-approval-add-one--you": {
+        "message": "Poslali ste žiadosť o členstvo v skupine.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--admin-approval-add-one--other": {
+        "message": "$joinerName$ požiadal o pripojenie prostredníctvom skupinového odkazu.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--admin-approval-remove-one--you--you": {
+        "message": "Zrušili ste vašu žiadosť o členstvo v skupine.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--admin-approval-remove-one--you--unknown": {
+        "message": "Vaša žiadosť o členstvo v skupine bola odmietnutá administrátorom.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--admin-approval-remove-one--other--you": {
+        "message": "Odmietli ste žiadosť o pripojenie k skupine od $joinerName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--admin-approval-remove-one--other--own": {
+        "message": "$joinerName$ zrušili svoju žiadosť o pripojenie sa k skupine.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--admin-approval-remove-one--other--other": {
+        "message": "$adminName$ odmietol žiadosť o pripojenie sa k skupine od používateľa $joinerName$",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "joinerName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-add--disabled--you": {
+        "message": "Zapli ste odkaz na skupinu s nepovolenou funkciou \"schválenie správcom\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-add--disabled--other": {
+        "message": "$adminName$ zapnutý odkaz na skupinu s nepovolenou funkciou \"schválenie správcom\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-add--disabled--unknown": {
+        "message": "Odkaz na skupinu bol zapnutý s nepovolenou funkciou \"schválenie správcom\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-add--enabled--you": {
+        "message": "Zapli ste odkaz na skupinu s povolenou funkciou \"schválenie správcom\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-add--enabled--other": {
+        "message": "$adminName$ zapol odkaz na skupinu s povolenou funkciou \"schválenie správcom\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-add--enabled--unknown": {
+        "message": " Odkaz na skupinu bol zapnutý s povolenou funkciou \"schválenie správcom\".",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-remove--you": {
+        "message": "Odkaz do skupiny ste vypli.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-remove--other": {
+        "message": "$adminName$ vypol skupinové prepojenie.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-remove--unknown": {
+        "message": "Odkaz do skupiny bol vypnutý.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-reset--you": {
+        "message": "Zresetovali ste odkaz do skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-reset--other": {
+        "message": "$adminName$ obnovil odkaz na skupinu.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-reset--unknown": {
+        "message": "Odkaz do skupiny bol zresetovaný.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--description--remove--you": {
+        "message": "Odstránili ste popis skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--description--remove--other": {
+        "message": "$memberName$ odstránil popis skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--description--remove--unknown": {
+        "message": "Popis skupiny bol odstránený.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--description--change--you": {
+        "message": "Zmenili ste popis skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--description--change--other": {
+        "message": "$memberName$ zmenil popis skupiny.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--description--change--unknown": {
+        "message": "Popis skupiny bol zmenený.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV1--Migration--disabled": {
+        "message": "Inovujte túto skupinu pre sprístupnenie nových funkcií, ako @zmienky a administrátorov. Členovia, ktorí nezdieľali svoje meno alebo fotku v tejto skupine budú do nej pozvaní. $learnMore$",
+        "description": "Shown instead of composition area when user is forced to migrate a legacy group (GV1).",
+        "placeholders": {
+            "learnMore": {
+                "content": "$1",
+                "example": "Learn more."
+            }
+        }
+    },
+    "GroupV1--Migration--was-upgraded": {
+        "message": "Táto skupina sa modernizovala na Novú skupinu.",
+        "description": "Shown in timeline when a legacy group (GV1) is upgraded to a new group (GV2)"
+    },
+    "GroupV1--Migration--learn-more": {
+        "message": "Dozvedieť sa viac",
+        "description": "Shown on a bubble below a 'group was migrated' timeline notification, or as button on Migrate dialog"
+    },
+    "GroupV1--Migration--migrate": {
+        "message": "Aktualizovať",
+        "description": "Shown on Migrate dialog to kick off the process"
+    },
+    "GroupV1--Migration--info--title": {
+        "message": "Čo sú Nové skupiny?",
+        "description": "Shown on Learn More popup after GV1 migration"
+    },
+    "GroupV1--Migration--migrate--title": {
+        "message": "Modernizovať na Novú skupinu",
+        "description": "Shown on Migration popup after choosing to migrate group"
+    },
+    "GroupV1--Migration--info--summary": {
+        "message": "Nové skupiny majú funkcie ako @spomenutia, administrátori skupín a v budúcnosti budú podporovať ďalšie nové funkcie.",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--keep-history": {
+        "message": "Celá história správ a médií ostala zachovaná tak ako pred modernizáciou.",
+        "description": "Shown on Learn More popup after GV1 migration"
+    },
+    "GroupV1--Migration--migrate--keep-history": {
+        "message": "Celá história správ a médií ostane zachovaná tak ako pred modernizáciou.",
+        "description": "Shown on Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--invited--you": {
+        "message": "Musíte znova prijať pozvánku do tejto skupiny a kým ju neprijmete, nebudete dostávať skupinové správy.",
+        "description": "Shown on Learn More popup after GV1 migration"
+    },
+    "GroupV1--Migration--info--invited--many": {
+        "message": "Títo členovia musia znova prijať pozvánku do skupiny a kým ju neprijmú, nebudú dostávať skupinové správy:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--invited--one": {
+        "message": "Tento člen musí znova prijať pozvánku do skupiny a kým ju neprijme, nebude dostávať skupinové správy:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--removed--before--many": {
+        "message": "Títo členovia nemôžu byť pridaní do Nových skupín a budú zo skupiny odstránení:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--removed--before--one": {
+        "message": "Tento člen nemôže byť pridaný do Nových skupín a bude zo skupiny odstránený:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--removed--after--many": {
+        "message": "Títo členovia neboli schopní pripojenia sa do Nových skupín a boli zo skupiny odstránení:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--removed--after--one": {
+        "message": "Tento člen nebol schopný pripojenia sa do Nových skupín a bol zo skupiny odstránený:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--invited--you": {
+        "message": "Nepodarilo sa vás pridať do Novej skupiny a boli ste do nej pozvaný.",
+        "description": "Shown in timeline when a group is upgraded and you were invited instead of added"
+    },
+    "GroupV1--Migration--invited--one": {
+        "message": "$contact$ nemohol byť pridaný do Novej skupiny a bol pozvaný.",
+        "description": "Shown in timeline when a group is upgraded and one person was invited, instead of added",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV1--Migration--invited--many": {
+        "message": "$count$ členov nemohlo byť pridaných do Novej skupiny a boli pozvaní.",
+        "description": "Shown in timeline when a group is upgraded and some people were invited, instead of added",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV1--Migration--removed--one": {
+        "message": "$contact$ bol odstránený zo skupiny.",
+        "description": "Shown in timeline when a group is upgraded and one person was removed entirely during the upgrade",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV1--Migration--removed--many": {
+        "message": "$count$ členov bolo odstránených zo skupiny.",
+        "description": "Shown in timeline when a group is upgraded and some people were removed entirely during the upgrade",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "close": {
+        "message": "Zatvoriť",
+        "description": "Generic close label"
+    },
+    "previous": {
+        "message": "predošlý",
+        "description": "Generic previous label"
+    },
+    "next": {
+        "message": "ďalší",
+        "description": "Generic next label"
+    },
+    "CompositionArea--expand": {
+        "message": "Rozbaliť",
+        "description": "Aria label for expanding composition area"
+    },
+    "CompositionArea--attach-file": {
+        "message": "Pripojiť súbor",
+        "description": "Aria label for file attachment button in composition area"
+    },
+    "CompositionArea--sms-only__title": {
+        "message": "Táto osoba nepoužíva Signal",
+        "description": "Title for the composition area for the SMS-only contact"
+    },
+    "CompositionArea--sms-only__body": {
+        "message": "Aplikácia Signal Desktop nepodporuje zasielanie správ kontaktom bez Signal. Požiadajte túto osobu, aby si nainštalovala program Signal, aby ste zabezpečili bezpečnejšie zasielanie správ.",
+        "description": "Body for the composition area for the SMS-only contact"
+    },
+    "CompositionArea--sms-only__spinner-label": {
+        "message": "Kontroluje sa stav registrácie kontaktu",
+        "description": "Displayed while checking if the contact is SMS-only"
+    },
+    "countMutedConversationsDescription": {
+        "message": "Počítať stlmené konverzácie v počítadle pri odznaku.",
+        "description": "Description for counting muted conversations in badge setting"
+    },
+    "ContactModal--message": {
+        "message": "Správa",
+        "description": "Button text for send message button in Group Contact Details modal"
+    },
+    "ContactModal--rm-admin": {
+        "message": "Odstrániť ako admina",
+        "description": "Button text for removing as admin button in Group Contact Details modal"
+    },
+    "ContactModal--make-admin": {
+        "message": "Spraviť administrátorom",
+        "description": "Button text for make admin button in Group Contact Details modal"
+    },
+    "ContactModal--make-admin-info": {
+        "message": "$contact$ bude môcť upravovať túto skupinu a jej členov.",
+        "description": "Shown in a confirmation dialog when you are about to grant admin privileges to someone",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "Homer"
+            }
+        }
+    },
+    "ContactModal--rm-admin-info": {
+        "message": "Odstrániť $contact$ ako správca skupiny",
+        "description": "Shown in a confirmation dialog when you are about to remove admin privileges from someone",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "Homer"
+            }
+        }
+    },
+    "ContactModal--remove-from-group": {
+        "message": "Odstrániť zo skupiny",
+        "description": "Button text for remove from group button in Group Contact Details modal"
+    },
+    "showChatColorEditor": {
+        "message": "Farba chatu",
+        "description": "This is a button in the conversation context menu to show the chat color editor"
+    },
+    "showConversationDetails": {
+        "message": "Nastavenia skupiny",
+        "description": "This is a button in the conversation context menu to show group settings"
+    },
+    "ConversationDetails--group-link": {
+        "message": "Odkaz do skupiny",
+        "description": "This is the label for the group link management panel"
+    },
+    "ConversationDetails--disappearing-messages-label": {
+        "message": "Miznúce správy",
+        "description": "This is the label for the disappearing messages setting panel"
+    },
+    "ConversationDetails--disappearing-messages-info": {
+        "message": "Keď je táto možnosť povolená, správy odoslané a prijaté v tejto skupine po zobrazení zmiznú.",
+        "description": "This is the info about the disappearing messages setting"
+    },
+    "ConversationDetails--group-info-label": {
+        "message": "Kto môže upravovať informácie o skupine",
+        "description": "This is the label for the 'who can edit the group' panel"
+    },
+    "ConversationDetails--group-info-info": {
+        "message": "Vyberte, kto môže upraviť názov skupiny, fotografiu, popis a časovač miznúcich správ.",
+        "description": "This is the additional info for the 'who can edit the group' panel"
+    },
+    "ConversationDetails--add-members-label": {
+        "message": "Kto môže pridávať členov",
+        "description": "This is the label for the 'who can add members' panel"
+    },
+    "ConversationDetails--add-members-info": {
+        "message": "Vyberte, kto môže pridať členov do tejto skupiny.",
+        "description": "This is the additional info for the 'who can add members' panel"
+    },
+    "ConversationDetails--requests-and-invites": {
+        "message": "Žiadosti a pozvánky",
+        "description": "This is a button to display which members have been invited but have not joined yet"
+    },
+    "ConversationDetailsActions--leave-group": {
+        "message": "Opustiť skupinu",
+        "description": "This is a button to leave a group"
+    },
+    "ConversationDetailsActions--block-group": {
+        "message": "Blokovať skupinu",
+        "description": "This is a button to block a group"
+    },
+    "ConversationDetailsActions--leave-group-must-choose-new-admin": {
+        "message": "Pred tým, než opustíte túto skupinu, musíte pre ňu vybrať aspoň jedného nového administrátora.",
+        "description": "Shown if, before leaving a group, you need to choose an admin"
+    },
+    "ConversationDetailsActions--leave-group-modal-title": {
+        "message": "Naozaj chcete odísť?",
+        "description": "This is the modal title for confirming leaving a group"
+    },
+    "ConversationDetailsActions--leave-group-modal-content": {
+        "message": "Nebudete môcť poslať ani prijať správy z tejto skupiny.",
+        "description": "This is the modal content for confirming leaving a group"
+    },
+    "ConversationDetailsActions--leave-group-modal-confirm": {
+        "message": "Opustiť",
+        "description": "This is the modal button to confirm leaving a group"
+    },
+    "ConversationDetailsActions--block-group-modal-title": {
+        "message": "Zablokovať a opustiť \"$groupName$\" skupinu?",
+        "description": "This is the modal title for confirming blocking a group",
+        "placeholders": {
+            "groupName": {
+                "content": "$1",
+                "example": "Our Conversation"
+            }
+        }
+    },
+    "ConversationDetailsActions--block-group-modal-content": {
+        "message": "Už nebudete dostávať správy a aktualizácie od tejto skupiny.",
+        "description": "This is the modal content for confirming blocking a group"
+    },
+    "ConversationDetailsActions--block-group-modal-confirm": {
+        "message": "Blokovať",
+        "description": "This is the modal button to confirm blocking a group"
+    },
+    "ConversationDetailsHeader--members": {
+        "message": "$number$ používateľov",
+        "description": "This is the number of members in a group",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "10"
+            }
+        }
+    },
+    "ConversationDetailsMediaList--shared-media": {
+        "message": "Zdieľané médiá",
+        "description": "Title for the media thumbnails in the conversation details screen"
+    },
+    "ConversationDetailsMediaList--show-all": {
+        "message": "Pozrieť všetky",
+        "description": "This is a button on the conversation details to show all media"
+    },
+    "ConversationDetailsMembershipList--title": {
+        "message": "$number$ používateľov",
+        "description": "The title of the membership list panel",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "10"
+            }
+        }
+    },
+    "ConversationDetailsMembershipList--add-members": {
+        "message": "Pridať členov",
+        "description": "The button that you can click to add new members"
+    },
+    "ConversationDetailsMembershipList--show-all": {
+        "message": "Pozrieť všetky",
+        "description": "This is a button on the conversation details to show all members"
+    },
+    "GroupLinkManagement--clipboard": {
+        "message": "Odkaz na skupinu bol skopírovaný.",
+        "description": "Shown in a toast when a user selects to copy group link"
+    },
+    "GroupLinkManagement--share": {
+        "message": "Skopírovať odkaz",
+        "description": "This lets users share their group link"
+    },
+    "GroupLinkManagement--confirm-reset": {
+        "message": "Ste si istý/á, že chcete zresetovať odkaz do skupiny? Ľudia sa už viac nebudú môcť do skupiny pridať prostredníctvom aktuálneho odkazu.",
+        "description": "Shown in the confirmation dialog when an admin is about to reset the group link"
+    },
+    "GroupLinkManagement--reset": {
+        "message": "Zresetovať odkaz",
+        "description": "This lets users generate a new group link"
+    },
+    "GroupLinkManagement--approve-label": {
+        "message": "Schválenie nových členov",
+        "description": "Title for the approve new members select area"
+    },
+    "GroupLinkManagement--approve-info": {
+        "message": "Vyžadujte od správcu, aby schválil pripojenie nových členov cez odkaz na skupinu",
+        "description": "Description for the approve new members select area"
+    },
+    "PendingInvites--tab-requests": {
+        "message": "Žiadosti ($count$)",
+        "description": "Label for the tab to view pending requests",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "4"
+            }
+        }
+    },
+    "PendingInvites--tab-invites": {
+        "message": "Pozvánky ($count$)",
+        "description": "Label for the tab to view pending invites",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "2"
+            }
+        }
+    },
+    "PendingRequests--approve-for": {
+        "message": "Schváliť žiadosť od \"$name$\"?",
+        "description": "This is the modal content when confirming approving a group request to join",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Meowsy Purrington"
+            }
+        }
+    },
+    "PendingRequests--deny-for": {
+        "message": "Odmietnuť žiadosť od \"$name$\"?",
+        "description": "This is the modal content when confirming denying a group request to join",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Meowsy Purrington"
+            }
+        }
+    },
+    "PendingInvites--invites": {
+        "message": "Pozvaní vami",
+        "description": "This is the title list of all invites"
+    },
+    "PendingInvites--invited-by-you": {
+        "message": "Pozvaní vami",
+        "description": "This is the title for the list of members you have invited"
+    },
+    "PendingInvites--invited-by-others": {
+        "message": "Pozvaní ostatnými",
+        "description": "This is the title for the list of members who have invited other people"
+    },
+    "PendingInvites--invited-count": {
+        "message": "Pozvaný $number$",
+        "description": "This is the label for the number of members someone has invited",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "3"
+            }
+        }
+    },
+    "PendingInvites--revoke-for-label": {
+        "message": "Odvolať pozvanie skupiny",
+        "description": "This is aria label for revoking a group invite icon"
+    },
+    "PendingInvites--revoke-for": {
+        "message": "Odvolať pozvanie do skupiny pre \"$name$\"?",
+        "description": "This is the modal content when confirming revoking a single invite",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "3"
+            },
+            "name": {
+                "content": "$2",
+                "example": "Fred Riley III"
+            }
+        }
+    },
+    "PendingInvites--revoke-from-singular": {
+        "message": "Odvolať 1 pozvánku odoslanú od \"$name$\"?",
+        "description": "This is the modal content when confirming revoking a single invite",
+        "placeholders": {
+            "name": {
+                "content": "$2",
+                "example": "Fred Riley III"
+            }
+        }
+    },
+    "PendingInvites--revoke-from-plural": {
+        "message": "Odvolať $number$ pozvánky odoslané používateľom \"$name$\"",
+        "description": "This is the modal content when confirming revoking multiple invites",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "3"
+            },
+            "name": {
+                "content": "$2",
+                "example": "Fred Riley III"
+            }
+        }
+    },
+    "PendingInvites--revoke": {
+        "message": "Odvolať",
+        "description": "This is the modal button to confirm revoking invites"
+    },
+    "PendingRequests--approve": {
+        "message": "Schváliť žiadosť",
+        "description": "This is the modal button to approve group request to join"
+    },
+    "PendingRequests--deny": {
+        "message": "Odmietnuť žiadosť",
+        "description": "This is the modal button to deny group request to join"
+    },
+    "PendingRequests--info": {
+        "message": "Ľudia v tomto zozname sa pokúšajú pripojiť k \"$name$\" pomocou skupinového odkazu.",
+        "description": "Inforamtion shown below the pending admin approval list",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Tahoe List"
+            }
+        }
+    },
+    "PendingInvites--info": {
+        "message": "Podrobnosti o ľuďoch pozvaných do tejto skupiny sa zobrazia, až keď sa pripoja. Pozvané osoby uvidia správy až po pripojení k skupine",
+        "description": "Information shown below the invite list"
+    },
+    "AvatarInput--no-photo-label--group": {
+        "message": "Pridať fotku skupiny",
+        "description": "The label for the avatar uploader when no group photo is selected"
+    },
+    "AvatarInput--change-photo-label": {
+        "message": "Zmeniť fotku",
+        "description": "The label for the avatar uploader when a photo is selected"
+    },
+    "AvatarInput--upload-photo-choice": {
+        "message": "Nahrať fotku",
+        "description": "The button text when you click on an uploaded avatar and want to upload a new one"
+    },
+    "AvatarInput--remove-photo-choice": {
+        "message": "Odstrániť fotku",
+        "description": "The button text when you click on an uploaded avatar and want to remove it"
+    },
+    "ContactPill--remove": {
+        "message": "Odstrániť kontakt",
+        "description": "The label for the 'remove' button on the contact pill"
+    },
+    "ComposeErrorDialog--close": {
+        "message": "OK",
+        "description": "The text on the button when there's an error in the composer"
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--title--one": {
+        "message": "Pozvánka odoslaná",
+        "description": "When creating a new group and inviting users, this is shown in the dialog"
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--title--many": {
+        "message": "$count$ pozvánok odoslaných",
+        "description": "When creating a new group and inviting users, this is shown in the dialog",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "3"
+            }
+        }
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--body--user-paragraph--one": {
+        "message": "Nemôžete automaticky pridať používateľa $name$ do tejto skupiny.",
+        "description": "When creating a new group and inviting users, this is shown in the dialog",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Jane Doe"
+            }
+        }
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--body--user-paragraph--many": {
+        "message": "Týchto používateľov nemôžete automaticky pridať do tejto skupiny.",
+        "description": "When creating a new group and inviting users, this is shown in the dialog"
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--body--info-paragraph": {
+        "message": "Týmto používateľom bola odoslaná pozvánka, aby sa pridali, a kým pozvanie neprijmú, neuvidia žiadne správy zo skupiny.",
+        "description": "When creating a new group and inviting users, this is shown in the dialog"
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--body--learn-more": {
+        "message": "Dozvedieť sa viac",
+        "description": "When creating a new group and inviting users, this is shown in the dialog"
+    },
+    "AddGroupMembersModal--title": {
+        "message": "Pridať členov",
+        "description": "When adding new members to an existing group, this is shown in the dialog"
+    },
+    "AddGroupMembersModal--continue-to-confirm": {
+        "message": "Aktualizovať",
+        "description": "When adding new members to an existing group, this is shown in the dialog"
+    },
+    "AddGroupMembersModal--confirm-title--one": {
+        "message": "Pridať $person$ do \"$group$\"?",
+        "description": "When adding new members to an existing group, this is shown in the confirmation dialog",
+        "placeholders": {
+            "person": {
+                "content": "$1",
+                "example": "Jane Doe"
+            },
+            "group": {
+                "content": "$2",
+                "example": "Tahoe Trip"
+            }
+        }
+    },
+    "AddGroupMembersModal--confirm-title--many": {
+        "message": "Pridať $count$ členov do \"$group$\"?",
+        "description": "When adding new members to an existing group, this is shown in the confirmation dialog",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            },
+            "group": {
+                "content": "$2",
+                "example": "Tahoe Trip"
+            }
+        }
+    },
+    "AddGroupMembersModal--confirm-button--one": {
+        "message": "Pridať člena",
+        "description": "When adding new members to an existing group, this is shown on the confirmation dialog button"
+    },
+    "AddGroupMembersModal--confirm-button--many": {
+        "message": "Pridať členov",
+        "description": "When adding new members to an existing group, this is shown on the confirmation dialog button"
+    },
+    "createNewGroupButton": {
+        "message": "Nová skupina",
+        "description": "The text of the button to create new groups"
+    },
+    "selectContact": {
+        "message": "Vyber kontakt",
+        "description": "The label for contact checkboxes that are non-selected (clicking them should select the contact)"
+    },
+    "deselectContact": {
+        "message": "Zrušiť vybraný kontakt",
+        "description": "The label for contact checkboxes that are selected (clicking them should de-select the contact)"
+    },
+    "cannotSelectContact": {
+        "message": "Nemožno vybrať kontakt",
+        "description": "The label for contact checkboxes that are disabled"
+    },
+    "alreadyAMember": {
+        "message": "Už je členom",
+        "description": "The label for contact checkboxes that are disabled because they're already a member"
+    },
+    "MessageAudio--play": {
+        "message": "Prehrať zvukovú prílohu",
+        "description": "Aria label for audio attachment's Play button"
+    },
+    "MessageAudio--pause": {
+        "message": "Pauza zvukovej prílohy",
+        "description": "Aria label for audio attachment's Pause button"
+    },
+    "MessageAudio--download": {
+        "message": "Stiahnuť zvukovú prílohu",
+        "description": "Aria label for audio attachment's Download button"
+    },
+    "MessageAudio--pending": {
+        "message": "Sťahuje sa zvuková príloha...",
+        "description": "Aria label for pending audio attachment spinner"
+    },
+    "MessageAudio--slider": {
+        "message": "Čas prehrávania zvukovej prílohy",
+        "description": "Aria label for audio attachment's playback time slider"
+    },
+    "emptyInboxMessage": {
+        "message": "Kliknite hore na $composeIcon$ a vyhľadajte svoje kontakty, alebo skupiny ktorým chcete poslať správu.",
+        "description": "Shown in the left-pane when the inbox is empty",
+        "placeholders": {
+            "composeIcon": {
+                "content": "$1",
+                "example": "compose button"
+            }
+        }
+    },
+    "composeIcon": {
+        "message": "tlačidlo zostavenia",
+        "description": "Shown in the left-pane when the inbox is empty. Describes the button that composes a new message."
+    },
+    "ForwardMessageModal--continue": {
+        "message": "Pokračovať",
+        "description": "aria-label for the 'next' button in the forward a message modal dialog"
+    },
+    "MessageRequestWarning__learn-more": {
+        "message": "Dozvedieť sa viac",
+        "description": "Shown on the message request warning. Clicking this button will open a dialog with more information"
+    },
+    "MessageRequestWarning__dialog__details": {
+        "message": "S touto osobou nemáte spoločné žiadne skupiny. Pred prijatím žiadosti starostlivo skontrolujte, aby ste predišli nežiaducim správam.",
+        "description": "Shown in the message request warning dialog. Gives more information about message requests"
+    },
+    "MessageRequestWarning__dialog__learn-even-more": {
+        "message": "O žiadostiach o správy",
+        "description": "Shown in the message request warning dialog. Clicking this button will open a page on Signal's support site"
+    },
+    "ContactSpoofing__same-name": {
+        "message": "Žiadosti starostlivo skontrolujte. Signal našiel ďalší kontakt s rovnakým menom. $link$",
+        "description": "Shown in the timeline warning when you have a message request from someone with the same name as someone else",
+        "placeholders": {
+            "link": {
+                "content": "$1",
+                "example": "Review request"
+            }
+        }
+    },
+    "ContactSpoofing__same-name-in-group": {
+        "message": "$count$ členovia skupiny majú rovnaké meno. $link$",
+        "description": "Shown in the timeline warning when you multiple group members have the same name",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "3"
+            },
+            "link": {
+                "content": "$2",
+                "example": "Tap to review"
+            }
+        }
+    },
+    "ContactSpoofing__same-name__link": {
+        "message": "Overiť žiadosť",
+        "description": "Shown in the timeline warning when you have a message request from someone with the same name as someone else"
+    },
+    "ContactSpoofing__same-name-in-group__link": {
+        "message": "Kliknite a skontrolujte",
+        "description": "Shown in the timeline warning when you multiple group members have the same name"
+    },
+    "ContactSpoofingReviewDialog__title": {
+        "message": "Overiť žiadosť",
+        "description": "Title for the contact name spoofing review dialog"
+    },
+    "ContactSpoofingReviewDialog__description": {
+        "message": "Ak si nie ste istý/á, od koho je táto žiadosť, overte nižšie zobrazené kontakty a zvoľte úkon.",
+        "description": "Description for the contact spoofing review dialog"
+    },
+    "ContactSpoofingReviewDialog__possibly-unsafe-title": {
+        "message": "Žiadosť",
+        "description": "Header in the contact spoofing review dialog, shown above the potentially-unsafe user"
+    },
+    "ContactSpoofingReviewDialog__safe-title": {
+        "message": "Váš kontakt",
+        "description": "Header in the contact spoofing review dialog, shown above the \"safe\" user"
+    },
+    "ContactSpoofingReviewDialog__group__title": {
+        "message": "Skontrolujte členov",
+        "description": "Title for the contact name spoofing review dialog in groups"
+    },
+    "ContactSpoofingReviewDialog__group__description": {
+        "message": "$count$ členovia skupiny majú podobné mená. Skontrolujte členov nižšie alebo sa rozhodnite konať.",
+        "description": "Description for the group contact spoofing review dialog"
+    },
+    "ContactSpoofingReviewDialog__group__members-header": {
+        "message": "Členovia",
+        "description": "Header in the group contact spoofing review dialog. After this header, there will be a list of members"
+    },
+    "ContactSpoofingReviewDialog__group__name-change-info": {
+        "message": "$oldName$ nedávno zmenil svoje profilové meno na $newName$",
+        "description": "In the group contact spoofing review dialog, this text is shown when someone has changed their name recently",
+        "placeholders": {
+            "oldName": {
+                "content": "$1",
+                "example": "Jane Doe"
+            },
+            "newName": {
+                "content": "$2",
+                "example": "Doe Jane"
+            }
+        }
+    },
+    "RemoveGroupMemberConfirmation__remove-button": {
+        "message": "Odstrániť zo skupiny",
+        "description": "When confirming the removal of a group member, show this text in the button"
+    },
+    "RemoveGroupMemberConfirmation__description": {
+        "message": "Odstrániť \"$name$\" zo skupiny?",
+        "description": "When confirming the removal of a group member, show this text in the dialog",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Jane Doe"
+            }
+        }
+    },
+    "CaptchaDialog__title": {
+        "message": "Pre pokračovanie v zasielaní správ overte",
+        "description": "Header in the captcha dialog"
+    },
+    "CaptchaDialog__first-paragraph": {
+        "message": "Ak chcete zabrániť spamu v Signal, dokončite overenie.",
+        "description": "First paragraph in the captcha dialog"
+    },
+    "CaptchaDialog__second-paragraph": {
+        "message": "Po overení, môžete pokračovať v zasielaní správ. Pozastavené správy sa automaticky odošlú.",
+        "description": "First paragraph in the captcha dialog"
+    },
+    "CaptchaDialog--can-close__title": {
+        "message": "Pokračovať bez overenia?",
+        "description": "Header in the captcha dialog that can be closed"
+    },
+    "CaptchaDialog--can-close__body": {
+        "message": "Ak sa rozhodnete preskočiť overovanie, môžu vám chýbať správy od iných ľudí a môže sa stať, že sa vaše správy neodošlú.",
+        "description": "Body of the captcha dialog that can be closed"
+    },
+    "CaptchaDialog--can_close__skip-verification": {
+        "message": "Preskočiť overenie",
+        "description": "Skip button of the captcha dialog that can be closed"
+    },
+    "verificationComplete": {
+        "message": "Overenie je dokončené.",
+        "description": "Displayed after successful captcha"
+    },
+    "verificationFailed": {
+        "message": "Overenie zlyhalo. Skúste to znova neskôr.",
+        "description": "Displayed after unsuccessful captcha"
+    },
+    "deleteForEveryoneFailed": {
+        "message": "Nepodarilo sa odstrániť správu pre všetkých. Skúste to znova neskôr.",
+        "description": "Displayed when delete-for-everyone has failed to send to all recepients"
+    },
+    "ChatColorPicker__delete--title": {
+        "message": "Vymazať farbu",
+        "description": "Confirm title for deleting custom color"
+    },
+    "ChatColorPicker__delete--message": {
+        "message": "Táto vlastná farba sa používa v $num$ konverzáciach. Chcete ju odstrániť pre všetky konverzácie?",
+        "description": "Confirm message for deleting custom color",
+        "placeholders": {
+            "num": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "ChatColorPicker__global-chat-color": {
+        "message": "Globálna farba konverzácie",
+        "description": "Modal title for the chat color picker and editor for all conversations"
+    },
+    "ChatColorPicker__menu-title": {
+        "message": "Farba chatu",
+        "description": "View title for the chat color picker and editor"
+    },
+    "ChatColorPicker__reset": {
+        "message": "Obnoviť farbu rozhovoru",
+        "description": "Button label for resetting chat colors"
+    },
+    "ChatColorPicker__resetDefault": {
+        "message": "Resetovať farby chatov",
+        "description": "Confirmation dialog title for resetting all chat colors or only the global default one"
+    },
+    "ChatColorPicker__resetAll": {
+        "message": "Obnoviť všetky farby rozhovorov",
+        "description": "Button label for resetting all chat colors"
+    },
+    "ChatColorPicker__confirm-reset-default": {
+        "message": "Obnoviť predvolené",
+        "description": "Button label for resetting only global chat color"
+    },
+    "ChatColorPicker__confirm-reset": {
+        "message": "Resetovať",
+        "description": "Confirm button label for resetting chat colors"
+    },
+    "ChatColorPicker__confirm-reset-message": {
+        "message": "Chceli by ste prestaviť farby všetkých chatov?",
+        "description": "Modal message text for confirming resetting of chat colors"
+    },
+    "ChatColorPicker__custom-color--label": {
+        "message": "Zobraziť editor vlastných farieb",
+        "description": "aria-label for custom color editor button"
+    },
+    "ChatColorPicker__sampleBubble1": {
+        "message": "Tu je ukážka farby konverzácie.",
+        "description": "An example message bubble for selecting the chat color"
+    },
+    "ChatColorPicker__sampleBubble2": {
+        "message": "Ďalšia bublina.",
+        "description": "An example message bubble for selecting the chat color"
+    },
+    "ChatColorPicker__sampleBubble3": {
+        "message": "Farbu vidíte iba vy.",
+        "description": "An example message bubble for selecting the chat color"
+    },
+    "ChatColorPicker__context--edit": {
+        "message": "Upraviť farbu",
+        "description": "Option in the custom color bubble context menu"
+    },
+    "ChatColorPicker__context--duplicate": {
+        "message": "Duplikovať",
+        "description": "Option in the custom color bubble context menu"
+    },
+    "ChatColorPicker__context--delete": {
+        "message": "Vymazať",
+        "description": "Option in the custom color bubble context menu"
+    },
+    "CustomColorEditor__solid": {
+        "message": "Jednoliata",
+        "description": "Tab label for selecting solid colors"
+    },
+    "CustomColorEditor__gradient": {
+        "message": "Farebný prechod",
+        "description": "Tab label for selecting a gradient"
+    },
+    "CustomColorEditor__hue": {
+        "message": "Odtieň",
+        "description": "Label for the hue slider"
+    },
+    "CustomColorEditor__saturation": {
+        "message": "Sýtosť",
+        "description": "Label for the saturation slider"
+    },
+    "CustomColorEditor__title": {
+        "message": "Vlastná farba",
+        "description": "Modal title for the custom color editor"
+    },
+    "customDisappearingTimeOption": {
+        "message": "Vlastný čas...",
+        "description": "Text for an option in Disappearing Messages menu and Conversation Details Disappearing Messages setting when no user value is available"
+    },
+    "selectedCustomDisappearingTimeOption": {
+        "message": "Vlastný čas",
+        "description": "Text for an option in Conversation Details Disappearing Messages setting when user previously selected custom time"
+    },
+    "DisappearingTimeDialog__title": {
+        "message": "Vlastný čas",
+        "description": "Title for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__body": {
+        "message": "Vyberte si vlastný čas pre miznúce správy.",
+        "description": "Body for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__set": {
+        "message": "Nastaviť",
+        "description": "Text for the dialog button confirming the custom disappearing message timeout"
+    },
+    "DisappearingTimeDialog__seconds": {
+        "message": "Sekúnd",
+        "description": "Name of the 'seconds' unit select for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__minutes": {
+        "message": "Minút",
+        "description": "Name of the 'minutes' unit select for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__hours": {
+        "message": "Hodín",
+        "description": "Name of the 'hours' unit select for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__days": {
+        "message": "Dní",
+        "description": "Name of the 'days' unit select for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__weeks": {
+        "message": "Týždňov",
+        "description": "Name of the 'weeks' unit select for the custom disappearing message timeout dialog"
+    },
+    "settings__DisappearingMessages__footer": {
+        "message": "Nastavte predvolený časovač miznutia správ pre všetky nové správy ktoré ste poslali.",
+        "description": "Footer for the Disappearing Messages settings section"
+    },
+    "settings__DisappearingMessages__timer__label": {
+        "message": "Predvolený časovač pre nové konverzácie",
+        "description": "Label for the Disapearring Messages default timer setting"
+    },
+    "UniversalTimerNotification__text": {
+        "message": "Keď im odošlete správu, čas zmiznutia správy bude nastavený na $timeValue$.",
+        "description": "A message displayed when default disappearing message timeout is about to be applied",
+        "placeholders": {
+            "timeValue": {
+                "content": "$1",
+                "example": "1 week"
+            }
+        }
+    },
+    "GroupDescription__read-more": {
+        "message": "čítať viac",
+        "description": "Button text when the group description is too long"
+    },
+    "EditConversationAttributesModal__description-warning": {
+        "message": "Popisy skupín budú viditeľné pre členov tejto skupiny a ľudí, ktorí boli pozvaní.",
+        "description": "Label text shown when editing group description"
+    },
+    "ConversationDetailsHeader--add-group-description": {
+        "message": "Pridať popis skupiny…",
+        "description": "Placeholder text in the details header for those that can edit the group description"
     }
 }

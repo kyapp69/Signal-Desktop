@@ -1,7 +1,19 @@
 {
+    "softwareAcknowledgments": {
+        "message": "Falënderime për Software-in",
+        "description": "Shown in the about box for the link to software acknowledgments"
+    },
+    "privacyPolicy": {
+        "message": "Kushte & Rregulla Privatësie",
+        "description": "Shown in the about box for the link to https://signal.org/legal"
+    },
     "copyErrorAndQuit": {
         "message": "Kopjo gabimin dhe dil",
         "description": "Shown in the top-level error popup, allowing user to copy the error text and close the app"
+    },
+    "unknownContact": {
+        "message": "Kontakt i panjohur",
+        "description": "Shown as the name of a contact if we don't have any displayable information about them"
     },
     "unknownGroup": {
         "message": "Grup i panjohur",
@@ -13,7 +25,7 @@
     },
     "deleteAndRestart": {
         "message": "Fshiji krejt të dhënat dhe rifillo",
-        "description": "Shown in a popup if the database cannot start up properly; allows user to dalete database and restart"
+        "description": "Shown in a popup if the database cannot start up properly; allows user to delete database and restart"
     },
     "mainMenuFile": {
         "message": "&Kartelë",
@@ -42,6 +54,10 @@
     "mainMenuSettings": {
         "message": "Parapëlqime…",
         "description": "The label that is used for the Preferences menu in the program main menu. This should be consistent with the standard naming for ‘Preferences’ on the operating system."
+    },
+    "appMenuServices": {
+        "message": "Shërbime",
+        "description": "Application menu item for macOS 'Services'"
     },
     "appMenuHide": {
         "message": "Fshihe",
@@ -89,7 +105,7 @@
     },
     "editMenuSelectAll": {
         "message": "Përzgjidhi Krejt",
-        "description": "Edit menu comand to select all of the text in selected text box"
+        "description": "Edit menu command to select all of the text in selected text box"
     },
     "editMenuStartSpeaking": {
         "message": "Filloni të flisni",
@@ -113,7 +129,7 @@
     },
     "windowMenuBringAllToFront": {
         "message": "Silli Krejt Përpara",
-        "description": "Window menu command to bring all windows of current applicatinon to front"
+        "description": "Window menu command to bring all windows of current application to front"
     },
     "viewMenuResetZoom": {
         "message": "Madhësi Faktike",
@@ -143,9 +159,17 @@
         "message": "Rregulloje si Pajisje Më Vete",
         "description": "Only available on development modes, menu option to open up the standalone device setup sequence"
     },
+    "messageContextMenuButton": {
+        "message": "Më tepër veprime",
+        "description": "Label for context button next to each message"
+    },
     "contextMenuCopyLink": {
         "message": "Kopjoji Lidhjen",
         "description": "Shown in the context menu for a link to indicate that the user can copy the link"
+    },
+    "contextMenuCopyImage": {
+        "message": "Kopjoje Figurën",
+        "description": "Shown in the context menu for an image to indicate that the user can copy the image"
     },
     "contextMenuNoSuggestions": {
         "message": "Pa Sugjerime",
@@ -153,6 +177,10 @@
     },
     "avatarMenuViewArchive": {
         "message": "Shihni Arkivin",
+        "description": "One of the menu options available in the Avatar Popup menu"
+    },
+    "avatarMenuChatColors": {
+        "message": "Ngjyrë Fjalosjeje",
         "description": "One of the menu options available in the Avatar Popup menu"
     },
     "loading": {
@@ -177,17 +205,41 @@
         "message": "Biseda të Arkivuara",
         "description": "Shown in place of the search box when showing archived conversation list"
     },
+    "LeftPane--pinned": {
+        "message": "E fiksuar",
+        "description": "Shown as a header for pinned conversations in the left pane"
+    },
+    "LeftPane--chats": {
+        "message": "Fjalosje",
+        "description": "Shown as a header for non-pinned conversations in the left pane"
+    },
     "archiveHelperText": {
         "message": "Këto biseda janë të arkivuara dhe do të shfaqen te Të marrë vetëm nëse merren mesazhe të rinj.",
-        "description": "Shown at the top of the archived converations list in the left pane"
+        "description": "Shown at the top of the archived conversations list in the left pane"
     },
     "archiveConversation": {
-        "message": "Arkivojeni Bisedën",
+        "message": "Arkiv",
         "description": "Shown in menu for conversation, and moves conversation out of main conversation list"
     },
+    "markUnread": {
+        "message": "Vëri shenjë si i lexuar",
+        "description": "Shown in menu for conversation, and marks conversation as unread"
+    },
     "moveConversationToInbox": {
-        "message": "Kaloje Bisedën te Të marrë",
+        "message": "Çarkivoje ",
         "description": "Undoes Archive Conversation action, and moves archived conversation back to the main conversation list"
+    },
+    "pinConversation": {
+        "message": "Fiksoje Bisedën",
+        "description": "Shown in menu for conversation, and pins the conversation to the top of the conversation list"
+    },
+    "unpinConversation": {
+        "message": "Hiqe Bisedën Nga të Fiksuar",
+        "description": "Undoes Archive Conversation action, and unpins the conversation from the top of the conversation list"
+    },
+    "pinnedConversationsFull": {
+        "message": "Mund të fiksoni vetëm deri në 4 fjalosje",
+        "description": ""
     },
     "chooseDirectory": {
         "message": "Zgjidhni dosje",
@@ -264,8 +316,12 @@
         "description": "Used as a label on a button allowing user to see more information"
     },
     "youLeftTheGroup": {
-        "message": "E braktisët grupin.",
+        "message": "S’jeni më anëtar i grupit.",
         "description": "Displayed when a user can't send a message because they have left the group"
+    },
+    "invalidConversation": {
+        "message": "Ky grup është i pavlefshëm. Ju lutemi, krijoni një grup të ri.",
+        "description": "Displayed when a user can't send a message because something has gone wrong in the conversation."
     },
     "scrollDown": {
         "message": "Rrëshqitni drejt fundit të bisedës",
@@ -337,50 +393,34 @@
         "message": "Numrat tuaj të sigurisë me këta anëtarë grupi kanë ndryshuar që nga hera e fundit që i verifikuat. Klikoni një anëtar grupi që të shihni numrin tuaj të ri të sigurisë për me ta.",
         "description": "When there are multiple previously-verified group members with safety number changes, a banner will be shown. The list of contacts with safety number changes is shown, and this text introduces that list."
     },
-    "changedSinceVerifiedMultiple": {
-        "message": "Numrat tuaj të sigurisë me një numër anëtarësh të grupit kanë ndryshuar që nga hera e fundit që i verifikuat. Kjo mund të ishte shenjë se dikush po rreket të përgjojë komunikimin tuaj ose se ata thjesht kanë riinstaluar Signal-in.",
-        "description": "Shown on confirmation dialog when user attempts to send a message"
-    },
-    "changedSinceVerified": {
-        "message": "Numri juaj i sigurisë me $name$ ka ndryshuar që nga hera e fundit që e verifikuat. Kjo mund të ishte shenjë se dikush po rreket të përgjojë komunikimin tuaj ose se $name$ thjesht ka riinstaluar Signal-in.",
-        "description": "Shown on confirmation dialog when user attempts to send a message",
-        "placeholders": {
-            "name": {
-                "content": "$1",
-                "example": "Bob"
-            }
-        }
-    },
     "changedRightAfterVerify": {
-        "message": "Numri i sigurisë që po provoni të verifikoni ka ndryshuar. Ju lutemi, shqyrtoni numrin tuaj të ri të sigurisë me $name$. Mos harroni, ky ndryshim mund të ishte shenjë se dikush po rreket të përgjojë komunikimin tuaj ose se $name$ thjesht ka riinstaluar Signal-in.",
+        "message": "Numri i sigurisë që po provoni të verifikoni ka ndryshuar. Ju lutemi, shqyrtoni numrin tuaj të ri të sigurisë me $name1$. Mos harroni, ky ndryshim mund të ishte shenjë se dikush po rreket të përgjojë komunikimin tuaj ose se $name2$ has simply reinstalled Signal.thjesht ka riinstaluar Signal-in.",
         "description": "Shown on the safety number screen when the user has selected to verify/unverify a contact's safety number, and we immediately discover a safety number change",
         "placeholders": {
-            "name": {
+            "name1": {
                 "content": "$1",
+                "example": "Bob"
+            },
+            "name2": {
+                "content": "$2",
                 "example": "Bob"
             }
         }
     },
-    "changedRecentlyMultiple": {
-        "message": "Numrat tuaj të sigurisë me shumë anëtarë të grupit kanë ndryshuar tani së fundi. Kjo mund të ishte shenjë se dikush po rreket të përgjojë komunikimin tuaj ose se thjesht ata kanë riinstaluar Signal-in.",
+    "changedVerificationWarning": {
+        "message": "Personat vijues mund të kenë riinstaluar ose ndryshuar pajisjet. Për të siguruar privatësi, verifikoni me ta numrin tuaj të sigurisë.",
         "description": "Shown on confirmation dialog when user attempts to send a message"
     },
-    "changedRecently": {
-        "message": "Numri juaj i sigurisë me $name$ ka ndryshuar tani së fundi. Kjo mund të jetë shenjë se dikush po rreket të përgjojë komunikimin tuaj ose se $name$ thjesht ka riinstaluar Signal-in.",
-        "description": "Shown on confirmation dialog when user attempts to send a message",
-        "placeholders": {
-            "name": {
-                "content": "$1",
-                "example": "Bob"
-            }
-        }
-    },
     "identityKeyErrorOnSend": {
-        "message": "Numri juaj i sigurisë për me $name$ ka ndryshuar. Kjo mund të ishte shenjë se dikush po rreket të përgjojë komunikimin tuaj ose se $name$ thjesht ka riinstaluar Signal-in. Mund të donit të verifikonit numrin tuaj të sigurisë me këtë kontakt.",
+        "message": "Numri juaj i sigurisë me $name1$ ka ndryshuar. Kjo do të mund të thoshte se dikush po rreket të përgjojë komunikimin tuaj, ose se$name2$ thjesht ka riinstaluar Signal-in. Mund të donit të verifikonit numrin tuaj të sigurisë me këtë kontakt.",
         "description": "Shown when user clicks on a failed recipient in the message detail view after an identity key change",
         "placeholders": {
-            "name": {
+            "name1": {
                 "content": "$1",
+                "example": "Bob"
+            },
+            "name2": {
+                "content": "$2",
                 "example": "Bob"
             }
         }
@@ -389,9 +429,17 @@
         "message": "Dërgoje Sido Qoftë",
         "description": "Used on a warning dialog to make it clear that it might be risky to send the message."
     },
+    "callAnyway": {
+        "message": "Thirre, Sido Qoftë",
+        "description": "Used on a warning dialog to make it clear that it might be risky to call the conversation."
+    },
+    "continueCall": {
+        "message": "Vazhdoje Thirrjen",
+        "description": "Used on a warning dialog to make it clear that it might be risky to continue the group call."
+    },
     "noLongerVerified": {
         "message": "Numri juaj i sigurisë për me $name$ ka ndryshuar dhe s’është më i verifikuar. Klikoni që të shfaqet.",
-        "description": "Shown in converation banner when user's safety number has changed, but they were previously verified.",
+        "description": "Shown in conversation banner when user's safety number has changed, but they were previously verified.",
         "placeholders": {
             "name": {
                 "content": "$1",
@@ -410,6 +458,18 @@
     "debugLogError": {
         "message": "Diç shkoi ters me ngarkimin! Ju lutemi, shihni mundësinë e shtimit dorazi të regjistrit tuaj te e meta që po parashtroni.",
         "description": ""
+    },
+    "debugLogCopy": {
+        "message": "Kopjoje",
+        "description": "Shown as the text for the copy button on the debug log screen"
+    },
+    "debugLogCopyAlt": {
+        "message": "Kopjoje lidhjen në të papastër",
+        "description": "Shown as the alt text for the copy button on the debug log screen"
+    },
+    "debugLogLinkCopied": {
+        "message": "Lidhja u Kopjua në të Papastrën Tuaj",
+        "description": "Shown in a toast to let the user know that the link to the debug log has been copied to their clipboard"
     },
     "reportIssue": {
         "message": "Raportoni një problem",
@@ -478,6 +538,10 @@
     "mediaEmptyState": {
         "message": "S’keni ndonjë media në këtë bisedë",
         "description": "Message shown to user in the media gallery when there are no messages with media attachments (images or video)"
+    },
+    "allMedia": {
+        "message": "Krejt Mediat",
+        "description": "Header for the media gallery"
     },
     "documents": {
         "message": "Dokumente",
@@ -561,7 +625,7 @@
         "message": "Kur përfshihet një bashkëngjitje që s’është figurë, kufiri është një bashkëngjitje për mesazh.",
         "description": "An error popup when the user has attempted to add an attachment"
     },
-    "cannotMixImageAdnNonImageAttachments": {
+    "cannotMixImageAndNonImageAttachments": {
         "message": "S’mund të përzieni brenda të njëjtit mesazh bashkëngjitje figurë dhe jo figurë.",
         "description": "An error popup when the user has attempted to add an attachment"
     },
@@ -613,6 +677,10 @@
         "message": "Shfaq Shkurtore Tastiere",
         "description": "Item under the help menu, pops up a screen showing the application's keyboard shortcuts"
     },
+    "contactUs": {
+        "message": "Lidhuni Me Ne",
+        "description": "Item under the help menu, takes you to the contact us support page"
+    },
     "goToReleaseNotes": {
         "message": "Kalo te Shënime Versioni",
         "description": "Item under the help menu, takes you to GitHub page for release notes"
@@ -625,9 +693,9 @@
         "message": "Kalo te Faqja e Asistencës",
         "description": "Item under the Help menu, takes you to the support page"
     },
-    "menuReportIssue": {
-        "message": "Njoftoni një Problem",
-        "description": "Item under the Help menu, takes you to GitHub new issue form (title case)"
+    "joinTheBeta": {
+        "message": "Merrni pjesë në Beta",
+        "description": "Item under the Help menu, takes you to an article describing how to install the beta release of Signal Desktop"
     },
     "signalDesktopPreferences": {
         "message": "Parapëlqime për Signal-in në Desktop",
@@ -640,6 +708,10 @@
     "aboutSignalDesktop": {
         "message": "Mbi Signal-in për Desktop",
         "description": "Item under the Help menu, which opens a small about window"
+    },
+    "screenShareWindow": {
+        "message": "Ndarje ekrani me të tjerë",
+        "description": "Title for screen sharing window"
     },
     "speech": {
         "message": "E folur",
@@ -665,6 +737,10 @@
         "message": "Kërko",
         "description": "Placeholder text in the search input"
     },
+    "clearSearch": {
+        "message": "Spastro Kërkimin",
+        "description": "Aria label for clear search button"
+    },
     "searchIn": {
         "message": "Kërkoni te $conversationName$",
         "description": "Shown in the search box before text is entered when searching in a specific conversation",
@@ -685,11 +761,19 @@
             }
         }
     },
+    "noSearchResults--sms-only": {
+        "message": "Kontaktet SMS/MMS s’janë të passhëm në Desktop.",
+        "description": "Shown in the search left pane when no results were found and primary device has SMS/MMS handling enabled"
+    },
     "noSearchResultsInConversation": {
         "message": "S’ka përfundime për \"$searchTerm$\" te $conversationName$",
         "description": "Shown in the search left pane when no results were found",
         "placeholders": {
             "searchTerm": {
+                "content": "$1",
+                "example": "dog"
+            },
+            "conversationName": {
                 "content": "$2",
                 "example": "Friends"
             }
@@ -701,6 +785,10 @@
     },
     "contactsHeader": {
         "message": "Kontakte",
+        "description": "Shown to separate the types of search results"
+    },
+    "groupsHeader": {
+        "message": "Grupe",
         "description": "Shown to separate the types of search results"
     },
     "messagesHeader": {
@@ -717,7 +805,11 @@
     },
     "typingAlt": {
         "message": "Animacion shtypjesh për këtë bisedë",
-        "description": "Used as the 'title' attibute for the typing animation"
+        "description": "Used as the 'title' attribute for the typing animation"
+    },
+    "contactInAddressBook": {
+        "message": "Ky person gjendet në kontaktet tuaja.",
+        "description": "Description of icon denoting that contact is from your address book"
     },
     "contactAvatarAlt": {
         "message": "Avatar për kontaktin $name$",
@@ -831,11 +923,19 @@
     },
     "audioPermissionNeeded": {
         "message": "Për të dërguar mesazhe audio, lejojeni Signal-in për Desktop të përdorë mikrofonin tuaj.",
-        "description": "Shown if the user attempts to send an audio message without audio permssions turned on"
+        "description": "Shown if the user attempts to send an audio message without audio permissions turned on"
+    },
+    "audioCallingPermissionNeeded": {
+        "message": "Për thirrje, duhet të lejoni Signal-in për Desktop të përdorë mikrofonin tuaj.",
+        "description": "Shown if the user attempts access the microphone for calling without audio permissions turned on"
+    },
+    "videoCallingPermissionNeeded": {
+        "message": "Për thirrje video, duhet të lejoni Signal-in për Desktop të përdorë kamerën tuaj.",
+        "description": "Shown if the user attempts access the camera for video calling without video permissions turned on"
     },
     "allowAccess": {
         "message": "Lejoje Përdorimin",
-        "description": "Button shown in popup asking to enable microphon/video permissions to send audio messages"
+        "description": "Button shown in popup asking to enable microphone/video permissions to send audio messages"
     },
     "showSettings": {
         "message": "Shfaq Rregullime",
@@ -909,9 +1009,25 @@
         "message": "Fshije",
         "description": ""
     },
-    "deleteWarning": {
-        "message": "Jeni i sigurt? Klikimi mbi 'fshije' do të fshijë përgjithmonë këtë mesazh vetëm nga kjo pajisje.",
+    "accept": {
+        "message": "Pranoje",
         "description": ""
+    },
+    "on": {
+        "message": "On",
+        "description": "Label for when something is turned on"
+    },
+    "off": {
+        "message": "Off",
+        "description": "Label for when something is turned off"
+    },
+    "deleteWarning": {
+        "message": "Ky mesazh do të fshihet prej kësaj pajisjeje.",
+        "description": "Text shown in the confirmation dialog for deleting a message locally"
+    },
+    "deleteForEveryoneWarning": {
+        "message": "Ky mesazh do të fshihet për këdo te biseda, nëse gjenden në një version të freskët të Signal-it. Ata do të jenë në gjendje të shohin se fshitë një mesazh.",
+        "description": "Text shown in the confirmation dialog for deleting a message for everyone"
     },
     "deleteThisMessage": {
         "message": "Fshije këtë mesazh",
@@ -957,8 +1073,8 @@
         "message": "Shihni numër sigurie",
         "description": ""
     },
-    "viewAllMedia": {
-        "message": "Shihni krejt mediat",
+    "viewRecentMedia": {
+        "message": "Shihni media së fundi",
         "description": "This is a menu item for viewing all media (images + video) in a conversation, using the imperative case, as in a command."
     },
     "verifyHelp": {
@@ -975,20 +1091,36 @@
         "message": "S’keni shkëmbyer ende ndonjë mesazh me këtë grup. Numri juaj i sigurisë me të do të jetë i passhëm pas mesazhit të parë.",
         "description": ""
     },
+    "back": {
+        "message": "Mbrapsht",
+        "description": "Generic label for back"
+    },
+    "goBack": {
+        "message": "Shko mbrapsht",
+        "description": "Label for back button in a conversation"
+    },
     "moreInfo": {
-        "message": "Më Tepër të Dhëna…",
+        "message": "Më Tepër të Dhëna",
         "description": "Shown on the drop-down menu for an individual message, takes you to message detail screen"
     },
     "retrySend": {
         "message": "Riprovo Dërgimin",
-        "description": "Shown on the drop-down menu for an indinvidaul message, but only if it is an outgoing message that failed to send"
+        "description": "Shown on the drop-down menu for an individual message, but only if it is an outgoing message that failed to send"
+    },
+    "forwardMessage": {
+        "message": "Përcille mesazhin",
+        "description": "Shown on the drop-down menu for an individual message, forwards a message"
     },
     "deleteMessage": {
-        "message": "Fshije Mesazhin",
+        "message": "Fshije mesazhin për mua",
         "description": "Shown on the drop-down menu for an individual message, deletes single message"
     },
+    "deleteMessageForEveryone": {
+        "message": "Fshije mesazhin për këdo",
+        "description": "Shown on the drop-down menu for an individual message, deletes single message for everyone"
+    },
     "deleteMessages": {
-        "message": "Fshini mesazhe",
+        "message": "Fshije",
         "description": "Menu item for deleting messages, title case."
     },
     "deleteConversationConfirmation": {
@@ -998,6 +1130,54 @@
     "sessionEnded": {
         "message": "U rinis sesion i siguruar",
         "description": "This is a past tense, informational message. In other words, your secure session has been reset."
+    },
+    "ChatRefresh--notification": {
+        "message": "Sesioni i fjalosjes u rifreskua",
+        "description": "Shown in timeline when a error happened, and the session was automatically reset."
+    },
+    "ChatRefresh--learnMore": {
+        "message": "Mësoni Më Tepër",
+        "description": "Shown in timeline when session is automatically reset, to provide access to a popup info dialog"
+    },
+    "ChatRefresh--summary": {
+        "message": "Signal-i përdor fshehtëzim skaj-më-skaj dhe ndonjëherë mund të jetë e nevojshme të rifreskoni sesionin e fjalosjes tuaj. Kjo nuk prek sigurinë e fjalosjes tuaj, por mund të keni humbur një mesazh prej këtij kontakti dhe mund t’i kërkoni ta ridërgojë.",
+        "description": "Shown on explainer dialog available from chat session refreshed timeline events"
+    },
+    "ChatRefresh--contactSupport": {
+        "message": "Lidhuni Me Asistencën",
+        "description": "Shown on explainer dialog available from chat session refreshed timeline events"
+    },
+    "DeliveryIssue--preview": {
+        "message": "Problem dërgimi",
+        "description": "Shown in left pane preview when message delivery issue happens"
+    },
+    "DeliveryIssue--notification": {
+        "message": "S’u dërgua dot një mesazh prej $sender$",
+        "description": "Shown in timeline when message delivery issue happens",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "DeliveryIssue--learnMore": {
+        "message": "Mësoni Më Tepër",
+        "description": "Shown in timeline when message delivery issue happens, to provide access to a popup info dialog"
+    },
+    "DeliveryIssue--title": {
+        "message": "Problem Dërgimi",
+        "description": "Shown on explainer dialog available from delivery issue timeline events"
+    },
+    "DeliveryIssue--summary": {
+        "message": "S’u dërgua dot te ju një mesazh, ngjitës, reagim, dëftesë leximi ose media nga $sender$. Mund të ketë provuar ta dërgojë drejtpërsëdrejti për ju, ose në një grup.",
+        "description": "Shown on explainer dialog available from delivery issue timeline events",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
     },
     "quoteThumbnailAlt": {
         "message": "Miniaturë e figurës nga mesazhi i cituar",
@@ -1021,11 +1201,11 @@
     },
     "addACaption": {
         "message": "Shtoni një përshkrim…",
-        "description": ""
+        "description": "Used as the placeholder text in the caption editor text field"
     },
     "save": {
         "message": "Ruaje",
-        "description": ""
+        "description": "Used as a 'commit changes' button in the Caption Editor for outgoing image attachments"
     },
     "fileIconAlt": {
         "message": "Ikonë kartele",
@@ -1041,7 +1221,7 @@
     },
     "linkYourPhone": {
         "message": "Lidheni telefonin tuaj me Signal-in për Desktop",
-        "description": "Shown on the front page when the application first starst, above the QR code"
+        "description": "Shown on the front page when the application first starts, above the QR code"
     },
     "signalSettings": {
         "message": "Rregullime Signal-i",
@@ -1083,20 +1263,282 @@
         "message": "Na ndjeni, keni shumë pajisje të lidhura tashmë. Provoni të hiqni ndoca.",
         "description": ""
     },
-    "settings": {
-        "message": "Rregullime",
-        "description": "Menu item and header for global settings"
+    "installTooOld": {
+        "message": "Që të lidhni telefonin tuaj, përditësoni Signal-in në këtë pajisje.",
+        "description": ""
+    },
+    "installErrorHeader": {
+        "message": "Diç shkoi ters!",
+        "description": ""
+    },
+    "installTryAgain": {
+        "message": "Riprovo",
+        "description": ""
     },
     "theme": {
         "message": "Temë",
         "description": "Header for theme settings"
+    },
+    "calling": {
+        "message": "Thirrje",
+        "description": "Header for calling options on the settings screen"
+    },
+    "calling__start": {
+        "message": "Nise Thirrjen",
+        "description": "Button label in the call lobby for starting a call"
+    },
+    "calling__join": {
+        "message": "Hyni në Thirrje",
+        "description": "Button label in the call lobby for joining a call"
+    },
+    "calling__return": {
+        "message": "Kthehuni te Thirrja",
+        "description": "Button label in the call lobby for returning to a call"
+    },
+    "calling__call-is-full": {
+        "message": "Thirrja është plot",
+        "description": "Button label in the call lobby when you can't join because the call is full"
+    },
+    "calling__button--video-disabled": {
+        "message": "Kamera e çaktivizuar",
+        "description": "Button tooltip label when the camera is disabled"
+    },
+    "calling__button--video-off": {
+        "message": "Fike kamerën",
+        "description": "Button tooltip label for turning off the camera"
+    },
+    "calling__button--video-on": {
+        "message": "Ndize kamerën",
+        "description": "Button tooltip label for turning on the camera"
+    },
+    "calling__button--audio-disabled": {
+        "message": "Mikrofon i çaktivizuar",
+        "description": "Button tooltip label when the microphone is disabled"
+    },
+    "calling__button--audio-off": {
+        "message": "Mbyllini zërin mikrofonit",
+        "description": "Button tooltip label for turning off the microphone"
+    },
+    "calling__button--audio-on": {
+        "message": "Hapjani zërin mikrofonit",
+        "description": "Button tooltip label for turning on the microphone"
+    },
+    "calling__button--presenting-disabled": {
+        "message": "Paraqitje e çaktivizuar",
+        "description": "Button tooltip label for when screen sharing is disabled"
+    },
+    "calling__button--presenting-on": {
+        "message": "Nis paraqitje",
+        "description": "Button tooltip label for starting to share screen"
+    },
+    "calling__button--presenting-off": {
+        "message": "Ndal paraqitje",
+        "description": "Button tooltip label for stopping screen sharing"
+    },
+    "calling__your-video-is-off": {
+        "message": "Kamera juaj është e fikur",
+        "description": "Label in the calling lobby indicating that your camera is off"
+    },
+    "calling__lobby-summary--zero": {
+        "message": "S’ka tjetër këtu",
+        "description": "Shown in the calling lobby to describe who is in the call"
+    },
+    "calling__lobby-summary--single": {
+        "message": "$first$ gjendet në këtë thirrje",
+        "description": "Shown in the calling lobby to describe who is in the call",
+        "placeholders": {
+            "first": {
+                "content": "$1",
+                "example": "Sam"
+            }
+        }
+    },
+    "calling__lobby-summary--self": {
+        "message": "Një nga pajisjet tuaja të tjera gjendet në këtë thirrje",
+        "description": "Shown in the calling lobby to describe when it is just you"
+    },
+    "calling__lobby-summary--double": {
+        "message": "$first$ dhe $second$ gjenden në këtë thirrje",
+        "description": "Shown in the calling lobby to describe who is in the call",
+        "placeholders": {
+            "first": {
+                "content": "$1",
+                "example": "Sam"
+            },
+            "second": {
+                "content": "$2",
+                "example": "Cayce"
+            }
+        }
+    },
+    "calling__lobby-summary--triple": {
+        "message": "$first$, $second$, dhe $third$ gjenden në këtë thirrje",
+        "description": "Shown in the calling lobby to describe who is in the call",
+        "placeholders": {
+            "first": {
+                "content": "$1",
+                "example": "Sam"
+            },
+            "second": {
+                "content": "$2",
+                "example": "Cayce"
+            },
+            "third": {
+                "content": "$3",
+                "example": "April"
+            }
+        }
+    },
+    "calling__lobby-summary--many": {
+        "message": "$first$, $second$, dhe $others$ të tjerë gjenden në këtë thirrje",
+        "description": "Shown in the calling lobby to describe who is in the call",
+        "placeholders": {
+            "first": {
+                "content": "$1",
+                "example": "Sam"
+            },
+            "second": {
+                "content": "$2",
+                "example": "Cayce"
+            },
+            "others": {
+                "content": "$3",
+                "example": "5"
+            }
+        }
+    },
+    "calling__in-this-call--zero": {
+        "message": "S’ka tjetër këtu",
+        "description": "Shown in the participants list to describe how many people are in the call"
+    },
+    "calling__in-this-call--one": {
+        "message": "Në këtë thirrje · 1 person",
+        "description": "Shown in the participants list to describe how many people are in the call"
+    },
+    "calling__in-this-call--many": {
+        "message": "Në këtë thirrje · $people$ vetë",
+        "description": "Shown in the participants list to describe how many people are in the call",
+        "placeholders": {
+            "people": {
+                "content": "$1",
+                "example": "15"
+            }
+        }
+    },
+    "calling__you-have-blocked": {
+        "message": "Keni bllokuar $name$",
+        "description": "when you block someone and cannot view their video",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Henry Richard"
+            }
+        }
+    },
+    "calling__block-info": {
+        "message": "S’do të merrni audio ose video prej tyre dhe as ata prej jush.",
+        "description": "Shown in the modal dialog to describe how blocking works in a gorup call"
+    },
+    "calling__overflow__scroll-up": {
+        "message": "Rrëshqit për poshtë",
+        "description": "Label for the \"scroll up\" button in a call's overflow area"
+    },
+    "calling__overflow__scroll-down": {
+        "message": "Rrëshqit për sipër",
+        "description": "Label for the \"scroll down\" button in a call's overflow area"
+    },
+    "calling__presenting--notification-title": {
+        "message": "Po e paraqisni për këdo.",
+        "description": "Title for the share screen notification"
+    },
+    "calling__presenting--notification-body": {
+        "message": "Klikoni këtu që të ktheheni te thirrja, kur jeni gati të ndalet paraqitja.",
+        "description": "Body text for the share screen notification"
+    },
+    "calling__presenting--info": {
+        "message": "Signal-i po ndan me të tjerë $window$.",
+        "description": "Text that appears in the screen sharing controller to inform person that they are presenting",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Application"
+            }
+        }
+    },
+    "calling__presenting--stop": {
+        "message": "Ndale ndarjen me të tjerë",
+        "description": "Button for stopping screen sharing"
+    },
+    "calling__presenting--you-stopped": {
+        "message": "E ndalët paraqitjen",
+        "description": "Toast that appears when someone stops presenting"
+    },
+    "calling__presenting--person-ongoing": {
+        "message": "$name$ po paraqet",
+        "description": "Title of call when someone is presenting",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Maddie"
+            }
+        }
+    },
+    "calling__presenting--person-stopped": {
+        "message": "$name$ e ndali paraqitjen",
+        "description": "Toast that appears when someone stops presenting",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Maddie"
+            }
+        }
+    },
+    "calling__presenting--permission-title": {
+        "message": "Lypset leje",
+        "description": "Shown as the title for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--macos-permission-description": {
+        "message": "Signal-i lyp leje, që të përdorë regjistrimin e ekranit tuaj.",
+        "description": "Shown as the description for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--permission-instruction-step1": {
+        "message": "Kalo te Parapëlqime Sistemi.",
+        "description": "Shown as the description for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--permission-instruction-step2": {
+        "message": "Klikoni te ikona dry, majtas poshtë dhe jepni fjalëkalimin e kompjuterit tuaj.",
+        "description": "Shown as the description for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--permission-instruction-step3": {
+        "message": "Djathtas, i vini shenjë kutizës në krah të Signal-it. Nëse s’e shihni Signal-in te lista, klikoni mbi + që të shtohet.",
+        "description": "Shown as the description for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--permission-open": {
+        "message": "Hapni Parapëlqime Sistemi",
+        "description": "The button that opens your system preferences for the needs screen record permissions modal"
+    },
+    "calling__presenting--permission-cancel": {
+        "message": "Hidhe tej",
+        "description": "The cancel button for the needs screen record permissions modal"
+    },
+    "alwaysRelayCallsDescription": {
+        "message": "Kaloji përherë thirrjet përmes releje",
+        "description": "Description of the always relay calls setting"
+    },
+    "alwaysRelayCallsDetail": {
+        "message": "Kaloji krejt thirrjet përmes shërbyesit Signal për të shmangur zbulimin e adresës tuaj IP nga kontakti juaj. Aktivizimi do të ulë cilësinë e thirrjes.",
+        "description": "Details describing the always relay calls setting"
     },
     "permissions": {
         "message": "Leje",
         "description": "Header for permissions section of settings"
     },
     "mediaPermissionsDescription": {
-        "message": "Lejo përdorim të kamerës dhe mikrofonit",
+        "message": "Lejo përdorim të mikrofonit",
+        "description": "Description of the media permission description"
+    },
+    "mediaCameraPermissionsDescription": {
+        "message": "Lejo përdorim të kamerës",
         "description": "Description of the media permission description"
     },
     "general": {
@@ -1104,8 +1546,8 @@
         "description": "Header for general options on the settings screen"
     },
     "spellCheckDescription": {
-        "message": "Aktivizo kontroll drejtshkrimi të tekstit të dhënë te kutia e hartimit të mesazheve",
-        "description": "Description of the media permission description"
+        "message": "Aktivizoni kontroll drejtshkrimi:",
+        "description": "Description of the spell check setting"
     },
     "spellCheckWillBeEnabled": {
         "message": "Kontrolli i drejtshkrimit do të aktivizohet herës tjetër që niset Signal-i.",
@@ -1114,6 +1556,10 @@
     "spellCheckWillBeDisabled": {
         "message": "Kontrolli i drejtshkrimit do të çaktivizohet herës tjetër që niset Signal-i.",
         "description": "Shown when the user disables spellcheck to indicate that they must restart Signal."
+    },
+    "autoLaunchDescription": {
+        "message": "Hapje gjatë hyrjes në llogarinë e kompjuterit",
+        "description": "Description for the automatic launch setting"
     },
     "clearDataHeader": {
         "message": "Pastroji të Dhënat",
@@ -1143,6 +1589,14 @@
         "message": "Po bëhet shkëputja dhe fshirja e krejt të dhënave",
         "description": "Message shown to user when app is disconnected and data deleted"
     },
+    "deleteOldIndexedDBData": {
+        "message": "Keni të dhëna të vjetra prej një instalimi të mëparshëm të Signal-it për Desktop. Nëse vendosni të vazhdohet, do të fshihen dhe do t’ia filloni nga e para.",
+        "description": "Shown if user last ran Signal Desktop before October 2018"
+    },
+    "deleteOldData": {
+        "message": "Fshiji të Dhënat e Vjetra",
+        "description": "Button to make the delete happen"
+    },
     "notifications": {
         "message": "Njoftime",
         "description": "Header for notification settings"
@@ -1156,53 +1610,37 @@
         "description": "Label for disabling notifications"
     },
     "nameAndMessage": {
-        "message": "Emrin e dërguesit dhe mesazhin",
+        "message": "Emër, lëndë, dhe veprime",
         "description": "Label for setting notifications to display name and message text"
     },
     "noNameOrMessage": {
-        "message": "As emrin, as mesazhin",
+        "message": "S’ka emër ose lëndë",
         "description": "Label for setting notifications to display no name and no message text"
     },
     "nameOnly": {
-        "message": "Vetëm emër dërguesi",
+        "message": "Vetëm emrin",
         "description": "Label for setting notifications to display sender name only"
     },
     "newMessage": {
         "message": "Mesazh i Ri",
         "description": "Displayed in notifications for only 1 message"
     },
-    "newMessages": {
-        "message": "Mesazhi të Rinj",
-        "description": "Displayed in notifications for multiple messages"
-    },
-    "notificationMostRecentFrom": {
-        "message": "Më të rejat nga:",
-        "description": "Displayed in notifications when setting is 'name only' and more than one message is waiting"
-    },
-    "notificationFrom": {
-        "message": "Nga:",
-        "description": "Displayed in notifications when setting is 'name only' and one message is waiting"
-    },
-    "notificationMostRecent": {
-        "message": "Më të rejat:",
-        "description": "Displayed in notifications when setting is 'name and message' and more than one message is waiting"
-    },
-    "notificationReaction": {
-        "message": "$sender$ reagoi me $emoji$ ndaj mesazhit tuaj",
-        "description": "",
+    "notificationSenderInGroup": {
+        "message": "$sender$ te $group$",
+        "description": "Displayed in notifications for messages in a group",
         "placeholders": {
             "sender": {
                 "content": "$1",
                 "example": "John"
             },
-            "emoji": {
-                "content": "$2",
-                "example": "👍"
+            "group": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
             }
         }
     },
-    "notificationReactionMostRecent": {
-        "message": "Më e freskëta: $sender$ reagoi me $emoji$ te mesazhi juaj",
+    "notificationReaction": {
+        "message": "$sender$ reagoi me $emoji$ ndaj mesazhit tuaj",
         "description": "",
         "placeholders": {
             "sender": {
@@ -1233,27 +1671,17 @@
             }
         }
     },
-    "notificationReactionMessageMostRecent": {
-        "message": "Më të freskëtat: $sender$ reagoi $emoji$ te: $message$",
-        "description": "",
-        "placeholders": {
-            "sender": {
-                "content": "$1",
-                "example": "John"
-            },
-            "emoji": {
-                "content": "$2",
-                "example": "👍"
-            },
-            "message": {
-                "content": "$3",
-                "example": "Sounds good."
-            }
-        }
-    },
     "sendFailed": {
         "message": "Dërgimi dështoi",
         "description": "Shown on outgoing message if it fails to send"
+    },
+    "sendPaused": {
+        "message": "Dërgimi i ndal",
+        "description": "Shown on outgoing message if it cannot be sent immediately"
+    },
+    "partiallySent": {
+        "message": "Dërguar pjesërisht, prekeni për hollësi",
+        "description": "Shown on outgoing message if it is partially sent"
     },
     "showMore": {
         "message": "Hollësi",
@@ -1360,7 +1788,7 @@
         "description": "Brief message shown when trying to message a blocked group"
     },
     "youChangedTheTimer": {
-        "message": "E keni caktuar kohëmatësin e zhdukjes së mesazheve në $time$",
+        "message": "E keni caktuar kohëmatësin e zhdukjes së mesazheve në $time$.",
         "description": "Message displayed when you change the message expiration timer in a conversation.",
         "placeholders": {
             "time": {
@@ -1370,7 +1798,7 @@
         }
     },
     "timerSetOnSync": {
-        "message": "Kohëmatësi i zhdukjes së mesazheve u përditësua në $time$",
+        "message": "Kohëmatësi i zhdukjes së mesazheve u përditësua në $time$.",
         "description": "Message displayed when timer is set on initial link of desktop device.",
         "placeholders": {
             "time": {
@@ -1379,8 +1807,18 @@
             }
         }
     },
+    "timerSetByMember": {
+        "message": "Një anëtar caktoi si kohë zhdukjeje mesazhesh $time$.",
+        "description": "Message displayed when timer is by an unknown group member.",
+        "placeholders": {
+            "time": {
+                "content": "$1",
+                "example": "10m"
+            }
+        }
+    },
     "theyChangedTheTimer": {
-        "message": "$name$ caktoi kohëmatësin e zhdukjes së mesazheve në $time$",
+        "message": "$name$ caktoi kohëmatësin e zhdukjes së mesazheve në $time$.",
         "description": "Message displayed when someone else changes the message expiration timer in a conversation.",
         "placeholders": {
             "name": {
@@ -1393,112 +1831,24 @@
             }
         }
     },
-    "timerOption_0_seconds": {
+    "disappearingMessages__off": {
         "message": "off",
         "description": "Label for option to turn off message expiration in the timer menu"
     },
-    "timerOption_5_seconds": {
-        "message": "5 sekonda",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_10_seconds": {
-        "message": "10 sekonda",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_30_seconds": {
-        "message": "30 sekonda",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_1_minute": {
-        "message": "1 minutë",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_5_minutes": {
-        "message": "5 minuta",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_30_minutes": {
-        "message": "30 minuta",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_1_hour": {
-        "message": "1 orë",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_6_hours": {
-        "message": "6 orë",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_12_hours": {
-        "message": "12 orë",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_1_day": {
-        "message": "1 ditë",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_1_week": {
-        "message": "1 javë",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
     "disappearingMessages": {
         "message": "Zhdukje mesazhesh",
-        "description": "Conversation menu option to enable disappearing messages"
-    },
-    "timerOption_0_seconds_abbreviated": {
-        "message": "off",
-        "description": "Short format indicating current timer setting in the conversation list snippet"
-    },
-    "timerOption_5_seconds_abbreviated": {
-        "message": "5s",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_10_seconds_abbreviated": {
-        "message": "10s",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_30_seconds_abbreviated": {
-        "message": "30s",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_1_minute_abbreviated": {
-        "message": "1m",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_5_minutes_abbreviated": {
-        "message": "5m",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_30_minutes_abbreviated": {
-        "message": "30m",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_1_hour_abbreviated": {
-        "message": "1h",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_6_hours_abbreviated": {
-        "message": "6h",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_12_hours_abbreviated": {
-        "message": "12h",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_1_day_abbreviated": {
-        "message": "1d",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_1_week_abbreviated": {
-        "message": "1j",
-        "description": "Very short format indicating current timer setting in the conversation header"
+        "description": "Conversation menu option to enable disappearing messages. Title of the settings section for Disappearing Messages"
     },
     "disappearingMessagesDisabled": {
         "message": "Zhdukja e mesazheve është e çaktivizuar",
         "description": "Displayed in the left pane when the timer is turned off"
     },
+    "disappearingMessagesDisabledByMember": {
+        "message": "Një anëtar çaktivizoi zhdukjen e mesazheve.",
+        "description": "Displayed in the left pane when the timer is turned off"
+    },
     "disabledDisappearingMessages": {
-        "message": "$name$ çaktivizoi zhdukjen e mesazheve",
+        "message": "$name$ çaktivizoi zhdukjen e mesazheve.",
         "description": "Displayed in the conversation list when the timer is turned off",
         "placeholders": {
             "name": {
@@ -1508,7 +1858,7 @@
         }
     },
     "youDisabledDisappearingMessages": {
-        "message": "Çaktivizuat zhdukjen e mesazheve",
+        "message": "Çaktivizuat zhdukje mesazhesh.",
         "description": "Displayed in the conversation list when the timer is turned off"
     },
     "timerSetTo": {
@@ -1525,9 +1875,57 @@
         "message": "Luaj një tingull njoftimi ",
         "description": "Description for audio notification setting"
     },
+    "callRingtoneNotificationDescription": {
+        "message": "Luani tinguj thirrjeje",
+        "description": "Description for call ringtone notification setting"
+    },
+    "callSystemNotificationDescription": {
+        "message": "Shfaq njoftime për thirrje",
+        "description": "Description for call notification setting"
+    },
+    "incomingCallNotificationDescription": {
+        "message": "Aktivizo thirrje ardhëse",
+        "description": "Description for incoming calls setting"
+    },
+    "contactChangedProfileName": {
+        "message": "$sender$ ndryshoi emrin e vet të profilit nga $oldProfile$ në $newProfile$.",
+        "description": "Description for incoming calls setting",
+        "placeholders": {
+            "sender": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "oldProfile": {
+                "content": "$2",
+                "example": ".x8Skillz8x."
+            },
+            "newProfile": {
+                "content": "$3",
+                "example": "Bob Smith"
+            }
+        }
+    },
+    "changedProfileName": {
+        "message": "$oldProfile$ ndryshoi emrin e vet të profilit në $newProfile$.",
+        "description": "Shown when a contact not in your address book changes their profile name",
+        "placeholders": {
+            "oldProfile": {
+                "content": "$2",
+                "example": ".x8Skillz8x."
+            },
+            "newProfile": {
+                "content": "$3",
+                "example": "Bob Smith"
+            }
+        }
+    },
     "safetyNumberChanged": {
         "message": "Ka ndryshuar Numër Sigurie",
         "description": "A notification shown in the conversation when a contact reinstalls"
+    },
+    "safetyNumberChanges": {
+        "message": "Ndryshime Numri Sigurie",
+        "description": "Title for safety number changed modal"
     },
     "safetyNumberChangedGroup": {
         "message": "Ka ndryshuar Numri i Sigurisë me $name$",
@@ -1543,11 +1941,15 @@
         "message": "Verifikoni Numër Sigurie",
         "description": "Label on button included with safety number change notification in the conversation"
     },
+    "cannotGenerateSafetyNumber": {
+        "message": "Ky përdorues s’mund të verifikohet përpara se të keni shkëmbyer mesazhe me të.",
+        "description": "Shown on the safety number screen if you have never exchanged messages with that contact"
+    },
     "yourSafetyNumberWith": {
-        "message": "Numri juaj i sigurisë me $name$:",
+        "message": "Numri juaj i sigurisë me $name1$:",
         "description": "Heading for safety number view",
         "placeholders": {
-            "name": {
+            "name1": {
                 "content": "$1",
                 "example": "John"
             }
@@ -1569,6 +1971,14 @@
         "message": "Shënim për Veten",
         "description": "Name for the conversation with your own phone number"
     },
+    "noteToSelfHero": {
+        "message": "Në këtë bisedë mund të shtoni shënime për veten. Nëse llogaria juaj ka ndonjë pajisje të lidhur, shënimet e reja do të njëkohësohen.",
+        "description": "Description for the Note to Self conversation"
+    },
+    "notificationDrawAttention": {
+        "message": "Tërhiq vëmendjen te kjo dritare, kur mbërrin një njoftim",
+        "description": "Label text for the setting that controls whether new notifications draw attention to the window"
+    },
     "hideMenuBar": {
         "message": "Fshihe shtyllën e menusë",
         "description": "Label text for menu bar visibility setting"
@@ -1576,6 +1986,116 @@
     "startConversation": {
         "message": "Filloni bisedë të re…",
         "description": "Label underneath number a user enters that is not an existing contact"
+    },
+    "newConversation": {
+        "message": "Bisedë e re",
+        "description": "Label for header when starting a new conversation"
+    },
+    "contactSearchPlaceholder": {
+        "message": "Kërkoni sipas emrash ose numrash telefoni",
+        "description": "Placeholder to use when searching for contacts in the composer"
+    },
+    "noContactsFound": {
+        "message": "S’u gjetën kontakte.",
+        "description": "Label shown when there are no contacts to compose to"
+    },
+    "noConversationsFound": {
+        "message": "S’u gjetën biseda.",
+        "description": "Label shown when there are no conversations to compose to"
+    },
+    "chooseGroupMembers__title": {
+        "message": "Zgjidhni anëtarë",
+        "description": "The title for the 'choose group members' left pane screen"
+    },
+    "chooseGroupMembers__back-button": {
+        "message": "Mbrapsht",
+        "description": "Used as alt-text of the back button on the 'choose group members' left pane screen"
+    },
+    "chooseGroupMembers__skip": {
+        "message": "Anashkaloje",
+        "description": "The 'skip' button text in the 'choose group members' left pane screen"
+    },
+    "chooseGroupMembers__next": {
+        "message": "Pasuesi",
+        "description": "The 'next' button text in the 'choose group members' left pane screen"
+    },
+    "chooseGroupMembers__maximum-group-size__title": {
+        "message": "U mbërrit në kufi madhësie grupesh",
+        "description": "Shown in the alert when you add the maximum number of group members"
+    },
+    "chooseGroupMembers__maximum-group-size__body": {
+        "message": "Grupet Signal mund të kenë një maksimum prej $max$ anëtarësh.",
+        "description": "Shown in the alert when you add the maximum number of group members",
+        "placeholders": {
+            "max": {
+                "content": "$1",
+                "example": "1000"
+            }
+        }
+    },
+    "chooseGroupMembers__maximum-recommended-group-size__title": {
+        "message": "U mbërrit në kufi të rekomanduar anëtaarësh",
+        "description": "Shown in the alert when you add the maximum recommended number of group members"
+    },
+    "chooseGroupMembers__maximum-recommended-group-size__body": {
+        "message": "Punimin më të mirë grupet Signal e kanë me $max$anëtarë ose më pak. Shtimi i më shumë anëtarëve do të shkaktojë vonesa në dërgim dhe marrje mesazhesh.",
+        "description": "Shown in the alert when you add the maximum recommended number of group members",
+        "placeholders": {
+            "max": {
+                "content": "$1",
+                "example": "150"
+            }
+        }
+    },
+    "chooseGroupMembers__cant-add-member__title": {
+        "message": "S’shtohen dot anëtar.",
+        "description": "Shown in the alert when you try to add someone who can't be added to a group"
+    },
+    "chooseGroupMembers__cant-add-member__body": {
+        "message": "“$name$” s’mund të shtohet te grupi, ngaqë përdor një version të vjetër të Signal-it. Mund ta shtoni te grupi pasi të kenë përditësuar Signal-in.",
+        "description": "Shown in the alert when you try to add someone who can't be added to a group",
+        "placeholders": {
+            "max": {
+                "content": "$1",
+                "example": "Jane Doe"
+            }
+        }
+    },
+    "setGroupMetadata__title": {
+        "message": "Emërtojeni këtë grup",
+        "description": "The title for the 'set group metadata' left pane screen"
+    },
+    "setGroupMetadata__back-button": {
+        "message": "Mbrapsht te përzgjedhje anëtarësh",
+        "description": "Used as alt-text of the back button on the 'set group metadata' left pane screen"
+    },
+    "setGroupMetadata__group-name-placeholder": {
+        "message": "Emër grupi (e domosdoshme)",
+        "description": "The placeholder for the group name placeholder"
+    },
+    "setGroupMetadata__group-description-placeholder": {
+        "message": "Përshkrim",
+        "description": "The placeholder for the group description"
+    },
+    "setGroupMetadata__create-group": {
+        "message": "Krijoje",
+        "description": "The 'create group' button text in the 'set group metadata' left pane screen"
+    },
+    "setGroupMetadata__members-header": {
+        "message": "Anëtarë",
+        "description": "The header for the members list in the 'set group metadata' left pane screen"
+    },
+    "setGroupMetadata__error-message": {
+        "message": "S’u krijua dot ky grup. Kontrolloni lidhjen tuaj në internet dhe riprovoni.",
+        "description": "Shown in the modal when we can't create a group"
+    },
+    "updateGroupAttributes__title": {
+        "message": "Përpunoni grup",
+        "description": "Shown in the modal when we want to update a group"
+    },
+    "updateGroupAttributes__error-message": {
+        "message": "S’u arrit të përditësohej grupi. Kontrolloni lidhjen tuaj dhe riprovoni.",
+        "description": "Shown in the modal when we can't update a group"
     },
     "notSupportedSMS": {
         "message": "Mesazhet SMS/MMS nuk mbulohen.",
@@ -1693,13 +2213,55 @@
             }
         }
     },
+    "ConversationListItem--message-request": {
+        "message": "Kërkesë Mesazhi",
+        "description": "Preview shown for conversation if the user has not yet accepted an incoming message request"
+    },
     "ConversationListItem--draft-prefix": {
         "message": "Skicë:",
         "description": "Prefix shown in italic in conversation view when a draft is saved"
     },
+    "message--getNotificationText--gif": {
+        "message": "GIF",
+        "description": "Shown in notifications and in the left pane when a GIF is received."
+    },
+    "message--getNotificationText--photo": {
+        "message": "Foto",
+        "description": "Shown in notifications and in the left pane when a photo is received."
+    },
+    "message--getNotificationText--video": {
+        "message": "Video",
+        "description": "Shown in notifications and in the left pane when a video is received."
+    },
+    "message--getNotificationText--voice-message": {
+        "message": "Mesazh Zanor",
+        "description": "Shown in notifications and in the left pane when a voice message is received."
+    },
+    "message--getNotificationText--audio-message": {
+        "message": "Mesazh Audio",
+        "description": "Shown in notifications and in the left pane when an audio message is received."
+    },
+    "message--getNotificationText--file": {
+        "message": "Kartelë",
+        "description": "Shown in notifications and in the left pane when a generic file is received."
+    },
     "message--getNotificationText--stickers": {
         "message": "Mesazh ngjitësi",
         "description": "Shown in notifications and in the left pane instead of sticker image."
+    },
+    "message--getNotificationText--text-with-emoji": {
+        "message": "$emoji$ $text$",
+        "description": "Shown in notifications and in the left pane when text has an emoji. Probably always [emoji] [text] on LTR languages and [text] [emoji] on RTL languages.",
+        "placeholders": {
+            "emoji": {
+                "content": "$1",
+                "example": "📷"
+            },
+            "text": {
+                "content": "$2",
+                "example": "Photo"
+            }
+        }
     },
     "message--getDescription--unsupported-message": {
         "message": "Mesazh i pambuluar",
@@ -1707,15 +2269,19 @@
     },
     "message--getDescription--disappearing-media": {
         "message": "Media Për T’u Parë Vetëm Një Herë",
-        "description": "Shown in notifications and in the left pane after view-once message is deleted."
+        "description": "Shown in notifications and in the left pane after view-once message is deleted. Also shown when quoting a view once media."
     },
     "message--getDescription--disappearing-photo": {
         "message": "Foto Për T’u Parë Vetëm Një Herë",
-        "description": "Shown in notifications and in the left pane when a message is a view once photo."
+        "description": "Shown in notifications and in the left pane when a message is a view once photo. Also shown when quoting a view once photo."
     },
     "message--getDescription--disappearing-video": {
         "message": "Video Për T’u Parë Vetëm Një Herë",
-        "description": "Shown in notifications and in the left pane when a message is a view once video."
+        "description": "Shown in notifications and in the left pane when a message is a view once video. Also shown when quoting a view once video."
+    },
+    "message--deletedForEveryone": {
+        "message": "Ky mesazh u fshi.",
+        "description": "Shown in a message's bubble when the message has been deleted for everyone."
     },
     "stickers--toast--InstallFailed": {
         "message": "Paketa e ngjitësve s’u instalua dot",
@@ -1769,6 +2335,26 @@
         "message": "Pse të përdorni fjalë, kur mund të përdorni ngjitës?",
         "description": "Shown as the body on a tooltip when the user upgrades to a version of Signal supporting stickers."
     },
+    "stickers--StickerPicker--Open": {
+        "message": "Hap zgjedhës ngjitësish",
+        "description": "Label for the open button for the sticker picker"
+    },
+    "stickers--StickerPicker--AddPack": {
+        "message": "Shtoni një paketë ngjitësish",
+        "description": "Label for the add pack button in the sticker picker"
+    },
+    "stickers--StickerPicker--NextPage": {
+        "message": "Faqja Pasuese",
+        "description": "Label for the next page button in the sticker picker"
+    },
+    "stickers--StickerPicker--PrevPage": {
+        "message": "Faqja e Mëparshme",
+        "description": "Label for the previous page button in the sticker picker"
+    },
+    "stickers--StickerPicker--Recents": {
+        "message": "Ngjitës Së Fundi",
+        "description": "Label for the recent stickers button in the sticker picker"
+    },
     "stickers--StickerPicker--DownloadError": {
         "message": "Disa ngjitës s’u shkarkuan dot.",
         "description": "Shown in the sticker picker when one or more stickers could not be downloaded."
@@ -1819,6 +2405,42 @@
             }
         }
     },
+    "EmojiPicker__button--recents": {
+        "message": "Së fundi",
+        "description": "Label for recents emoji picker button"
+    },
+    "EmojiPicker__button--emoji": {
+        "message": "Emoji",
+        "description": "Label for emoji emoji picker button"
+    },
+    "EmojiPicker__button--animal": {
+        "message": "Kafshë",
+        "description": "Label for animal emoji picker button"
+    },
+    "EmojiPicker__button--food": {
+        "message": "Ushqim",
+        "description": "Label for food emoji picker button"
+    },
+    "EmojiPicker__button--activity": {
+        "message": "Veprimtari",
+        "description": "Label for activity emoji picker button"
+    },
+    "EmojiPicker__button--travel": {
+        "message": "Udhëtim",
+        "description": "Label for travel emoji picker button"
+    },
+    "EmojiPicker__button--object": {
+        "message": "Objekt",
+        "description": "Label for object emoji picker button"
+    },
+    "EmojiPicker__button--symbol": {
+        "message": "Simbol",
+        "description": "Label for symbol emoji picker button"
+    },
+    "EmojiPicker__button--flag": {
+        "message": "Flamur",
+        "description": "Label for flag emoji picker button"
+    },
     "confirmation-dialog--Cancel": {
         "message": "Anuloje",
         "description": "Appears on the cancel button in confirmation dialogs."
@@ -1861,7 +2483,7 @@
     },
     "Message--tap-to-view--outgoing": {
         "message": "Media",
-        "description": "Text shown on outgoing messages with with individual timers (inaccessble)"
+        "description": "Text shown on outgoing messages with with individual timers (inaccessible)"
     },
     "Message--tap-to-view--incoming--expired-toast": {
         "message": "E patë tashmë këtë mesazh",
@@ -1919,6 +2541,10 @@
         "message": "Hapni menu bisedash",
         "description": "Shown in the shortcuts guide"
     },
+    "Keyboard--new-conversation": {
+        "message": "Nisni një bisedë të re",
+        "description": "Shown in the shortcuts guide"
+    },
     "Keyboard--archive-conversation": {
         "message": "Arkivojeni bisedën",
         "description": "Shown in the shortcuts guide"
@@ -1968,7 +2594,7 @@
         "description": "Shown in the shortcuts guide"
     },
     "Keyboard--toggle-reaction-picker": {
-        "message": "Shfaq/fshih zgjedhës reagimi për mesazhin e përzgjedhur",
+        "message": "Shfaq/fshih zgjedhës reagimi me emoji për mesazhin e përzgjedhur",
         "description": "Shown in the shortcuts guide"
     },
     "Keyboard--save-attachment": {
@@ -2003,6 +2629,10 @@
         "message": "Hiqni krejt bashkëngjitjet e skicës",
         "description": "Shown in the shortcuts guide"
     },
+    "Keyboard--conversation-by-index": {
+        "message": "Hidhu te biseda",
+        "description": "A shortcut allowing direct navigation to conversations 1 to 9 in list"
+    },
     "Keyboard--Key--ctrl": {
         "message": "Ctrl",
         "description": "Key shown in shortcut combination in shortcuts guide"
@@ -2022,6 +2652,14 @@
     "Keyboard--Key--enter": {
         "message": "Enter",
         "description": "Key shown in shortcut combination in shortcuts guide"
+    },
+    "Keyboard--Key--tab": {
+        "message": "Tab",
+        "description": "Key shown in shortcut combination in shortcuts guide"
+    },
+    "Keyboard--Key--one-to-nine-range": {
+        "message": "1 deri në 9",
+        "description": "Expresses that 1, 2, 3, up to 9 are available shortcut keys"
     },
     "Keyboard--header": {
         "message": "Shkurtore Tastiere",
@@ -2051,6 +2689,18 @@
         "message": "Mbylleni bisedën e tanishme",
         "description": "Shown in the shortcuts guide"
     },
+    "Keyboard--calling-header": {
+        "message": "Thirrje",
+        "description": "Header of the keyboard shortcuts guide - calling section"
+    },
+    "Keyboard--toggle-audio": {
+        "message": "Aktivizoni dhe çaktivizoni heshtimin",
+        "description": "Shown in the shortcuts guide"
+    },
+    "Keyboard--toggle-video": {
+        "message": "Hapni dhe mbyllni videon",
+        "description": "Shown in the shortcuts guide"
+    },
     "close-popup": {
         "message": "Mbylleni flluskën",
         "description": "Used as alt text for any button closing a popup"
@@ -2074,6 +2724,10 @@
     "conversationReturnedToInbox": {
         "message": "Biseda u kthye te Të marrë",
         "description": "A toast that shows up when the user unarchives a conversation"
+    },
+    "conversationMarkedUnread": {
+        "message": "Bisedës iu vu shenjë si e palexuar",
+        "description": "A toast that shows up when user marks a conversation as unread"
     },
     "StickerCreator--title": {
         "message": "Krijues pakete ngjitësish",
@@ -2128,7 +2782,7 @@
         "description": "Title for the drop stage of the sticker creator"
     },
     "StickerCreator--DropStage--help": {
-        "message": "Ngjitësit duhet të jenë në format PNG ose WebP, me një sfond të tejdukshëm dhe 512x512 piksel. Mënjana e këshilluar është 16px.",
+        "message": "Ngjitësit duhet të jenë në format PNG, APNG ose WebP, me një sfond të tejdukshëm dhe 512x512 piksel. Mënjana e këshilluar është 16px.",
         "description": "Help text for the drop stage of the sticker creator"
     },
     "StickerCreator--DropStage--showMargins": {
@@ -2257,7 +2911,23 @@
     },
     "StickerCreator--Toasts--errorProcessing": {
         "message": "Gabim në përpunim figure",
-        "description": "Text for the toast when an image cannot be processed was dropped on the sticker creator"
+        "description": "Text for the toast when an image cannot be processed was dropped on the sticker creator with a generic error"
+    },
+    "StickerCreator--Toasts--APNG--notSquare": {
+        "message": "Ngjitësit e animuar PNG duhet të jenë katrorë",
+        "description": "Text for the toast when someone tries to upload a non-square APNG"
+    },
+    "StickerCreator--Toasts--mustLoopForever": {
+        "message": "Ngjitësit e animuar duhet të qerthullohen përherë",
+        "description": "Text for the toast when an image in the sticker creator does not animate forever"
+    },
+    "StickerCreator--Toasts--APNG--dimensionsTooLarge": {
+        "message": "Përmasat e ngjitësit të animuar PNG janë shumë të mëdha",
+        "description": "Text for the toast when an APNG image in the sticker creator is too large"
+    },
+    "StickerCreator--Toasts--APNG--dimensionsTooSmall": {
+        "message": "Përmasat e ngjitësit të animuar PNG janë shumë të vogla",
+        "description": "Text for the toast when an APNG image in the sticker creator is too small"
     },
     "StickerCreator--Toasts--errorUploading": {
         "message": "Gabim në ngarkim ngjitësish: $message$",
@@ -2289,12 +2959,2666 @@
         "message": "S’u arrit të dërgohej reagim. Ju lutemi, riprovoni.",
         "description": "Shown when a reaction fails to send"
     },
+    "ReactionsViewer--more": {
+        "message": "Më tepër",
+        "description": "Use in the reaction picker as the alt text for the 'more' button"
+    },
     "ReactionsViewer--all": {
         "message": "Krejt",
         "description": "Shown in reaction viewer as the title for the 'all' category"
     },
-    "privacyPolicy": {
-        "message": "Kushte & Rregulla Privatësie",
-        "description": "Shown in the about box for the link to https://signal.org/legal"
+    "MessageRequests--message-direct": {
+        "message": "Të lejohet $name$ t’ju dërgojë mesazh dhe të ndajë emrin dhe foton tuaj me të tjerë? S’do ta dijë se e keni parë mesazhin e tij, para se të pranoni këtë.",
+        "description": "Shown as the message for a message request in a direct message",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce"
+            }
+        }
+    },
+    "MessageRequests--message-direct-blocked": {
+        "message": "Të lejohet $name$ t’ju dërgojë mesazh dhe të ndajë emrin dhe foton tuaj me të tjerë? S’do të merrni ndonjë mesazh, para se ta zhbllokoni.",
+        "description": "Shown as the message for a message request in a direct message with a blocked account",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce"
+            }
+        }
+    },
+    "MessageRequests--message-group": {
+        "message": "Të bëhet anëtarësim në këtë grup dhe të ndahet emri dhe fotoja juaj me anëtarët e tij? S’do ta dinë se i keni parë mesazhet e tyre, para se të pranoni këtë.",
+        "description": "Shown as the message for a message request in a group",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--message-group-blocked": {
+        "message": "Të zhbllokohet ky grup dhe të lejohet të ndajë emrin dhe foton tuaj me anëtarët e tij? S’do të merrni ndonjë mesazh, para se ta zhbllokoni.",
+        "description": "Shown as the message for a message request in a blocked group"
+    },
+    "MessageRequests--block": {
+        "message": "Bllokoje",
+        "description": "Shown as a button to let the user block a message request"
+    },
+    "MessageRequests--unblock": {
+        "message": "Zhbllokoje",
+        "description": "Shown as a button to let the user unblock a message request"
+    },
+    "MessageRequests--unblock-confirm-title": {
+        "message": "Të zhbllokohet $name$?",
+        "description": "Shown as a button to let the user unblock a message request",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--unblock-direct-confirm-body": {
+        "message": "Do të jeni në gjendje t’i shkruani mesazhe dhe t’i bëni thirrje njëri-tjetrit.",
+        "description": "Shown as the body in the confirmation modal for unblocking a private message request",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--unblock-group-confirm-body": {
+        "message": "Anëtarë të grupit do të jenë në gjendje t’ju rishtojnë te ky grup.",
+        "description": "Shown as the body in the confirmation modal for unblocking a group message request",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--block-and-report-spam": {
+        "message": "Raportoni dhe Bllokoni të Padëshiruar",
+        "description": "Shown as a button to let the user block a message request and report spam"
+    },
+    "MessageRequests--block-and-report-spam-success-toast": {
+        "message": "Raportuar si mesazh i padëshiruar dhe bllokuar.",
+        "description": "Shown in a toast when you successfully block a user and report them as spam"
+    },
+    "MessageRequests--block-direct-confirm-title": {
+        "message": "Të bllokohet $name$?",
+        "description": "Shown as the title in the confirmation modal for blocking a private message request",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--block-direct-confirm-body": {
+        "message": "Personat e bllokuar s’do të jenë në gjendje t’ju bëjnë thirrje apo t’ju dërgojnë mesazhe.",
+        "description": "Shown as the body in the confirmation modal for blocking a private message request"
+    },
+    "MessageRequests--block-group-confirm-title": {
+        "message": "Të bllokohet dhe të Braktiset $group$?",
+        "description": "Shown as the title in the confirmation modal for blocking a group message request",
+        "placeholders": {
+            "group": {
+                "content": "$1",
+                "example": "Friends 🌿"
+            }
+        }
+    },
+    "MessageRequests--block-group-confirm-body": {
+        "message": "S’do të merrni më mesazhe apo përditësime nga ky grup, dhe anëtarët e tij s’do të jenë në gjendje t’ju shtojnë sërish te ky grup.",
+        "description": "Shown as the body in the confirmation modal for blocking a group message request"
+    },
+    "MessageRequests--delete": {
+        "message": "Fshije",
+        "description": "Shown as a button to let the user delete any message request"
+    },
+    "MessageRequests--delete-direct-confirm-title": {
+        "message": "Të fshihet biseda?",
+        "description": "Shown as the title in the confirmation modal for deleting a private message request"
+    },
+    "MessageRequests--delete-direct-confirm-body": {
+        "message": "Kjo bisedë do të fshihet prej krejt pajisjeve tuaja.",
+        "description": "Shown as the body in the confirmation modal for deleting a private message request"
+    },
+    "MessageRequests--delete-group-confirm-title": {
+        "message": "Të fshihet dhe të Dilet nga $group$?",
+        "description": "Shown as the title in the confirmation modal for deleting a group message request",
+        "placeholders": {
+            "group": {
+                "content": "$1",
+                "example": "Friends 🌿"
+            }
+        }
+    },
+    "MessageRequests--delete-direct": {
+        "message": "Fshije",
+        "description": "Shown as a button to let the user delete a direct message request"
+    },
+    "MessageRequests--delete-group": {
+        "message": "Fshije dhe Braktise",
+        "description": "Shown as a button to let the user delete a group message request"
+    },
+    "MessageRequests--delete-group-confirm-body": {
+        "message": "Do ta braktisni këtë grup dhe do të fshihet prej krejt pajisjeve tuaja.",
+        "description": "Shown as the body in the confirmation modal for deleting a group message request"
+    },
+    "MessageRequests--accept": {
+        "message": "Pranoje",
+        "description": "Shown as a button to let the user accept a message request"
+    },
+    "MessageRequests--continue": {
+        "message": "Vazhdo",
+        "description": "Shown as a button to share your profile, necessary to continue messaging in a conversation"
+    },
+    "MessageRequests--profile-sharing--group": {
+        "message": "Të vazhdohet biseda juaj me këtë grup dhe të ndahet me anëtarët e tij emri dhe fotoja juaj? $learnMore$",
+        "description": "Shown when user hasn't shared their profile in a group yet",
+        "placeholders": {
+            "learnMore": {
+                "content": "$1",
+                "example": "Learn More."
+            }
+        }
+    },
+    "MessageRequests--profile-sharing--direct": {
+        "message": "Të vazhdohet biseda juaj me $firstName$ dhe të ndahet me ta emri dhe fotoja juaj? $learnMore$",
+        "description": "Shown when user hasn't shared their profile in a 1:1 conversation yet",
+        "placeholders": {
+            "firstName": {
+                "content": "$1",
+                "example": "Alice"
+            },
+            "learnMore": {
+                "content": "$2",
+                "example": "Learn More."
+            }
+        }
+    },
+    "MessageRequests--learn-more": {
+        "message": "Mësoni më tepër.",
+        "description": "Shown at the end of profile sharing messages as a link."
+    },
+    "ConversationHero--members": {
+        "message": "$count$ anëtarë",
+        "description": "Specifies the number of members in a group conversation",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "22"
+            }
+        }
+    },
+    "ConversationHero--members-1": {
+        "message": "1 anëtar",
+        "description": "Specifies the number of members in a group conversation when there is one member",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "22"
+            }
+        }
+    },
+    "member-of-1-group": {
+        "message": "Anëtar i $group$",
+        "description": "Shown in the conversation hero to indicate this user is a member of a mutual group",
+        "placeholders": {
+            "group": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
+            }
+        }
+    },
+    "member-of-2-groups": {
+        "message": "Anëtar i $group1$ dhe $group2$",
+        "description": "Shown in the conversation hero to indicate this user is a member of at least two mutual groups",
+        "placeholders": {
+            "group1": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
+            },
+            "group2": {
+                "content": "$2",
+                "example": "Dinner Party"
+            }
+        }
+    },
+    "member-of-3-groups": {
+        "message": "Anëtar i $group1$, $group2$, dhe $group3$",
+        "description": "Shown in the conversation hero to indicate this user is a member of at least three mutual groups",
+        "placeholders": {
+            "group1": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
+            },
+            "group2": {
+                "content": "$2",
+                "example": "Dinner Party"
+            },
+            "group3": {
+                "content": "$3",
+                "example": "Friends 🌿"
+            }
+        }
+    },
+    "member-of-more-than-3-groups": {
+        "message": "Anëtar i $group1$, $group2$, $group3$ dhe $remainingCount$ të tjerëve",
+        "description": "Shown in the conversation hero to indicate this user is a member of at least three mutual groups",
+        "placeholders": {
+            "group1": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
+            },
+            "group2": {
+                "content": "$2",
+                "example": "Dinner Party"
+            },
+            "group3": {
+                "content": "$3",
+                "example": "Friends 🌿"
+            },
+            "remainingCount": {
+                "content": "$4",
+                "example": "3"
+            }
+        }
+    },
+    "ConversationHero--membership-added": {
+        "message": "$name$ ju shtoi te grupi.",
+        "description": "Shown Indicates that you were added to a group by a given individual.",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Jeff Smith"
+            }
+        }
+    },
+    "no-groups-in-common": {
+        "message": "S’ka grupe të përbashkët",
+        "description": "Shown to indicate this user is not a member of any groups"
+    },
+    "no-groups-in-common-warning": {
+        "message": "Pa grupe të përbashkët. Shqyrtojini me kujdes kërkesat.",
+        "description": "When a user has no common groups, show this warning"
+    },
+    "acceptCall": {
+        "message": "Përgjigjuni",
+        "description": "Shown in tooltip for the button to accept a call (audio or video)"
+    },
+    "acceptCallWithoutVideo": {
+        "message": "Përgjigjuni pa video",
+        "description": "Shown in tooltip for the button to accept a video call without video"
+    },
+    "declineCall": {
+        "message": "Hidhet tej",
+        "description": "Shown in tooltip for the button to decline a call (audio or video)"
+    },
+    "declinedIncomingAudioCall": {
+        "message": "Nuk pranuat një thirrje audio",
+        "description": "Shown in conversation history when you declined an incoming audio call"
+    },
+    "declinedIncomingVideoCall": {
+        "message": "Nuk pranuat një thirrje video",
+        "description": "Shown in conversation history when you declined an incoming video call"
+    },
+    "acceptedIncomingAudioCall": {
+        "message": "Thirrje audio ardhëse",
+        "description": "Shown in conversation history when you accepted an incoming audio call"
+    },
+    "acceptedIncomingVideoCall": {
+        "message": "Thirrje video ardhëse",
+        "description": "Shown in conversation history when you accepted an incoming video call"
+    },
+    "missedIncomingAudioCall": {
+        "message": "Humbët thirrje audio",
+        "description": "Shown in conversation history when you missed an incoming audio call"
+    },
+    "missedIncomingVideoCall": {
+        "message": "Humbët thirrje video",
+        "description": "Shown in conversation history when you missed an incoming video call"
+    },
+    "acceptedOutgoingAudioCall": {
+        "message": "Thirrje audio nga ju",
+        "description": "Shown in conversation history when you made an outgoing audio call"
+    },
+    "acceptedOutgoingVideoCall": {
+        "message": "Thirrje video nga ju",
+        "description": "Shown in conversation history when you made an outgoing video call"
+    },
+    "missedOrDeclinedOutgoingAudioCall": {
+        "message": "Thirrje audio pa përgjigje",
+        "description": "Shown in conversation history when your audio call is missed or declined"
+    },
+    "missedOrDeclinedOutgoingVideoCall": {
+        "message": "Thirrje video pa përgjigje",
+        "description": "Shown in conversation history when your video call is missed or declined"
+    },
+    "incomingAudioCall": {
+        "message": "Thirrje audio ardhëse…",
+        "description": "Shown in both the incoming call bar and notification for an incoming audio call"
+    },
+    "incomingVideoCall": {
+        "message": "Thirrje video ardhëse…",
+        "description": "Shown in both the incoming call bar and notification for an incoming video call"
+    },
+    "outgoingCallPrering": {
+        "message": "Po thirret…",
+        "description": "Shown in the call screen when placing an outgoing call that isn't ringing yet"
+    },
+    "outgoingCallRinging": {
+        "message": "Po i bihet ziles…",
+        "description": "Shown in the call screen when placing an outgoing call that is now ringing"
+    },
+    "makeOutgoingCall": {
+        "message": "Nisni një thirrje",
+        "description": "Title for the call button in a conversation"
+    },
+    "makeOutgoingVideoCall": {
+        "message": "Nisni një thirrje video",
+        "description": "Title for the video call button in a conversation"
+    },
+    "joinOngoingCall": {
+        "message": "Merrni pjesë",
+        "description": "Text that appears in a group when a call is active"
+    },
+    "callNeedPermission": {
+        "message": "$title$ do të marrë një kërkesë mesazhi nga ju. Mund të bëni thirrje sapo të pranohet kërkesa juaj për mesazhe.",
+        "description": "Shown when a call is rejected because the other party hasn't approved the message/call request",
+        "placeholders": {
+            "title": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "callReconnecting": {
+        "message": "Po rilidhet…",
+        "description": "Shown in the call screen when the call is reconnecting due to network issues"
+    },
+    "callDuration": {
+        "message": "Signal $duration$",
+        "description": "Shown in the call screen to indicate how long the call has been connected",
+        "placeholders": {
+            "duration": {
+                "content": "$1",
+                "example": "00:01"
+            }
+        }
+    },
+    "callingDeviceSelection__settings": {
+        "message": "Rregullime",
+        "description": "Title for device selection settings"
+    },
+    "calling__participants": {
+        "message": "$people$ në thirrje",
+        "description": "Title for participants list toggle",
+        "placeholders": {
+            "people": {
+                "content": "$1",
+                "example": "16"
+            }
+        }
+    },
+    "calling__call-notification__ended": {
+        "message": "Thirrja e grupit përfundoi",
+        "description": "Notification message when a group call has ended"
+    },
+    "calling__call-notification__started-by-someone": {
+        "message": "U nis një thirrje grupi",
+        "description": "Notification message when a group call has started, but we don't know who started it"
+    },
+    "calling__call-notification__started-by-you": {
+        "message": "Nisët një thirrje grupi",
+        "description": "Notification message when a group call has started by you"
+    },
+    "calling__call-notification__started": {
+        "message": "$name$ nisi një thirrje grupi",
+        "description": "Notification message when a group call has started",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "calling__call-notification__button__in-another-call-tooltip": {
+        "message": "Jeni tashmë në një thirrje",
+        "description": "Tooltip in disabled notification button when you're on another call"
+    },
+    "calling__call-notification__button__call-full-tooltip": {
+        "message": "Thirrja ka mbërritur në kapacitetin prej $max$ pjesëmarrësish",
+        "description": "Tooltip in disabled notification button when the call is full",
+        "placeholders": {
+            "max": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "calling__pip--on": {
+        "message": "Minizoje thirrjen",
+        "description": "Title for picture-in-picture toggle"
+    },
+    "calling__pip--off": {
+        "message": "Thirrje sa krejt ekrani",
+        "description": "Title for picture-in-picture toggle"
+    },
+    "calling__switch-view--to-grid": {
+        "message": "Kalo nën pamjen rrjetë",
+        "description": "Title for grid/speaker view toggle when on a call"
+    },
+    "calling__switch-view--to-speaker": {
+        "message": "Kalo nën pamjen folës",
+        "description": "Title for grid/speaker view toggle when on a call"
+    },
+    "calling__hangup": {
+        "message": "Dilni nga thirrja",
+        "description": "Title for hang up button"
+    },
+    "calling__SelectPresentingSourcesModal--title": {
+        "message": "Ndani ekranin tuaj me të tjerë",
+        "description": "Title for the select your screen sharing sources modal"
+    },
+    "calling__SelectPresentingSourcesModal--confirm": {
+        "message": "Ndaje ekranin",
+        "description": "Confirm button for sharing screen modal"
+    },
+    "calling__SelectPresentingSourcesModal--entireScreen": {
+        "message": "Krejt ekranin",
+        "description": "Title for the select your screen sharing sources modal and 'Entire Screen' source"
+    },
+    "calling__SelectPresentingSourcesModal--screen": {
+        "message": "Skena $id$",
+        "description": "Title for `Screen #N` source in screen sharing sources modal and overlay",
+        "placeholders": {
+            "id": {
+                "content": "$1",
+                "example": "1"
+            }
+        }
+    },
+    "calling__SelectPresentingSourcesModal--window": {
+        "message": "Një dritare",
+        "description": "Title for the select your screen sharing sources modal"
+    },
+    "callingDeviceSelection__label--video": {
+        "message": "Video",
+        "description": "Label for video input selector"
+    },
+    "callingDeviceSelection__label--audio-input": {
+        "message": "Mikrofon",
+        "description": "Label for audio input selector"
+    },
+    "callingDeviceSelection__label--audio-output": {
+        "message": "Altoparlantë",
+        "description": "Label for audio output selector"
+    },
+    "callingDeviceSelection__select--no-device": {
+        "message": "S’ka pajisje",
+        "description": "Message for when there are no available devices to select for input/output audio or video"
+    },
+    "callingDeviceSelection__select--default": {
+        "message": "Parazgjedhje",
+        "description": "Shown when the device is the default device"
+    },
+    "muteNotificationsTitle": {
+        "message": "Heshtoji njoftimet",
+        "description": "Label for the mute notifications drop-down selector"
+    },
+    "muteHour": {
+        "message": "Heshtoje për një orë",
+        "description": "Label for muting the conversation"
+    },
+    "muteEightHours": {
+        "message": "Heshtoje për tetë orë",
+        "description": "Label for muting the conversation"
+    },
+    "muteDay": {
+        "message": "Heshtoje për një ditë",
+        "description": "Label for muting the conversation"
+    },
+    "muteWeek": {
+        "message": "Heshtoje për një javë",
+        "description": "Label for muting the conversation"
+    },
+    "muteAlways": {
+        "message": "Heshtoje përherë",
+        "description": "Label for muting the conversation"
+    },
+    "unmute": {
+        "message": "Çheshtoji",
+        "description": "Label for unmuting the conversation"
+    },
+    "muteExpirationLabelAlways": {
+        "message": "Përherë e heshtuar",
+        "description": "Shown in the mute notifications submenu whenever a conversation has been muted"
+    },
+    "muteExpirationLabel": {
+        "message": "Heshtuar deri më $duration$",
+        "description": "Shown in the mute notifications submenu whenever a conversation has been muted",
+        "placeholders": {
+            "duration": {
+                "content": "$1",
+                "example": "10/23/2023, 7:10 PM"
+            }
+        }
+    },
+    "EmojiButton__label": {
+        "message": "Emoji",
+        "description": "Label for emoji button"
+    },
+    "ErrorModal--title": {
+        "message": "Diç shkoi ters!",
+        "description": "Title of pop-up dialog when user-initiated task has gone wrong"
+    },
+    "ErrorModal--description": {
+        "message": "Ju lutemi, riprovoni ose lidhuni me asistencën.",
+        "description": "Description text in pop-up dialog when user-initiated task has gone wrong"
+    },
+    "Confirmation--confirm": {
+        "message": "OK",
+        "description": "Button to dismiss pop-up dialog when user-initiated task has gone wrong"
+    },
+    "unknown-sgnl-link": {
+        "message": "Na ndjeni, kjo lidhje sgnl:// s’ka kuptim!",
+        "description": "Shown if you click on a sgnl:// link not currently supported by Desktop"
+    },
+    "GroupV2--join--invalid-link--title": {
+        "message": "Lidhje e Pavlefshme",
+        "description": "Shown if we are unable to parse a group link"
+    },
+    "GroupV2--join--invalid-link": {
+        "message": "Kjo s’është lidhje grupi e vlefshme. Sigurohuni që krejt lidhja është e pacenuar dhe e saktë, përpara se të provoni të merrni pjesë.",
+        "description": "Shown if we are unable to parse a group link"
+    },
+    "GroupV2--join--prompt": {
+        "message": "Doni të bëheni pjesë e këtij grupi dhe të ndani me anëtarët e tij emrin dhe foton tuaj?",
+        "description": "Shown when you click on a group link to confirm"
+    },
+    "GroupV2--join--already-in-group": {
+        "message": "Gjendeni tashmë në këtë grup.",
+        "description": "Shown if you click a group link for a group where you're already a member"
+    },
+    "GroupV2--join--already-awaiting-approval": {
+        "message": "Keni kërkuar tashmë miratim për t’u bërë pjesë e këtij grupi.",
+        "description": "Shown if you click a group link for a group where you've already requested approval'"
+    },
+    "GroupV2--join--unknown-link-version--title": {
+        "message": "Version i panjohur lidhjeje",
+        "description": "This group link is no longer valid."
+    },
+    "GroupV2--join--unknown-link-version": {
+        "message": "Kjo lidhje nuk mbulohet nga ky version i Signal-it për Desktop.",
+        "description": "Shown if you click a group link and we can't get information about it"
+    },
+    "GroupV2--join--link-revoked--title": {
+        "message": "S’bëheni Dot Pjesë e Grupit",
+        "description": "Shown if you click a group link and we can't get information about it"
+    },
+    "GroupV2--join--link-revoked": {
+        "message": "Kjo lidhje grupi s’është më e vlefshme.",
+        "description": "Shown if you click a group link and we can't get information about it"
+    },
+    "GroupV2--join--prompt-with-approval": {
+        "message": "Përpara se të mund të bëheni pjesë e këtij grupi, kërkesën tuaj duhet ta miratojë një përgjegjës i tij. Në u miratoftë. emri dhe fotoja juaj do t’u jepet anëtarëve të ti.",
+        "description": "Shown when you click on a group link to confirm, if it requires admin approval"
+    },
+    "GroupV2--join--join-button": {
+        "message": "Merrni pjesë",
+        "description": "The button to join the group"
+    },
+    "GroupV2--join--request-to-join-button": {
+        "message": "Kërko Pjesëmarrje",
+        "description": "The button to join the group, if approval is required"
+    },
+    "GroupV2--join--cancel-request-to-join": {
+        "message": "Anuloje Kërkesën",
+        "description": "The button to cancel request to join the group"
+    },
+    "GroupV2--join--cancel-request-to-join--confirmation": {
+        "message": "Të anulohet kërkesa juaj për t’u bërë pjesë e këtij grupi?",
+        "description": "A confirmation message that shows after you click the button"
+    },
+    "GroupV2--join--cancel-request-to-join--yes": {
+        "message": "Po",
+        "description": "Choosing to continue in the cancel join confirmation dialog"
+    },
+    "GroupV2--join--cancel-request-to-join--no": {
+        "message": "Jo",
+        "description": "Choosing not to continue in the cancel join confirmation dialog"
+    },
+    "GroupV2--join--member-count--single": {
+        "message": "1 anëtar",
+        "description": "Shown in the metadata section if group has just one member"
+    },
+    "GroupV2--join--member-count--multiple": {
+        "message": "$count$ anëtarë",
+        "description": "Shown in the metadata section if group has more than one member",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "12"
+            }
+        }
+    },
+    "GroupV2--join--group-metadata": {
+        "message": "Grup · $memberCount$",
+        "description": "A holder for two pieces of information - the type of conversation, and the member count",
+        "placeholders": {
+            "memberCount": {
+                "content": "$1",
+                "example": "12 members"
+            }
+        }
+    },
+    "GroupV2--join--requested": {
+        "message": "Kërkesa juaj për t’u bërë pjesë iu dërgua përgjegjësit të grupit. Kur të veprojnë, do t’ju njoftohet.",
+        "description": "Shown in composition area when you've requested to join a group"
+    },
+    "GroupV2--join--general-join-failure--title": {
+        "message": "Gabim Lidhjeje",
+        "description": "Shown if something went wrong when you try to join via a group link"
+    },
+    "GroupV2--join--general-join-failure": {
+        "message": "Pjesëmarrja përmes kësaj lidhjeje dështoi. Provoni të bëheni pjesë më vonë.",
+        "description": "Shown if something went wrong when you try to join via a group link"
+    },
+    "GroupV2--admin": {
+        "message": "Përgjegjës",
+        "description": "Label for a group administrator"
+    },
+    "GroupV2--only-admins": {
+        "message": "Vetëm Përgjegjësit",
+        "description": "Label for group administrators -- used in drop-downs to select permissions that apply to admins"
+    },
+    "GroupV2--all-members": {
+        "message": "Krejt anëtarët",
+        "description": "Label for describing the general non-privileged members of a group"
+    },
+    "updating": {
+        "message": "Po përditësohet…",
+        "description": "Shown along with a spinner when an update operation takes longer than one second"
+    },
+    "GroupV2--create--you": {
+        "message": "E krijuat grupin.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--create--other": {
+        "message": "$memberName$ krijoi grupin.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--create--unknown": {
+        "message": "Grupi u krijua.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--title--change--other": {
+        "message": "$memberName$ ndryshoi në \"$newTitle$\" emrin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "newTitle": {
+                "content": "$2",
+                "example": "Saturday Hiking"
+            }
+        }
+    },
+    "GroupV2--title--change--you": {
+        "message": "Ndryshuat në \"$newTitle$\" emrin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "newTitle": {
+                "content": "$1",
+                "example": "Saturday Hiking"
+            }
+        }
+    },
+    "GroupV2--title--change--unknown": {
+        "message": "Një anëtar ndryshoi në \"$newTitle$\" emrin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "newTitle": {
+                "content": "$1",
+                "example": "Saturday Hiking"
+            }
+        }
+    },
+    "GroupV2--title--remove--other": {
+        "message": "$memberName$ hoqi emrin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--title--remove--you": {
+        "message": "Hoqët emrin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--title--remove--unknown": {
+        "message": "Një anëtar hoqi emrin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--avatar--change--other": {
+        "message": "$memberName$ ndryshoi avatarin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--avatar--change--you": {
+        "message": "Ndryshuat avatarin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--avatar--change--unknown": {
+        "message": "Një anëtar ndryshoi avatarin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--avatar--remove--other": {
+        "message": "$memberName$ hoqi avatarin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--avatar--remove--you": {
+        "message": "Hoqët avatarin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--avatar--remove--unknown": {
+        "message": "Një anëtar hoqi avatarin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-attributes--admins--other": {
+        "message": "$adminName$ ndryshoi se cilët mund të përpunojnë të dhëna grupi në “Vetëm përgjegjësit”.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--access-attributes--admins--you": {
+        "message": "Ndryshuat se cilët mund të përpunojnë të dhëna grupi në “Vetëm përgjegjësit”.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-attributes--admins--unknown": {
+        "message": "Një përgjegjës ndryshoi se cilët mund të përpunojnë të dhëna grupi në “Vetëm përgjegjësit”. ",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-attributes--all--other": {
+        "message": "$adminName$ ndryshoi se cilët mund të përpunojnë të dhëna grupi në “Krejt anëtarët”.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--access-attributes--all--you": {
+        "message": "Ndryshuat se cilët mund të përpunojnë të dhëna grupi në “Krejt anëtarët”.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-attributes--all--unknown": {
+        "message": "Një përgjegjës ndryshoi se cilët mund të përpunojnë të dhëna grupi në “Krejt anëtarët”.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-members--admins--other": {
+        "message": "$adminName$ ndryshoi se cilët mund të përpunojnë anëtarësi grupi në “Vetëm përgjegjësit”.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--access-members--admins--you": {
+        "message": "Ndryshuat se cilët mund të përpunojnë anëtarësi grupi në “Vetëm përgjegjësit”.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-members--admins--unknown": {
+        "message": "Një përgjegjës ndryshoi se cilët mund të përpunojnë anëtarësi grupi në “Vetëm përgjegjësit”.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-members--all--other": {
+        "message": "$adminName$ ndryshoi se cilët mund të përpunojnë anëtarësi grupi në “Krejt anëtarët”.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--access-members--all--you": {
+        "message": "Ndryshuat se cilët mund të përpunojnë anëtarësi grupi në “Krejt anëtarët”.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-members--all--unknown": {
+        "message": "Një përgjegjës ndryshoi se cilët mund të përpunojnë anëtarësi grupi në “Krejt anëtarët”.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-invite-link--disabled--you": {
+        "message": "Çaktivizuat miratim përgjegjësi për lidhjen e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-invite-link--disabled--other": {
+        "message": "$adminName$ çaktivizoi miratim përgjegjësi për lidhjen e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--access-invite-link--disabled--unknown": {
+        "message": "Miratimi i përgjegjësit për lidhjen e grupit është çaktivizuar.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-invite-link--enabled--you": {
+        "message": "Aktivizuar miratim përgjegjësi për lidhjen e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-invite-link--enabled--other": {
+        "message": "$adminName$ aktivizoi miratim përgjegjësi për lidhjen e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--access-invite-link--enabled--unknown": {
+        "message": "Është aktivizuar miratimi nga përgjegjësi për lidhje grupesh.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add--invited--you": {
+        "message": "Shtuat anëtarin e ftuar $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add--invited--other": {
+        "message": "$memberName$ shtoi anëtarin e ftuar $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Alice"
+            },
+            "inviteeName": {
+                "content": "$2",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--invited--unknown": {
+        "message": "Një anëtar shtoi anëtarin e ftuar $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add--from-invite--other": {
+        "message": "$inviteeName$ pranoi një ftesë për te grupi nga $inviterName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Alice"
+            },
+            "inviterName": {
+                "content": "$2",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--from-invite--other-no-from": {
+        "message": "$inviteeName$ pranoi një ftesë te grupi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add--from-invite--you": {
+        "message": "Pranuat një ftesë për te grupi nga $inviterName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviterName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--from-invite--you-no-from": {
+        "message": "Pranuat një ftesë për te grupi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add--from-invite--from-you": {
+        "message": "$inviteeName$ pranoi ftesën tuaj për te grupi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--other--other": {
+        "message": "$adderName$ shtoi $addeeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adderName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "addeeName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add--other--you": {
+        "message": "Shtuat $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--other--unknown": {
+        "message": "Një anëtar shtoi $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--you--other": {
+        "message": "$memberName$ ju shtoi te grupi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--you--you": {
+        "message": "U bëtë pjesë e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add--you--unknown": {
+        "message": "U shtuat te grupi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add-from-link--you--you": {
+        "message": "U bëtë pjesë e grupit përmes lidhjes së grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add-from-link--other": {
+        "message": "$memberName$ u bë pjesë e grupit përmes lidhjes së grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add-from-admin-approval--you--other": {
+        "message": "$adminName$ miratoi kërkesën tuaj për t’u bërë pjesë e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add-from-admin-approval--you--unknown": {
+        "message": "Kërkesa jua për t’u bërë pjesë e grupit u miratua.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add-from-admin-approval--other--you": {
+        "message": "Miratuat një kërkesë nga $joinerName$ për t’u bërë pjesë e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add-from-admin-approval--other--other": {
+        "message": "$adminName$ miratoi një kërkesë nga $joinerName$ për t’u bërë pjesë e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add-from-admin-approval--other--unknown": {
+        "message": "U miratua një kërkesë për t’u bërë pjesë e grupit nga $joinerName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-remove--other--other": {
+        "message": "$adminName$ hoqi $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-remove--other--self": {
+        "message": "$memberName$ iku nga grupi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-remove--other--you": {
+        "message": "Hoqët $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-remove--other--unknown": {
+        "message": "Një anëtar hoqi $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-remove--you--other": {
+        "message": "$adminName$ ju hoqi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-remove--you--you": {
+        "message": "E braktisët grupin.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-remove--you--unknown": {
+        "message": "U hoqët prej grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-privilege--promote--other--other": {
+        "message": "$adminName$ e bëri $memberName$ një përgjegjës.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-privilege--promote--other--you": {
+        "message": "E bëtë $memberName$ një përgjegjës.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--promote--other--unknown": {
+        "message": "Një përgjegjës e bëri $memberName$ një përgjegjës.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--promote--you--other": {
+        "message": "$adminName$ ju bëri një përgjegjës.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--promote--you--unknown": {
+        "message": "Një përgjegjës ju bëri një nga përgjegjësit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-privilege--demote--other--other": {
+        "message": "$adminName$ shfuqizoi privilegje përgjegjësi për $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-privilege--demote--other--you": {
+        "message": "Shfuqizuat privilegje përgjegjësi për $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--demote--other--unknown": {
+        "message": "Një përgjegjës shfuqizoi privilegje përgjegjësi për $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-privilege--demote--you--other": {
+        "message": "$adminName$ ju shfuqizoi privilegje përgjegjësi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--demote--you--unknown": {
+        "message": "Një përgjegjës ju shfuqizoi privilegje përgjegjësi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--pending-add--one--other--other": {
+        "message": "$memberName$ ftoi te grupi 1 person.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-add--one--other--you": {
+        "message": "Ftuat te grupi $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-add--one--other--unknown": {
+        "message": "Te grupi qe ftuar një person.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-add--one--you--other": {
+        "message": "$memberName$ ju ftoi te grupi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-add--one--you--unknown": {
+        "message": "U ftuat te grupi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--pending-add--many--other": {
+        "message": "$memberName$ ftoi te grupi $count$ vetë.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "count": {
+                "content": "$2",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-add--many--you": {
+        "message": "Ftuat te grupi $count$ vetë.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-add--many--unknown": {
+        "message": "Te grupi qenë ftuar $count$ vetë.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--decline--other": {
+        "message": "1 person i ftuar nga $memberName$ hodhi poshtë ftesën për te grupi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--decline--you": {
+        "message": "$inviteeName$ hodhën poshtë ftesën tuaj për te grupi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--decline--from-you": {
+        "message": "Hodhët poshtë ftesën për te grupi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--pending-remove--decline--unknown": {
+        "message": "1 person hodhi poshtë ftesën e tij për te grupi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--pending-remove--revoke--one--other": {
+        "message": "$memberName$ shfuqizoi një ftesë për te grupi për 1 person.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--one--you": {
+        "message": "Shfuqizuat një ftesë për te grupi për 1 person.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-own--to-you": {
+        "message": "$inviterName$ shfuqizoi ftesën për ju.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviterName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-own--unknown": {
+        "message": "$inviterName$ shfuqizoi ftesën e tij për 1 person.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviterName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--one--unknown": {
+        "message": "Një përgjegjës shfuqizoi një ftesë për te grupi për 1 person.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--many--other": {
+        "message": "$memberName$ shfuqizoi ftesa për te grupi për $count$ vetë.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "count": {
+                "content": "$2",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--many--you": {
+        "message": "Shfuqizuat ftesa për te grupi për $count$ vetë.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--many--unknown": {
+        "message": "Një përgjegjës shfuqizoi ftesa për te grupi për $count$ vetë.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--one--other": {
+        "message": "$adminName$ shfuqizoi një ftesë për te grupi për 1 person të ftuar nga $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--one--you": {
+        "message": "Shfuqizuat një ftesë për te grupi për 1 person të ftuar nga $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--one--unknown": {
+        "message": "Një përgjegjës shfuqizoi një ftesë për te grupi për 1 person të ftuar nga $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--one--other": {
+        "message": "$adminName$ shfuqizoi ftesën për te grupi që dërguat për $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--one--you": {
+        "message": "Shfuqizuat ftesën tuaj për $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--one--unknown": {
+        "message": "Një përgjegjës shfuqizoi ftesët për te grupi që dërguat për $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--many--other": {
+        "message": "$adminName$ shfuqizoi ftesat për te grupi për $count$ vetë të ftuar nga $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--many--you": {
+        "message": "Shfuqizuat ftesat për te grupi për $count$ vetë të ftuar nga $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--many--unknown": {
+        "message": "Një përgjegjës shfuqizoi ftesat për te grupi për $count$ vetë të ftuar nga $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--many--other": {
+        "message": "$adminName$ shfuqizoi ftesat për te grupi që dërguat për $count$ vetë.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "count": {
+                "content": "$2",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--many--you": {
+        "message": "Shfuqizuat ftesën tuaj për $count$ vetë.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--many--unknown": {
+        "message": "Një përgjegjës shfuqizoi ftesat për te grupi që dërguat për $count$ vetë.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--admin-approval-add-one--you": {
+        "message": "Dërguat një kërkesë të bëheni pjesë e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--admin-approval-add-one--other": {
+        "message": "$joinerName$ kërkoi të bëhet pjesë e grupit përmes lidhjes së grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--admin-approval-remove-one--you--you": {
+        "message": "Anuluat kërkesën tuaj për t’u bërë pjesë e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--admin-approval-remove-one--you--unknown": {
+        "message": "Kërkesa juaj për t’u bërë pjesë e grupit është hedhur poshtë nga një përgjegjës.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--admin-approval-remove-one--other--you": {
+        "message": "Hodhët poshtë një kërkesë nga $joinerName$ për t’u bërë pjesë e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--admin-approval-remove-one--other--own": {
+        "message": "$joinerName$ anuloi kërkesën e tij për t’u bërë pjesë e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--admin-approval-remove-one--other--other": {
+        "message": "$adminName$ hodhi poshtë një kërkesë nga $joinerName$ për t’u bërë pjesë e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "joinerName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-add--disabled--you": {
+        "message": "Aktivizuat lidhjen e grupit me miratim nga përgjegjësi të çaktivizuar.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-add--disabled--other": {
+        "message": "$adminName$ aktivizoi lidhjen e grupit me miratim nga përgjegjësi të çaktivizuar.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-add--disabled--unknown": {
+        "message": "Lidhja e grupit është aktivizuar me miratim nga përgjegjësi të çaktivizuar.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-add--enabled--you": {
+        "message": "Aktivizuat lidhjen e grupit me miratim nga përgjegjësi të aktivizuar.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-add--enabled--other": {
+        "message": "$adminName$ aktivizoi lidhjen e grupit me miratim nga përgjegjësi të aktivizuar.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-add--enabled--unknown": {
+        "message": "Lidhja e grupit është aktivizuar me miratim nga përgjegjësi të aktivizuar.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-remove--you": {
+        "message": "Çaktivizuat lidhjen e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-remove--other": {
+        "message": "$adminName$ çaktivizoi lidhjen e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-remove--unknown": {
+        "message": "Lidhja e grupit është çaktivizuar.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-reset--you": {
+        "message": "Ricaktuat lidhjen e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-reset--other": {
+        "message": "$adminName$ ricaktoi lidhjen e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-reset--unknown": {
+        "message": "Lidhja e grupit është ricaktuar.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--description--remove--you": {
+        "message": "Hoqët përshkrimin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--description--remove--other": {
+        "message": "$memberName$ hoqi përshkrimin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--description--remove--unknown": {
+        "message": "Përshkrimi i grupit u hoq.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--description--change--you": {
+        "message": "Ndryshuat përshkrimin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--description--change--other": {
+        "message": "$memberName$ ndryshoi përshkrimin e grupit.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--description--change--unknown": {
+        "message": "Përshkrimi i grupit u ndryshua.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV1--Migration--disabled": {
+        "message": "Përmirësojeni këtë grup që të aktivizohen veçori të reja, të tilla si @përmendje dhe përgjegjës. Anëtarët që nuk kanë dhënë emrin ose foton e tyre në këtë grup do të ftohen të marrin pjesë. $learnMore$",
+        "description": "Shown instead of composition area when user is forced to migrate a legacy group (GV1).",
+        "placeholders": {
+            "learnMore": {
+                "content": "$1",
+                "example": "Learn more."
+            }
+        }
+    },
+    "GroupV1--Migration--was-upgraded": {
+        "message": "Ky grup u përmirësua si Grup i Ri.",
+        "description": "Shown in timeline when a legacy group (GV1) is upgraded to a new group (GV2)"
+    },
+    "GroupV1--Migration--learn-more": {
+        "message": "Mësoni Më Tepër",
+        "description": "Shown on a bubble below a 'group was migrated' timeline notification, or as button on Migrate dialog"
+    },
+    "GroupV1--Migration--migrate": {
+        "message": "Përmirësojeni",
+        "description": "Shown on Migrate dialog to kick off the process"
+    },
+    "GroupV1--Migration--info--title": {
+        "message": "Ç’janë Grupet e Reja?",
+        "description": "Shown on Learn More popup after GV1 migration"
+    },
+    "GroupV1--Migration--migrate--title": {
+        "message": "Përmirësoje si Grup të Ri",
+        "description": "Shown on Migration popup after choosing to migrate group"
+    },
+    "GroupV1--Migration--info--summary": {
+        "message": "Grupet e Reja kanë veçori të tilla si @përmendje dhe përgjegjës grupi, dhe në të ardhmen do të mbulojnë më tepër veçori.",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--keep-history": {
+        "message": "Krejt historiku i mesazheve dhe mediat janë mbajtur prej kohës para përmirësimit.",
+        "description": "Shown on Learn More popup after GV1 migration"
+    },
+    "GroupV1--Migration--migrate--keep-history": {
+        "message": "Krejt historiku i mesazheve dhe mediat do të mbahen prej kohës para përmirësimit.",
+        "description": "Shown on Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--invited--you": {
+        "message": "Do t’ju duhet të pranoni një ftesë, ta të ribëheni pjesë e këtij grupi, dhe s’do të merrni mesazhe grupi, pa e pranuar.",
+        "description": "Shown on Learn More popup after GV1 migration"
+    },
+    "GroupV1--Migration--info--invited--many": {
+        "message": "Këtyre anëtarëve do t’u duhet të pranojnë një ftesë për t’u bërë pjesë e grupit, dhe s’do të marrin mesazhe grupi, pa pranuar ftesën:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--invited--one": {
+        "message": "Këtij anëtari do t’i duhet të pranojë një ftesë për t’u bërë pjesë e grupit, dhe s’do të marrë mesazhe grupi, pa pranuar ftesën:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--removed--before--many": {
+        "message": "Këta anëtarë s’janë të aftë të bëhen pjesë Grupesh të Rinj, dhe do të hiqen prej grupit:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--removed--before--one": {
+        "message": "Ky anëtar s’është në gjendje të bëhet pjesë Grupesh të Rinj, dhe do të hiqet prej grupit:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--removed--after--many": {
+        "message": "Këta anëtarë s’qenë në gjendje të bëhen pjesë Grupesh të Rinj, dhe u hoqën nga grupi:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--removed--after--one": {
+        "message": "Ky anëtar s’qe në gjendje të bëhej pjesë e Grupeve të Rinj, dhe u hoq nga grupi:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--invited--you": {
+        "message": "S’u shtuat dot te Grupi i Ri dhe u ftuat të bëheni pjesë.",
+        "description": "Shown in timeline when a group is upgraded and you were invited instead of added"
+    },
+    "GroupV1--Migration--invited--one": {
+        "message": "$contact$ s’u shtua dot te Grupi i Ri dhe u ftua të bëhet pjesë e tij.",
+        "description": "Shown in timeline when a group is upgraded and one person was invited, instead of added",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV1--Migration--invited--many": {
+        "message": "$count$ anëtarë s’u shtuan dot te Grupi i Ri dhe u ftuan të bëhet pjesë.",
+        "description": "Shown in timeline when a group is upgraded and some people were invited, instead of added",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV1--Migration--removed--one": {
+        "message": "$contact$ u hoq prej grupit.",
+        "description": "Shown in timeline when a group is upgraded and one person was removed entirely during the upgrade",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV1--Migration--removed--many": {
+        "message": "$count$ anëtarë u hoqën prej grupit.",
+        "description": "Shown in timeline when a group is upgraded and some people were removed entirely during the upgrade",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "close": {
+        "message": "Mbylle",
+        "description": "Generic close label"
+    },
+    "previous": {
+        "message": "e mëparshmja",
+        "description": "Generic previous label"
+    },
+    "next": {
+        "message": "pasuesja",
+        "description": "Generic next label"
+    },
+    "CompositionArea--expand": {
+        "message": "Zgjeroje",
+        "description": "Aria label for expanding composition area"
+    },
+    "CompositionArea--attach-file": {
+        "message": "Bashkëngjitni kartelë",
+        "description": "Aria label for file attachment button in composition area"
+    },
+    "CompositionArea--sms-only__title": {
+        "message": "Ky person s’përdor Signal",
+        "description": "Title for the composition area for the SMS-only contact"
+    },
+    "CompositionArea--sms-only__body": {
+        "message": "Signal-i për Desktop nuk mbulon mesazhe për kontakte jo Signal. Kërkojini këtij personi të instalojë Signal-in, për punë më të sigurt me mesazhet.",
+        "description": "Body for the composition area for the SMS-only contact"
+    },
+    "CompositionArea--sms-only__spinner-label": {
+        "message": "Po kontrollohet gjendje regjistrimi kontakti",
+        "description": "Displayed while checking if the contact is SMS-only"
+    },
+    "countMutedConversationsDescription": {
+        "message": "Numëroji bisedat e heshtuara për numër stemash",
+        "description": "Description for counting muted conversations in badge setting"
+    },
+    "ContactModal--message": {
+        "message": "Mesazh",
+        "description": "Button text for send message button in Group Contact Details modal"
+    },
+    "ContactModal--rm-admin": {
+        "message": "Hiqe nga përgjegjës",
+        "description": "Button text for removing as admin button in Group Contact Details modal"
+    },
+    "ContactModal--make-admin": {
+        "message": "Bëje përgjegjës",
+        "description": "Button text for make admin button in Group Contact Details modal"
+    },
+    "ContactModal--make-admin-info": {
+        "message": "$contact$ do të jetë në gjendje të përpunojë këtë grup dhe anëtarët e tij.",
+        "description": "Shown in a confirmation dialog when you are about to grant admin privileges to someone",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "Homer"
+            }
+        }
+    },
+    "ContactModal--rm-admin-info": {
+        "message": "Hiqe $contact$ nga përgjegjës grupi",
+        "description": "Shown in a confirmation dialog when you are about to remove admin privileges from someone",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "Homer"
+            }
+        }
+    },
+    "ContactModal--remove-from-group": {
+        "message": "Hiqe nga grup",
+        "description": "Button text for remove from group button in Group Contact Details modal"
+    },
+    "showChatColorEditor": {
+        "message": "Ngjyrë fjalosjeje",
+        "description": "This is a button in the conversation context menu to show the chat color editor"
+    },
+    "showConversationDetails": {
+        "message": "Rregullime grupi",
+        "description": "This is a button in the conversation context menu to show group settings"
+    },
+    "ConversationDetails--group-link": {
+        "message": "Lidhje grupi",
+        "description": "This is the label for the group link management panel"
+    },
+    "ConversationDetails--disappearing-messages-label": {
+        "message": "Zhdukje mesazhesh",
+        "description": "This is the label for the disappearing messages setting panel"
+    },
+    "ConversationDetails--disappearing-messages-info": {
+        "message": "Në qoftë e aktivizuar, mesazhet e dërguar dhe të marrë në këtë grup do të zhduken, pasi të jenë parë.",
+        "description": "This is the info about the disappearing messages setting"
+    },
+    "ConversationDetails--group-info-label": {
+        "message": "Cilët mund të përpunojnë të dhëna grupi",
+        "description": "This is the label for the 'who can edit the group' panel"
+    },
+    "ConversationDetails--group-info-info": {
+        "message": "Zgjidhni cilët mund të përpunojnë emër grupi, foto, përshkrim dhe kohëmatës tretjeje mesazhesh.",
+        "description": "This is the additional info for the 'who can edit the group' panel"
+    },
+    "ConversationDetails--add-members-label": {
+        "message": "Cilët mund të shtojnë anëtarë",
+        "description": "This is the label for the 'who can add members' panel"
+    },
+    "ConversationDetails--add-members-info": {
+        "message": "Zgjidhni cili mund të shtojë anëtarë te ky grup.",
+        "description": "This is the additional info for the 'who can add members' panel"
+    },
+    "ConversationDetails--requests-and-invites": {
+        "message": "Kërkesa & Ftesa",
+        "description": "This is a button to display which members have been invited but have not joined yet"
+    },
+    "ConversationDetailsActions--leave-group": {
+        "message": "Braktise grupin",
+        "description": "This is a button to leave a group"
+    },
+    "ConversationDetailsActions--block-group": {
+        "message": "Blloko grup",
+        "description": "This is a button to block a group"
+    },
+    "ConversationDetailsActions--leave-group-must-choose-new-admin": {
+        "message": "Përpara se të largoheni, duhet të zgjidhni të paktën një përgjegjës të ri për këtë grup.",
+        "description": "Shown if, before leaving a group, you need to choose an admin"
+    },
+    "ConversationDetailsActions--leave-group-modal-title": {
+        "message": "Doni vërtet të dilet?",
+        "description": "This is the modal title for confirming leaving a group"
+    },
+    "ConversationDetailsActions--leave-group-modal-content": {
+        "message": "S’do të jeni më në gjendje të dërgoni ose merrni mesazhe në këtë grup.",
+        "description": "This is the modal content for confirming leaving a group"
+    },
+    "ConversationDetailsActions--leave-group-modal-confirm": {
+        "message": "Braktise",
+        "description": "This is the modal button to confirm leaving a group"
+    },
+    "ConversationDetailsActions--block-group-modal-title": {
+        "message": "Të bllokohet dhe të Braktiset Grupi $groupName$?",
+        "description": "This is the modal title for confirming blocking a group",
+        "placeholders": {
+            "groupName": {
+                "content": "$1",
+                "example": "Our Conversation"
+            }
+        }
+    },
+    "ConversationDetailsActions--block-group-modal-content": {
+        "message": "S\\’do të merrni më mesazhe apo përditësime nga ky grup.",
+        "description": "This is the modal content for confirming blocking a group"
+    },
+    "ConversationDetailsActions--block-group-modal-confirm": {
+        "message": "Bllokoje",
+        "description": "This is the modal button to confirm blocking a group"
+    },
+    "ConversationDetailsHeader--members": {
+        "message": "$number$ anëtarë",
+        "description": "This is the number of members in a group",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "10"
+            }
+        }
+    },
+    "ConversationDetailsMediaList--shared-media": {
+        "message": "Media e ndarë me të tjerët",
+        "description": "Title for the media thumbnails in the conversation details screen"
+    },
+    "ConversationDetailsMediaList--show-all": {
+        "message": "Shihini krejt",
+        "description": "This is a button on the conversation details to show all media"
+    },
+    "ConversationDetailsMembershipList--title": {
+        "message": "$number$ anëtarë",
+        "description": "The title of the membership list panel",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "10"
+            }
+        }
+    },
+    "ConversationDetailsMembershipList--add-members": {
+        "message": "Shtoni anëtarë",
+        "description": "The button that you can click to add new members"
+    },
+    "ConversationDetailsMembershipList--show-all": {
+        "message": "Shihini krejt",
+        "description": "This is a button on the conversation details to show all members"
+    },
+    "GroupLinkManagement--clipboard": {
+        "message": "Lidhja e grupit u kopjua.",
+        "description": "Shown in a toast when a user selects to copy group link"
+    },
+    "GroupLinkManagement--share": {
+        "message": "Kopjo lidhjen",
+        "description": "This lets users share their group link"
+    },
+    "GroupLinkManagement--confirm-reset": {
+        "message": "Jeni i sigurt se doni të ricaktohet lidhja e grupit? Njerëzit s’do të jenë më në gjendje të bëhen pjesë e grupit duke përdorur lidhjen e tanishme.",
+        "description": "Shown in the confirmation dialog when an admin is about to reset the group link"
+    },
+    "GroupLinkManagement--reset": {
+        "message": "Ricaktoni lidhje",
+        "description": "This lets users generate a new group link"
+    },
+    "GroupLinkManagement--approve-label": {
+        "message": "Miratoni anëtarë të rinj",
+        "description": "Title for the approve new members select area"
+    },
+    "GroupLinkManagement--approve-info": {
+        "message": "Kërko doemos që një përgjegjës të miratojë anëtarë të rinj që vijnë prej një lidhjeje grupi",
+        "description": "Description for the approve new members select area"
+    },
+    "PendingInvites--tab-requests": {
+        "message": "Kërkesa ($count$)",
+        "description": "Label for the tab to view pending requests",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "4"
+            }
+        }
+    },
+    "PendingInvites--tab-invites": {
+        "message": "Ftesa ($count$)",
+        "description": "Label for the tab to view pending invites",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "2"
+            }
+        }
+    },
+    "PendingRequests--approve-for": {
+        "message": "Të miratohet kërkesa prej \"$name$\"?",
+        "description": "This is the modal content when confirming approving a group request to join",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Meowsy Purrington"
+            }
+        }
+    },
+    "PendingRequests--deny-for": {
+        "message": "Të mohohet kërkesa prej \"$name$\"?",
+        "description": "This is the modal content when confirming denying a group request to join",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Meowsy Purrington"
+            }
+        }
+    },
+    "PendingInvites--invites": {
+        "message": "Ftuar nga ju",
+        "description": "This is the title list of all invites"
+    },
+    "PendingInvites--invited-by-you": {
+        "message": "Ftuar nga ju",
+        "description": "This is the title for the list of members you have invited"
+    },
+    "PendingInvites--invited-by-others": {
+        "message": "Ftuar nga të tjerë",
+        "description": "This is the title for the list of members who have invited other people"
+    },
+    "PendingInvites--invited-count": {
+        "message": "$number$ të ftuar",
+        "description": "This is the label for the number of members someone has invited",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "3"
+            }
+        }
+    },
+    "PendingInvites--revoke-for-label": {
+        "message": "Shfuqizoje ftesë grupi",
+        "description": "This is aria label for revoking a group invite icon"
+    },
+    "PendingInvites--revoke-for": {
+        "message": "Të shfuqizohet ftesë grupi për $name$?",
+        "description": "This is the modal content when confirming revoking a single invite",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "3"
+            },
+            "name": {
+                "content": "$2",
+                "example": "Fred Riley III"
+            }
+        }
+    },
+    "PendingInvites--revoke-from-singular": {
+        "message": "Të shfuqizohet 1 ftesë dërguar nga \"$name$\"?",
+        "description": "This is the modal content when confirming revoking a single invite",
+        "placeholders": {
+            "name": {
+                "content": "$2",
+                "example": "Fred Riley III"
+            }
+        }
+    },
+    "PendingInvites--revoke-from-plural": {
+        "message": "Të shfuqizohen $number$ ftesa dërguar nga \"$name$\"",
+        "description": "This is the modal content when confirming revoking multiple invites",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "3"
+            },
+            "name": {
+                "content": "$2",
+                "example": "Fred Riley III"
+            }
+        }
+    },
+    "PendingInvites--revoke": {
+        "message": "Shfuqizoje",
+        "description": "This is the modal button to confirm revoking invites"
+    },
+    "PendingRequests--approve": {
+        "message": "Miratoje Kërkesën",
+        "description": "This is the modal button to approve group request to join"
+    },
+    "PendingRequests--deny": {
+        "message": "Hidhe Poshtë Kërkesën",
+        "description": "This is the modal button to deny group request to join"
+    },
+    "PendingRequests--info": {
+        "message": "Persona në këtë listë po rreken të bëhen pjesë e $name$ përmes lidhjes së grupit.",
+        "description": "Inforamtion shown below the pending admin approval list",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Tahoe List"
+            }
+        }
+    },
+    "PendingInvites--info": {
+        "message": "Për persona të ftuar në këtë grup nuk shfaqen hollësi, pa u bërë pjesë. Të ftuarit do të shohin mesazhe vetëm pasi të bëhen pjesë e grupit.",
+        "description": "Information shown below the invite list"
+    },
+    "AvatarInput--no-photo-label--group": {
+        "message": "Shtoni foto grupi",
+        "description": "The label for the avatar uploader when no group photo is selected"
+    },
+    "AvatarInput--change-photo-label": {
+        "message": "Ndryshoni foto",
+        "description": "The label for the avatar uploader when a photo is selected"
+    },
+    "AvatarInput--upload-photo-choice": {
+        "message": "Ngarkoni foto",
+        "description": "The button text when you click on an uploaded avatar and want to upload a new one"
+    },
+    "AvatarInput--remove-photo-choice": {
+        "message": "Hiqe foton",
+        "description": "The button text when you click on an uploaded avatar and want to remove it"
+    },
+    "ContactPill--remove": {
+        "message": "Hiqe kontaktin",
+        "description": "The label for the 'remove' button on the contact pill"
+    },
+    "ComposeErrorDialog--close": {
+        "message": "OK",
+        "description": "The text on the button when there's an error in the composer"
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--title--one": {
+        "message": "U dërgua ftesë",
+        "description": "When creating a new group and inviting users, this is shown in the dialog"
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--title--many": {
+        "message": "U dërguan $count$ ftesa",
+        "description": "When creating a new group and inviting users, this is shown in the dialog",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "3"
+            }
+        }
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--body--user-paragraph--one": {
+        "message": "$name$ s’mund të shtohet automatikisht te ky grup nga ju.",
+        "description": "When creating a new group and inviting users, this is shown in the dialog",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Jane Doe"
+            }
+        }
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--body--user-paragraph--many": {
+        "message": "Këta përdorues s’mund të shtohen automatikisht te ky grup nga ju.",
+        "description": "When creating a new group and inviting users, this is shown in the dialog"
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--body--info-paragraph": {
+        "message": "Janë ftuar të marrin pjesë, dhe s’do të shohin ndonjë mesazh grupi, pa pranuar.",
+        "description": "When creating a new group and inviting users, this is shown in the dialog"
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--body--learn-more": {
+        "message": "Mësoni më tepër",
+        "description": "When creating a new group and inviting users, this is shown in the dialog"
+    },
+    "AddGroupMembersModal--title": {
+        "message": "Shtoni anëtarë",
+        "description": "When adding new members to an existing group, this is shown in the dialog"
+    },
+    "AddGroupMembersModal--continue-to-confirm": {
+        "message": "Përditësoje",
+        "description": "When adding new members to an existing group, this is shown in the dialog"
+    },
+    "AddGroupMembersModal--confirm-title--one": {
+        "message": "Të shtohet $person$ te \"$group$\"?",
+        "description": "When adding new members to an existing group, this is shown in the confirmation dialog",
+        "placeholders": {
+            "person": {
+                "content": "$1",
+                "example": "Jane Doe"
+            },
+            "group": {
+                "content": "$2",
+                "example": "Tahoe Trip"
+            }
+        }
+    },
+    "AddGroupMembersModal--confirm-title--many": {
+        "message": "Të shtohen $count$ anëtarë te \"$group$\"?",
+        "description": "When adding new members to an existing group, this is shown in the confirmation dialog",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            },
+            "group": {
+                "content": "$2",
+                "example": "Tahoe Trip"
+            }
+        }
+    },
+    "AddGroupMembersModal--confirm-button--one": {
+        "message": "Shto anëtarë",
+        "description": "When adding new members to an existing group, this is shown on the confirmation dialog button"
+    },
+    "AddGroupMembersModal--confirm-button--many": {
+        "message": "Shtoni anëtarë",
+        "description": "When adding new members to an existing group, this is shown on the confirmation dialog button"
+    },
+    "createNewGroupButton": {
+        "message": "Grup i ri",
+        "description": "The text of the button to create new groups"
+    },
+    "selectContact": {
+        "message": "Përzgjidhni kontakt",
+        "description": "The label for contact checkboxes that are non-selected (clicking them should select the contact)"
+    },
+    "deselectContact": {
+        "message": "Shpërzgjidhni kontakte",
+        "description": "The label for contact checkboxes that are selected (clicking them should de-select the contact)"
+    },
+    "cannotSelectContact": {
+        "message": "S’mund të përzgjidhet kontakt",
+        "description": "The label for contact checkboxes that are disabled"
+    },
+    "alreadyAMember": {
+        "message": "Tashmë anëtar",
+        "description": "The label for contact checkboxes that are disabled because they're already a member"
+    },
+    "MessageAudio--play": {
+        "message": "Luaje bashkëngjitjen audio",
+        "description": "Aria label for audio attachment's Play button"
+    },
+    "MessageAudio--pause": {
+        "message": "Luaje bashkëngjitjen video",
+        "description": "Aria label for audio attachment's Pause button"
+    },
+    "MessageAudio--download": {
+        "message": "Shkarkoje bashkëngjitjen audio",
+        "description": "Aria label for audio attachment's Download button"
+    },
+    "MessageAudio--pending": {
+        "message": "Po shkarkohet bashkëngjitje audio…",
+        "description": "Aria label for pending audio attachment spinner"
+    },
+    "MessageAudio--slider": {
+        "message": "Kohë luajtje e bashkëngjitjes audio",
+        "description": "Aria label for audio attachment's playback time slider"
+    },
+    "emptyInboxMessage": {
+        "message": "Klikoni $composeIcon$ më sipër dhe kërkoni për kontaktet ose grupet tuaja për t’u dërguar mesazh.",
+        "description": "Shown in the left-pane when the inbox is empty",
+        "placeholders": {
+            "composeIcon": {
+                "content": "$1",
+                "example": "compose button"
+            }
+        }
+    },
+    "composeIcon": {
+        "message": "buton hartimi",
+        "description": "Shown in the left-pane when the inbox is empty. Describes the button that composes a new message."
+    },
+    "ForwardMessageModal--continue": {
+        "message": "Vazhdo",
+        "description": "aria-label for the 'next' button in the forward a message modal dialog"
+    },
+    "MessageRequestWarning__learn-more": {
+        "message": "Mësoni më tepër",
+        "description": "Shown on the message request warning. Clicking this button will open a dialog with more information"
+    },
+    "MessageRequestWarning__dialog__details": {
+        "message": "S’keni grupe të përbashkët me këtë person. Për të shmangur mesazhe të padëshiruar, shqyrtojini me kujdes kërkesat, para se t’i miratoni.",
+        "description": "Shown in the message request warning dialog. Gives more information about message requests"
+    },
+    "MessageRequestWarning__dialog__learn-even-more": {
+        "message": "Mbi Kërkesa Mesazhesh",
+        "description": "Shown in the message request warning dialog. Clicking this button will open a page on Signal's support site"
+    },
+    "ContactSpoofing__same-name": {
+        "message": "Shqyrtojini me kujdes kërkesat. Signal-i gjeti një tjetër kontakt me të njëjtin emër. $link$",
+        "description": "Shown in the timeline warning when you have a message request from someone with the same name as someone else",
+        "placeholders": {
+            "link": {
+                "content": "$1",
+                "example": "Review request"
+            }
+        }
+    },
+    "ContactSpoofing__same-name-in-group": {
+        "message": "$count$ anëtarë grupi kanë të njëjtin emër. $link$",
+        "description": "Shown in the timeline warning when you multiple group members have the same name",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "3"
+            },
+            "link": {
+                "content": "$2",
+                "example": "Tap to review"
+            }
+        }
+    },
+    "ContactSpoofing__same-name__link": {
+        "message": "Shqyrtoni kërkesë",
+        "description": "Shown in the timeline warning when you have a message request from someone with the same name as someone else"
+    },
+    "ContactSpoofing__same-name-in-group__link": {
+        "message": "Klikoni për shqyrtim",
+        "description": "Shown in the timeline warning when you multiple group members have the same name"
+    },
+    "ContactSpoofingReviewDialog__title": {
+        "message": "Shqyrtoni kërkesë",
+        "description": "Title for the contact name spoofing review dialog"
+    },
+    "ContactSpoofingReviewDialog__description": {
+        "message": "Nëse s’jeni i sigurt se prej kujt është kërkesa, shqyrtoni kontaktet më poshtë dhe kryeni një veprim.",
+        "description": "Description for the contact spoofing review dialog"
+    },
+    "ContactSpoofingReviewDialog__possibly-unsafe-title": {
+        "message": "Kërkesë",
+        "description": "Header in the contact spoofing review dialog, shown above the potentially-unsafe user"
+    },
+    "ContactSpoofingReviewDialog__safe-title": {
+        "message": "Kontakti juaj",
+        "description": "Header in the contact spoofing review dialog, shown above the \"safe\" user"
+    },
+    "ContactSpoofingReviewDialog__group__title": {
+        "message": "Shqyrtoni anëtarë",
+        "description": "Title for the contact name spoofing review dialog in groups"
+    },
+    "ContactSpoofingReviewDialog__group__description": {
+        "message": "$count$ anëtarë grupi kanë emra të ngjashëm. Shqyrtoni anëtarët më poshtë ose zgjidhni të ndërmerret një veprim.",
+        "description": "Description for the group contact spoofing review dialog"
+    },
+    "ContactSpoofingReviewDialog__group__members-header": {
+        "message": "Anëtarë",
+        "description": "Header in the group contact spoofing review dialog. After this header, there will be a list of members"
+    },
+    "ContactSpoofingReviewDialog__group__name-change-info": {
+        "message": "Ndryshoi së fundi emrin e vet të profilit nga $oldName$ në $newName$",
+        "description": "In the group contact spoofing review dialog, this text is shown when someone has changed their name recently",
+        "placeholders": {
+            "oldName": {
+                "content": "$1",
+                "example": "Jane Doe"
+            },
+            "newName": {
+                "content": "$2",
+                "example": "Doe Jane"
+            }
+        }
+    },
+    "RemoveGroupMemberConfirmation__remove-button": {
+        "message": "Hiqe nga grup",
+        "description": "When confirming the removal of a group member, show this text in the button"
+    },
+    "RemoveGroupMemberConfirmation__description": {
+        "message": "Të hiqet $name$ prej grupit?",
+        "description": "When confirming the removal of a group member, show this text in the dialog",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Jane Doe"
+            }
+        }
+    },
+    "CaptchaDialog__title": {
+        "message": "Verifikojeni, që të vazhdoni shkëmbim mesazhesh",
+        "description": "Header in the captcha dialog"
+    },
+    "CaptchaDialog__first-paragraph": {
+        "message": "Që të ndihmoni të pengohen në Signal mesazhe të padëshiruar, ju lutemi, plotësoni verifikimin.",
+        "description": "First paragraph in the captcha dialog"
+    },
+    "CaptchaDialog__second-paragraph": {
+        "message": "Pas verifikimit, mund të vazhdoni të shkëmbeni mesazhe. Çfarëdo mesazhesh të ndalur do të dërgohen automatikisht.",
+        "description": "First paragraph in the captcha dialog"
+    },
+    "CaptchaDialog--can-close__title": {
+        "message": "Të Vazhdohet Pa Verifikim?",
+        "description": "Header in the captcha dialog that can be closed"
+    },
+    "CaptchaDialog--can-close__body": {
+        "message": "Nëse zgjidhni të anashkalohet verifikimi, mund të humbni mesazhe nga persona të tjerë dhe mund të dështojë dërgimi i mesazheve tuaj.",
+        "description": "Body of the captcha dialog that can be closed"
+    },
+    "CaptchaDialog--can_close__skip-verification": {
+        "message": "Anashkaloje verifikimin",
+        "description": "Skip button of the captcha dialog that can be closed"
+    },
+    "verificationComplete": {
+        "message": "Verifikim i plotë.",
+        "description": "Displayed after successful captcha"
+    },
+    "verificationFailed": {
+        "message": "Verifikimi dështoi. Ju lutemi, riprovoni më vonë.",
+        "description": "Displayed after unsuccessful captcha"
+    },
+    "deleteForEveryoneFailed": {
+        "message": "S’u arri të fshihet mesazhi për këdo. Ju lutemi, riprovoni më vonë.",
+        "description": "Displayed when delete-for-everyone has failed to send to all recepients"
+    },
+    "ChatColorPicker__delete--title": {
+        "message": "Fshije ngjyrën",
+        "description": "Confirm title for deleting custom color"
+    },
+    "ChatColorPicker__delete--message": {
+        "message": "Kjo ngjyrë vetjake përdoret në $num$ fjalosje. Doni të fshihet për krejt fjalosjet?",
+        "description": "Confirm message for deleting custom color",
+        "placeholders": {
+            "num": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "ChatColorPicker__global-chat-color": {
+        "message": "Ngjyrë Globale Fjalosjeje ",
+        "description": "Modal title for the chat color picker and editor for all conversations"
+    },
+    "ChatColorPicker__menu-title": {
+        "message": "Ngjyrë Fjalosjeje",
+        "description": "View title for the chat color picker and editor"
+    },
+    "ChatColorPicker__reset": {
+        "message": "Riktheje te parazgjedhja ngjyrën e fjalosjes",
+        "description": "Button label for resetting chat colors"
+    },
+    "ChatColorPicker__resetDefault": {
+        "message": "Riktheji Te Parazgjedhjet Ngjyrat e Fjalosjes",
+        "description": "Confirmation dialog title for resetting all chat colors or only the global default one"
+    },
+    "ChatColorPicker__resetAll": {
+        "message": "Riktheji te parazgjedhjet krejt ngjyrat e fjalosjes",
+        "description": "Button label for resetting all chat colors"
+    },
+    "ChatColorPicker__confirm-reset-default": {
+        "message": "Rikthe parazgjedhjet",
+        "description": "Button label for resetting only global chat color"
+    },
+    "ChatColorPicker__confirm-reset": {
+        "message": "Riktheje",
+        "description": "Confirm button label for resetting chat colors"
+    },
+    "ChatColorPicker__confirm-reset-message": {
+        "message": "Do të donit të anashkalohen krejt ngjyrat e fjalosjes?",
+        "description": "Modal message text for confirming resetting of chat colors"
+    },
+    "ChatColorPicker__custom-color--label": {
+        "message": "Shfaq përpunues ngjyrash vetjake",
+        "description": "aria-label for custom color editor button"
+    },
+    "ChatColorPicker__sampleBubble1": {
+        "message": "Ja një paraparje e ngjyrës së fjalosjes.",
+        "description": "An example message bubble for selecting the chat color"
+    },
+    "ChatColorPicker__sampleBubble2": {
+        "message": "Një tjetër flluskë.",
+        "description": "An example message bubble for selecting the chat color"
+    },
+    "ChatColorPicker__sampleBubble3": {
+        "message": "Ngjyra është e dukshme vetëm për ju.",
+        "description": "An example message bubble for selecting the chat color"
+    },
+    "ChatColorPicker__context--edit": {
+        "message": "Përpunoni ngjyrë",
+        "description": "Option in the custom color bubble context menu"
+    },
+    "ChatColorPicker__context--duplicate": {
+        "message": "E përsëdytur",
+        "description": "Option in the custom color bubble context menu"
+    },
+    "ChatColorPicker__context--delete": {
+        "message": "Fshije",
+        "description": "Option in the custom color bubble context menu"
+    },
+    "CustomColorEditor__solid": {
+        "message": "E plotë",
+        "description": "Tab label for selecting solid colors"
+    },
+    "CustomColorEditor__gradient": {
+        "message": "Gradient",
+        "description": "Tab label for selecting a gradient"
+    },
+    "CustomColorEditor__hue": {
+        "message": "Ngjyresë",
+        "description": "Label for the hue slider"
+    },
+    "CustomColorEditor__saturation": {
+        "message": "Ngopje",
+        "description": "Label for the saturation slider"
+    },
+    "CustomColorEditor__title": {
+        "message": "Ngjyrë Vetjake",
+        "description": "Modal title for the custom color editor"
+    },
+    "customDisappearingTimeOption": {
+        "message": "Kohë vetjake…",
+        "description": "Text for an option in Disappearing Messages menu and Conversation Details Disappearing Messages setting when no user value is available"
+    },
+    "selectedCustomDisappearingTimeOption": {
+        "message": "Kohë vetjake",
+        "description": "Text for an option in Conversation Details Disappearing Messages setting when user previously selected custom time"
+    },
+    "DisappearingTimeDialog__title": {
+        "message": "Kohë Vetjake",
+        "description": "Title for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__body": {
+        "message": "Zgjidhni një kohë vetjake për zhdukjen e mesazheve.",
+        "description": "Body for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__set": {
+        "message": "Vëre",
+        "description": "Text for the dialog button confirming the custom disappearing message timeout"
+    },
+    "DisappearingTimeDialog__seconds": {
+        "message": "Sekonda",
+        "description": "Name of the 'seconds' unit select for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__minutes": {
+        "message": "Minuta",
+        "description": "Name of the 'minutes' unit select for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__hours": {
+        "message": "Orë",
+        "description": "Name of the 'hours' unit select for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__days": {
+        "message": "Ditë",
+        "description": "Name of the 'days' unit select for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__weeks": {
+        "message": "Javë",
+        "description": "Name of the 'weeks' unit select for the custom disappearing message timeout dialog"
+    },
+    "settings__DisappearingMessages__footer": {
+        "message": "Ujdisni një kohëmatës tretjeje mesazhesh për krejt fjalosjet e reja të nisura nga ju.",
+        "description": "Footer for the Disappearing Messages settings section"
+    },
+    "settings__DisappearingMessages__timer__label": {
+        "message": "Kohëmatës parazgjedhje për fjalosje të reja",
+        "description": "Label for the Disapearring Messages default timer setting"
+    },
+    "UniversalTimerNotification__text": {
+        "message": "Koha për mesazhe që treten do të caktohet si $timeValue$, kur u dërgoni mesazhe.",
+        "description": "A message displayed when default disappearing message timeout is about to be applied",
+        "placeholders": {
+            "timeValue": {
+                "content": "$1",
+                "example": "1 week"
+            }
+        }
+    },
+    "GroupDescription__read-more": {
+        "message": "lexoni më tepër",
+        "description": "Button text when the group description is too long"
+    },
+    "EditConversationAttributesModal__description-warning": {
+        "message": "Përshkrimet e grupeve do të jenë të dukshëm për anëtarë të këtij grupi dhe për persona që janë ftuar.",
+        "description": "Label text shown when editing group description"
+    },
+    "ConversationDetailsHeader--add-group-description": {
+        "message": "Shtoni përshkrim grupi…",
+        "description": "Placeholder text in the details header for those that can edit the group description"
     }
 }

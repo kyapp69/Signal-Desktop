@@ -1,3 +1,6 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import * as React from 'react';
 import * as styles from './StickerPackPreview.scss';
 import { useI18n } from '../util/i18n';
@@ -19,8 +22,8 @@ export const StickerPackPreview = React.memo(
         </div>
         <div className={styles.scroller}>
           <div className={styles.grid}>
-            {images.map((src, id) => (
-              <img key={id} className={styles.sticker} src={src} alt={src} />
+            {images.map(src => (
+              <img key={src} className={styles.sticker} src={src} alt={src} />
             ))}
           </div>
         </div>

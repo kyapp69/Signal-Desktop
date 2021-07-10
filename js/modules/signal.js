@@ -1,35 +1,45 @@
+// Copyright 2018-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 // The idea with this file is to make it webpackable for the style guide
 
-const { bindActionCreators } = require('redux');
 const Backbone = require('../../ts/backbone');
 const Crypto = require('../../ts/Crypto');
+const Curve = require('../../ts/Curve');
+const {
+  start: conversationControllerStart,
+} = require('../../ts/ConversationController');
 const Data = require('../../ts/sql/Client').default;
 const Emojis = require('./emojis');
 const EmojiLib = require('../../ts/components/emoji/lib');
+const Groups = require('../../ts/groups');
+const GroupChange = require('../../ts/groupChange');
 const IndexedDB = require('./indexeddb');
 const Notifications = require('../../ts/notifications');
 const OS = require('../../ts/OS');
 const Stickers = require('./stickers');
 const Settings = require('./settings');
+const RemoteConfig = require('../../ts/RemoteConfig');
 const Util = require('../../ts/util');
-const Metadata = require('./metadata/SecretSessionCipher');
-const RefreshSenderCertificate = require('./refresh_sender_certificate');
-const LinkPreviews = require('./link_previews');
-const AttachmentDownloads = require('./attachment_downloads');
 
 // Components
 const {
   AttachmentList,
 } = require('../../ts/components/conversation/AttachmentList');
 const { CaptionEditor } = require('../../ts/components/CaptionEditor');
+const { ChatColorPicker } = require('../../ts/components/ChatColorPicker');
+const {
+  ConfirmationDialog,
+} = require('../../ts/components/ConfirmationDialog');
 const {
   ContactDetail,
 } = require('../../ts/components/conversation/ContactDetail');
 const { ContactListItem } = require('../../ts/components/ContactListItem');
 const {
-  ConversationHeader,
-} = require('../../ts/components/conversation/ConversationHeader');
+  ContactModal,
+} = require('../../ts/components/conversation/ContactModal');
 const { Emojify } = require('../../ts/components/conversation/Emojify');
+const { ErrorModal } = require('../../ts/components/ErrorModal');
 const { Lightbox } = require('../../ts/components/Lightbox');
 const { LightboxGallery } = require('../../ts/components/LightboxGallery');
 const {
@@ -39,16 +49,60 @@ const {
   MessageDetail,
 } = require('../../ts/components/conversation/MessageDetail');
 const { Quote } = require('../../ts/components/conversation/Quote');
+const { ProgressModal } = require('../../ts/components/ProgressModal');
 const {
   StagedLinkPreview,
 } = require('../../ts/components/conversation/StagedLinkPreview');
+const {
+  DisappearingTimeDialog,
+} = require('../../ts/components/DisappearingTimeDialog');
+const {
+  SystemTraySettingsCheckboxes,
+} = require('../../ts/components/conversation/SystemTraySettingsCheckboxes');
 
 // State
 const { createTimeline } = require('../../ts/state/roots/createTimeline');
 const {
+  createChatColorPicker,
+} = require('../../ts/state/roots/createChatColorPicker');
+const {
   createCompositionArea,
 } = require('../../ts/state/roots/createCompositionArea');
+const {
+  createContactModal,
+} = require('../../ts/state/roots/createContactModal');
+const {
+  createConversationDetails,
+} = require('../../ts/state/roots/createConversationDetails');
+const {
+  createConversationHeader,
+} = require('../../ts/state/roots/createConversationHeader');
+const { createApp } = require('../../ts/state/roots/createApp');
+const {
+  createForwardMessageModal,
+} = require('../../ts/state/roots/createForwardMessageModal');
+const {
+  createGroupLinkManagement,
+} = require('../../ts/state/roots/createGroupLinkManagement');
+const {
+  createGroupV1MigrationModal,
+} = require('../../ts/state/roots/createGroupV1MigrationModal');
+const {
+  createGroupV2JoinModal,
+} = require('../../ts/state/roots/createGroupV2JoinModal');
 const { createLeftPane } = require('../../ts/state/roots/createLeftPane');
+const {
+  createMessageDetail,
+} = require('../../ts/state/roots/createMessageDetail');
+const {
+  createGroupV2Permissions,
+} = require('../../ts/state/roots/createGroupV2Permissions');
+const {
+  createPendingInvites,
+} = require('../../ts/state/roots/createPendingInvites');
+const {
+  createSafetyNumberViewer,
+} = require('../../ts/state/roots/createSafetyNumberViewer');
 const {
   createStickerManager,
 } = require('../../ts/state/roots/createStickerManager');
@@ -60,10 +114,13 @@ const {
 } = require('../../ts/state/roots/createShortcutGuideModal');
 
 const { createStore } = require('../../ts/state/createStore');
+const appDuck = require('../../ts/state/ducks/app');
+const callingDuck = require('../../ts/state/ducks/calling');
 const conversationsDuck = require('../../ts/state/ducks/conversations');
 const emojisDuck = require('../../ts/state/ducks/emojis');
 const expirationDuck = require('../../ts/state/ducks/expiration');
 const itemsDuck = require('../../ts/state/ducks/items');
+const linkPreviewsDuck = require('../../ts/state/ducks/linkPreviews');
 const networkDuck = require('../../ts/state/ducks/network');
 const searchDuck = require('../../ts/state/ducks/search');
 const stickersDuck = require('../../ts/state/ducks/stickers');
@@ -82,7 +139,6 @@ const Errors = require('./types/errors');
 const MediaGalleryMessage = require('../../ts/components/conversation/media-gallery/types/Message');
 const MessageType = require('./types/message');
 const MIME = require('../../ts/types/MIME');
-const PhoneNumber = require('../../ts/types/PhoneNumber');
 const SettingsType = require('../../ts/types/Settings');
 
 // Views
@@ -94,11 +150,23 @@ const MessageDataMigrator = require('./messages_data_migrator');
 
 // Processes / Services
 const {
+  initializeGroupCredentialFetcher,
+} = require('../../ts/services/groupCredentialFetcher');
+const {
   initializeNetworkObserver,
 } = require('../../ts/services/networkObserver');
 const {
   initializeUpdateListener,
 } = require('../../ts/services/updateListener');
+const { notify } = require('../../ts/services/notify');
+const { calling } = require('../../ts/services/calling');
+const { onTimeout, removeTimeout } = require('../../ts/services/timers');
+const {
+  enableStorageService,
+  eraseAllStorageServiceState,
+  runStorageServiceSyncJob,
+  storageServiceUploadJob,
+} = require('../../ts/services/storage');
 
 function initializeMigrations({
   userDataPath,
@@ -260,24 +328,43 @@ exports.setup = (options = {}) => {
   const Components = {
     AttachmentList,
     CaptionEditor,
+    ChatColorPicker,
+    ConfirmationDialog,
     ContactDetail,
     ContactListItem,
-    ConversationHeader,
+    ContactModal,
     Emojify,
+    ErrorModal,
     Lightbox,
     LightboxGallery,
     MediaGallery,
     MessageDetail,
     Quote,
+    ProgressModal,
     StagedLinkPreview,
+    DisappearingTimeDialog,
+    SystemTraySettingsCheckboxes,
     Types: {
       Message: MediaGalleryMessage,
     },
   };
 
   const Roots = {
+    createApp,
+    createChatColorPicker,
     createCompositionArea,
+    createContactModal,
+    createConversationDetails,
+    createConversationHeader,
+    createForwardMessageModal,
+    createGroupLinkManagement,
+    createGroupV1MigrationModal,
+    createGroupV2JoinModal,
+    createGroupV2Permissions,
     createLeftPane,
+    createMessageDetail,
+    createPendingInvites,
+    createSafetyNumberViewer,
     createShortcutGuideModal,
     createStickerManager,
     createStickerPreviewModal,
@@ -285,10 +372,13 @@ exports.setup = (options = {}) => {
   };
 
   const Ducks = {
+    app: appDuck,
+    calling: callingDuck,
     conversations: conversationsDuck,
     emojis: emojisDuck,
     expiration: expirationDuck,
     items: itemsDuck,
+    linkPreviews: linkPreviewsDuck,
     network: networkDuck,
     updates: updatesDuck,
     user: userDuck,
@@ -302,12 +392,20 @@ exports.setup = (options = {}) => {
   };
 
   const Services = {
+    calling,
+    enableStorageService,
+    eraseAllStorageServiceState,
+    initializeGroupCredentialFetcher,
     initializeNetworkObserver,
     initializeUpdateListener,
+    onTimeout,
+    notify,
+    removeTimeout,
+    runStorageServiceSyncJob,
+    storageServiceUploadJob,
   };
 
   const State = {
-    bindActionCreators,
     createStore,
     Roots,
     Ducks,
@@ -321,7 +419,6 @@ exports.setup = (options = {}) => {
     Errors,
     Message: MessageType,
     MIME,
-    PhoneNumber,
     Settings: SettingsType,
     VisualAttachment,
   };
@@ -336,20 +433,21 @@ exports.setup = (options = {}) => {
   };
 
   return {
-    AttachmentDownloads,
     Backbone,
     Components,
     Crypto,
+    Curve,
+    conversationControllerStart,
     Data,
     Emojis,
     EmojiLib,
+    Groups,
+    GroupChange,
     IndexedDB,
-    LinkPreviews,
-    Metadata,
     Migrations,
     Notifications,
     OS,
-    RefreshSenderCertificate,
+    RemoteConfig,
     Settings,
     Services,
     State,

@@ -1,3 +1,6 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { LocalizerType } from '../types/Util';
@@ -10,36 +13,33 @@ export type PropsType = {
   readonly i18n: LocalizerType;
 };
 
-export const ShortcutGuideModal = React.memo(
-  // tslint:disable-next-line max-func-body-length
-  (props: PropsType) => {
-    const { i18n, close, hasInstalledStickers, platform } = props;
-    const [root, setRoot] = React.useState<HTMLElement | null>(null);
+export const ShortcutGuideModal = React.memo((props: PropsType) => {
+  const { i18n, close, hasInstalledStickers, platform } = props;
+  const [root, setRoot] = React.useState<HTMLElement | null>(null);
 
-    React.useEffect(() => {
-      const div = document.createElement('div');
-      document.body.appendChild(div);
-      setRoot(div);
+  React.useEffect(() => {
+    const div = document.createElement('div');
+    document.body.appendChild(div);
+    setRoot(div);
 
-      return () => {
-        document.body.removeChild(div);
-      };
-    }, []);
+    return () => {
+      document.body.removeChild(div);
+    };
+  }, []);
 
-    return root
-      ? createPortal(
-          <div className="module-shortcut-guide-modal">
-            <div className="module-shortcut-guide-container">
-              <ShortcutGuide
-                hasInstalledStickers={hasInstalledStickers}
-                platform={platform}
-                close={close}
-                i18n={i18n}
-              />
-            </div>
-          </div>,
-          root
-        )
-      : null;
-  }
-);
+  return root
+    ? createPortal(
+        <div className="module-shortcut-guide-modal">
+          <div className="module-shortcut-guide-container">
+            <ShortcutGuide
+              hasInstalledStickers={hasInstalledStickers}
+              platform={platform}
+              close={close}
+              i18n={i18n}
+            />
+          </div>
+        </div>,
+        root
+      )
+    : null;
+});

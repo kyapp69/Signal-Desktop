@@ -1,17 +1,27 @@
+// Copyright 2018-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import React from 'react';
 import classNames from 'classnames';
+import { Blurhash } from 'react-blurhash';
 
 import { Spinner } from '../Spinner';
-import { LocalizerType } from '../../types/Util';
-import { AttachmentType } from '../../types/Attachment';
+import { LocalizerType, ThemeType } from '../../types/Util';
+import {
+  AttachmentType,
+  hasNotDownloaded,
+  defaultBlurHash,
+} from '../../types/Attachment';
 
-interface Props {
+export type Props = {
   alt: string;
   attachment: AttachmentType;
-  url: string;
+  url?: string;
 
   height?: number;
   width?: number;
+  cropWidth?: number;
+  cropHeight?: number;
   tabIndex?: number;
 
   overlayText?: string;
@@ -30,15 +40,31 @@ interface Props {
   darkOverlay?: boolean;
   playIconOverlay?: boolean;
   softCorners?: boolean;
+  blurHash?: string;
 
   i18n: LocalizerType;
+  theme?: ThemeType;
   onClick?: (attachment: AttachmentType) => void;
   onClickClose?: (attachment: AttachmentType) => void;
   onError?: () => void;
-}
+};
 
 export class Image extends React.Component<Props> {
-  public handleClick = (event: React.MouseEvent) => {
+  private canClick() {
+    const { onClick, attachment } = this.props;
+    const { pending } = attachment || { pending: true };
+
+    return Boolean(onClick && !pending);
+  }
+
+  public handleClick = (event: React.MouseEvent): void => {
+    if (!this.canClick()) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      return;
+    }
+
     const { onClick, attachment } = this.props;
 
     if (onClick) {
@@ -49,7 +75,16 @@ export class Image extends React.Component<Props> {
     }
   };
 
-  public handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+  public handleKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement>
+  ): void => {
+    if (!this.canClick()) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      return;
+    }
+
     const { onClick, attachment } = this.props;
 
     if (onClick && (event.key === 'Enter' || event.key === 'Space')) {
@@ -59,11 +94,51 @@ export class Image extends React.Component<Props> {
     }
   };
 
-  // tslint:disable-next-line max-func-body-length cyclomatic-complexity
-  public render() {
+  public renderPending = (): JSX.Element => {
+    const { blurHash, height, i18n, width } = this.props;
+
+    if (blurHash) {
+      return (
+        <div className="module-image__download-pending">
+          <Blurhash
+            hash={blurHash}
+            width={width}
+            height={height}
+            style={{ display: 'block' }}
+          />
+          <div className="module-image__download-pending--spinner-container">
+            <div
+              className="module-image__download-pending--spinner"
+              title={i18n('loading')}
+            >
+              <Spinner moduleClassName="module-image-spinner" svgSize="small" />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className="module-image__loading-placeholder"
+        style={{
+          height: `${height}px`,
+          width: `${width}px`,
+          lineHeight: `${height}px`,
+          textAlign: 'center',
+        }}
+        title={i18n('loading')}
+      >
+        <Spinner svgSize="normal" />
+      </div>
+    );
+  };
+
+  public render(): JSX.Element {
     const {
       alt,
       attachment,
+      blurHash,
       bottomOverlay,
       closeButton,
       curveBottomLeft,
@@ -71,11 +146,10 @@ export class Image extends React.Component<Props> {
       curveTopLeft,
       curveTopRight,
       darkOverlay,
-      height,
+      height = 0,
       i18n,
       noBackground,
       noBorder,
-      onClick,
       onClickClose,
       onError,
       overlayText,
@@ -83,42 +157,47 @@ export class Image extends React.Component<Props> {
       smallCurveTopLeft,
       softCorners,
       tabIndex,
+      theme,
       url,
-      width,
+      width = 0,
+      cropWidth = 0,
+      cropHeight = 0,
     } = this.props;
 
     const { caption, pending } = attachment || { caption: null, pending: true };
-    const canClick = onClick && !pending;
+    const canClick = this.canClick();
+    const imgNotDownloaded = hasNotDownloaded(attachment);
 
-    const overlayClassName = classNames(
-      'module-image__border-overlay',
-      noBorder ? null : 'module-image__border-overlay--with-border',
-      canClick && onClick
-        ? 'module-image__border-overlay--with-click-handler'
-        : null,
-      curveTopLeft ? 'module-image--curved-top-left' : null,
-      curveTopRight ? 'module-image--curved-top-right' : null,
-      curveBottomLeft ? 'module-image--curved-bottom-left' : null,
-      curveBottomRight ? 'module-image--curved-bottom-right' : null,
-      smallCurveTopLeft ? 'module-image--small-curved-top-left' : null,
-      softCorners ? 'module-image--soft-corners' : null,
-      darkOverlay ? 'module-image__border-overlay--dark' : null
-    );
+    const resolvedBlurHash = blurHash || defaultBlurHash(theme);
 
-    let overlay;
-    if (canClick && onClick) {
-      overlay = (
-        <button
-          className={overlayClassName}
-          onClick={this.handleClick}
-          onKeyDown={this.handleKeyDown}
-          tabIndex={tabIndex}
-        />
-      );
-    } else {
-      overlay = <div className={overlayClassName} />;
-    }
+    const overlayClassName = classNames('module-image__border-overlay', {
+      'module-image__border-overlay--with-border': !noBorder,
+      'module-image__border-overlay--with-click-handler': canClick,
+      'module-image--curved-top-left': curveTopLeft,
+      'module-image--curved-top-right': curveTopRight,
+      'module-image--curved-bottom-left': curveBottomLeft,
+      'module-image--curved-bottom-right': curveBottomRight,
+      'module-image--small-curved-top-left': smallCurveTopLeft,
+      'module-image--soft-corners': softCorners,
+      'module-image__border-overlay--dark': darkOverlay,
+      'module-image--not-downloaded': imgNotDownloaded,
+    });
 
+    const overlay = canClick ? (
+      // Not sure what this button does.
+      // eslint-disable-next-line jsx-a11y/control-has-associated-label
+      <button
+        type="button"
+        className={overlayClassName}
+        onClick={this.handleClick}
+        onKeyDown={this.handleKeyDown}
+        tabIndex={tabIndex}
+      >
+        {imgNotDownloaded ? <span /> : null}
+      </button>
+    ) : null;
+
+    /* eslint-disable no-nested-ternary */
     return (
       <div
         className={classNames(
@@ -129,23 +208,14 @@ export class Image extends React.Component<Props> {
           curveTopLeft ? 'module-image--curved-top-left' : null,
           curveTopRight ? 'module-image--curved-top-right' : null,
           smallCurveTopLeft ? 'module-image--small-curved-top-left' : null,
-          softCorners ? 'module-image--soft-corners' : null
+          softCorners ? 'module-image--soft-corners' : null,
+          cropWidth || cropHeight ? 'module-image--cropped' : null
         )}
+        style={{ width: width - cropWidth, height: height - cropHeight }}
       >
         {pending ? (
-          <div
-            className="module-image__loading-placeholder"
-            style={{
-              height: `${height}px`,
-              width: `${width}px`,
-              lineHeight: `${height}px`,
-              textAlign: 'center',
-            }}
-            title={i18n('loading')}
-          >
-            <Spinner svgSize="normal" />
-          </div>
-        ) : (
+          this.renderPending()
+        ) : url ? (
           <img
             onError={onError}
             className="module-image__image"
@@ -154,7 +224,14 @@ export class Image extends React.Component<Props> {
             width={width}
             src={url}
           />
-        )}
+        ) : resolvedBlurHash ? (
+          <Blurhash
+            hash={resolvedBlurHash}
+            width={width}
+            height={height}
+            style={{ display: 'block' }}
+          />
+        ) : null}
         {caption ? (
           <img
             className="module-image__caption-icon"
@@ -187,7 +264,8 @@ export class Image extends React.Component<Props> {
         {overlay}
         {closeButton ? (
           <button
-            onClick={(e: React.MouseEvent<{}>) => {
+            type="button"
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.preventDefault();
               e.stopPropagation();
 
@@ -197,9 +275,11 @@ export class Image extends React.Component<Props> {
             }}
             className="module-image__close-button"
             title={i18n('remove-attachment')}
+            aria-label={i18n('remove-attachment')}
           />
         ) : null}
       </div>
     );
+    /* eslint-enable no-nested-ternary */
   }
 }

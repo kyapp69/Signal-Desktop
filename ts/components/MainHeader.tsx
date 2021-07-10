@@ -1,3 +1,6 @@
+// Copyright 2018-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import React from 'react';
 import classNames from 'classnames';
 import { debounce, get } from 'lodash';
@@ -7,13 +10,16 @@ import { createPortal } from 'react-dom';
 import { showSettings } from '../shims/Whisper';
 import { Avatar } from './Avatar';
 import { AvatarPopup } from './AvatarPopup';
-import { ColorType, LocalizerType } from '../types/Util';
+import { LocalizerType } from '../types/Util';
+import { AvatarColorType } from '../types/Colors';
+import { ConversationType } from '../state/ducks/conversations';
 
-export interface PropsType {
+export type PropsType = {
   searchTerm: string;
   searchConversationName?: string;
   searchConversationId?: string;
   startSearchCounter: number;
+  selectedConversation: undefined | ConversationType;
 
   // To be used as an ID
   ourConversationId: string;
@@ -22,16 +28,21 @@ export interface PropsType {
   regionCode: string;
 
   // For display
-  phoneNumber: string;
-  isMe: boolean;
+  phoneNumber?: string;
+  isMe?: boolean;
   name?: string;
-  color: ColorType;
-  verified: boolean;
+  color?: AvatarColorType;
+  disabled?: boolean;
+  isVerified?: boolean;
   profileName?: string;
+  title: string;
   avatarPath?: string;
 
   i18n: LocalizerType;
+
   updateSearchTerm: (searchTerm: string) => void;
+  startSearch: () => void;
+  searchInConversation: (id: string, name: string) => void;
   searchMessages: (
     query: string,
     options: {
@@ -48,17 +59,18 @@ export interface PropsType {
       noteToSelf: string;
     }
   ) => void;
-
   clearConversationSearch: () => void;
   clearSearch: () => void;
 
   showArchivedConversations: () => void;
-}
+  startComposing: () => void;
+  toggleChatColorEditor: () => void;
+};
 
-interface StateType {
+type StateType = {
   showingAvatarPopup: boolean;
   popperRoot: HTMLDivElement | null;
-}
+};
 
 export class MainHeader extends React.Component<PropsType, StateType> {
   private readonly inputRef: React.RefObject<HTMLInputElement>;
@@ -74,7 +86,7 @@ export class MainHeader extends React.Component<PropsType, StateType> {
     };
   }
 
-  public componentDidUpdate(prevProps: PropsType) {
+  public componentDidUpdate(prevProps: PropsType): void {
     const { searchConversationId, startSearchCounter } = this.props;
 
     // When user chooses to search in a given conversation we focus the field for them
@@ -90,7 +102,7 @@ export class MainHeader extends React.Component<PropsType, StateType> {
     }
   }
 
-  public handleOutsideClick = ({ target }: MouseEvent) => {
+  public handleOutsideClick = ({ target }: MouseEvent): void => {
     const { popperRoot, showingAvatarPopup } = this.state;
 
     if (
@@ -102,13 +114,7 @@ export class MainHeader extends React.Component<PropsType, StateType> {
     }
   };
 
-  public handleOutsideKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
-      this.hideAvatarPopup();
-    }
-  };
-
-  public showAvatarPopup = () => {
+  public showAvatarPopup = (): void => {
     const popperRoot = document.createElement('div');
     document.body.appendChild(popperRoot);
 
@@ -117,14 +123,12 @@ export class MainHeader extends React.Component<PropsType, StateType> {
       popperRoot,
     });
     document.addEventListener('click', this.handleOutsideClick);
-    document.addEventListener('keydown', this.handleOutsideKeyDown);
   };
 
-  public hideAvatarPopup = () => {
+  public hideAvatarPopup = (): void => {
     const { popperRoot } = this.state;
 
     document.removeEventListener('click', this.handleOutsideClick);
-    document.removeEventListener('keydown', this.handleOutsideKeyDown);
 
     this.setState({
       showingAvatarPopup: false,
@@ -136,19 +140,22 @@ export class MainHeader extends React.Component<PropsType, StateType> {
     }
   };
 
-  public componentWillUnmount() {
+  public componentDidMount(): void {
+    document.addEventListener('keydown', this.handleGlobalKeyDown);
+  }
+
+  public componentWillUnmount(): void {
     const { popperRoot } = this.state;
 
     document.removeEventListener('click', this.handleOutsideClick);
-    document.removeEventListener('keydown', this.handleOutsideKeyDown);
+    document.removeEventListener('keydown', this.handleGlobalKeyDown);
 
     if (popperRoot && document.body.contains(popperRoot)) {
       document.body.removeChild(popperRoot);
     }
   }
 
-  // tslint:disable-next-line member-ordering
-  public search = debounce((searchTerm: string) => {
+  public search = debounce((searchTerm: string): void => {
     const {
       i18n,
       ourConversationId,
@@ -177,7 +184,7 @@ export class MainHeader extends React.Component<PropsType, StateType> {
     }
   }, 200);
 
-  public updateSearch = (event: React.FormEvent<HTMLInputElement>) => {
+  public updateSearch = (event: React.FormEvent<HTMLInputElement>): void => {
     const {
       updateSearchTerm,
       clearConversationSearch,
@@ -200,28 +207,30 @@ export class MainHeader extends React.Component<PropsType, StateType> {
       updateSearchTerm(searchTerm);
     }
 
-    if (searchTerm.length < 2) {
+    if (searchTerm.length < 1) {
       return;
     }
 
     this.search(searchTerm);
   };
 
-  public clearSearch = () => {
+  public clearSearch = (): void => {
     const { clearSearch } = this.props;
 
     clearSearch();
     this.setFocus();
   };
 
-  public clearConversationSearch = () => {
+  public clearConversationSearch = (): void => {
     const { clearConversationSearch } = this.props;
 
     clearConversationSearch();
     this.setFocus();
   };
 
-  public handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  public handleInputKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ): void => {
     const {
       clearConversationSearch,
       clearSearch,
@@ -256,7 +265,51 @@ export class MainHeader extends React.Component<PropsType, StateType> {
     event.stopPropagation();
   };
 
-  public handleXButton = () => {
+  public handleGlobalKeyDown = (event: KeyboardEvent): void => {
+    const { showingAvatarPopup } = this.state;
+    const {
+      i18n,
+      selectedConversation,
+      startSearch,
+      searchInConversation,
+    } = this.props;
+
+    const { ctrlKey, metaKey, shiftKey, key } = event;
+    const commandKey = get(window, 'platform') === 'darwin' && metaKey;
+    const controlKey = get(window, 'platform') !== 'darwin' && ctrlKey;
+    const commandOrCtrl = commandKey || controlKey;
+    const commandAndCtrl = commandKey && ctrlKey;
+
+    if (showingAvatarPopup && key === 'Escape') {
+      this.hideAvatarPopup();
+    } else if (
+      commandOrCtrl &&
+      !commandAndCtrl &&
+      !shiftKey &&
+      (key === 'f' || key === 'F')
+    ) {
+      startSearch();
+
+      event.preventDefault();
+      event.stopPropagation();
+    } else if (
+      selectedConversation &&
+      commandOrCtrl &&
+      !commandAndCtrl &&
+      shiftKey &&
+      (key === 'f' || key === 'F')
+    ) {
+      const name = selectedConversation.isMe
+        ? i18n('noteToSelf')
+        : selectedConversation.title;
+      searchInConversation(selectedConversation.id, name);
+
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  };
+
+  public handleXButton = (): void => {
     const {
       searchConversationId,
       clearConversationSearch,
@@ -272,33 +325,34 @@ export class MainHeader extends React.Component<PropsType, StateType> {
     this.setFocus();
   };
 
-  public setFocus = () => {
+  public setFocus = (): void => {
     if (this.inputRef.current) {
-      // @ts-ignore
       this.inputRef.current.focus();
     }
   };
 
-  public setSelected = () => {
+  public setSelected = (): void => {
     if (this.inputRef.current) {
-      // @ts-ignore
       this.inputRef.current.select();
     }
   };
 
-  // tslint:disable-next-line:max-func-body-length
-  public render() {
+  public render(): JSX.Element {
     const {
       avatarPath,
       color,
+      disabled,
       i18n,
       name,
+      startComposing,
       phoneNumber,
       profileName,
+      title,
       searchConversationId,
       searchConversationName,
       searchTerm,
       showArchivedConversations,
+      toggleChatColorEditor,
     } = this.props;
     const { showingAvatarPopup, popperRoot } = this.state;
 
@@ -306,19 +360,30 @@ export class MainHeader extends React.Component<PropsType, StateType> {
       ? i18n('searchIn', [searchConversationName])
       : i18n('search');
 
+    const isSearching = Boolean(
+      searchConversationId || searchTerm.trim().length
+    );
+
     return (
       <div className="module-main-header">
         <Manager>
           <Reference>
             {({ ref }) => (
               <Avatar
+                acceptedMessageRequest
                 avatarPath={avatarPath}
+                className="module-main-header__avatar"
                 color={color}
                 conversationType="direct"
                 i18n={i18n}
+                isMe
                 name={name}
                 phoneNumber={phoneNumber}
                 profileName={profileName}
+                title={title}
+                // `sharedGroupNames` makes no sense for yourself, but `<Avatar>` needs it
+                //   to determine blurring.
+                sharedGroupNames={[]}
                 size={28}
                 innerRef={ref}
                 onClick={this.showAvatarPopup}
@@ -330,16 +395,25 @@ export class MainHeader extends React.Component<PropsType, StateType> {
                 <Popper placement="bottom-end">
                   {({ ref, style }) => (
                     <AvatarPopup
+                      acceptedMessageRequest
                       innerRef={ref}
                       i18n={i18n}
-                      style={style}
+                      isMe
+                      style={{ ...style, zIndex: 1 }}
                       color={color}
                       conversationType="direct"
                       name={name}
                       phoneNumber={phoneNumber}
                       profileName={profileName}
+                      title={title}
                       avatarPath={avatarPath}
                       size={28}
+                      // See the comment above about `sharedGroupNames`.
+                      sharedGroupNames={[]}
+                      onSetChatColor={() => {
+                        toggleChatColorEditor();
+                        this.hideAvatarPopup();
+                      }}
                       onViewPreferences={() => {
                         showSettings();
                         this.hideAvatarPopup();
@@ -361,6 +435,8 @@ export class MainHeader extends React.Component<PropsType, StateType> {
               className="module-main-header__search__in-conversation-pill"
               onClick={this.clearSearch}
               tabIndex={-1}
+              type="button"
+              aria-label={i18n('clearSearch')}
             >
               <div className="module-main-header__search__in-conversation-pill__avatar-container">
                 <div className="module-main-header__search__in-conversation-pill__avatar" />
@@ -372,9 +448,12 @@ export class MainHeader extends React.Component<PropsType, StateType> {
               className="module-main-header__search__icon"
               onClick={this.setFocus}
               tabIndex={-1}
+              type="button"
+              aria-label={i18n('search')}
             />
           )}
           <input
+            disabled={disabled}
             type="text"
             ref={this.inputRef}
             className={classNames(
@@ -388,7 +467,7 @@ export class MainHeader extends React.Component<PropsType, StateType> {
             )}
             placeholder={placeholder}
             dir="auto"
-            onKeyDown={this.handleKeyDown}
+            onKeyDown={this.handleInputKeyDown}
             value={searchTerm}
             onChange={this.updateSearch}
           />
@@ -397,9 +476,20 @@ export class MainHeader extends React.Component<PropsType, StateType> {
               tabIndex={-1}
               className="module-main-header__search__cancel-icon"
               onClick={this.handleXButton}
+              type="button"
+              aria-label={i18n('cancel')}
             />
           ) : null}
         </div>
+        {!isSearching && (
+          <button
+            aria-label={i18n('newConversation')}
+            className="module-main-header__compose-icon"
+            onClick={startComposing}
+            title={i18n('newConversation')}
+            type="button"
+          />
+        )}
       </div>
     );
   }

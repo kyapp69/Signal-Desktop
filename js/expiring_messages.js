@@ -1,16 +1,14 @@
+// Copyright 2016-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /* global
   _,
-  Backbone,
-  i18n,
   MessageController,
-  moment,
   Whisper
 */
 
 // eslint-disable-next-line func-names
-(function() {
-  'use strict';
-
+(function () {
   window.Whisper = window.Whisper || {};
 
   async function destroyExpiredMessages() {
@@ -19,33 +17,38 @@
       const messages = await window.Signal.Data.getExpiredMessages({
         MessageCollection: Whisper.MessageCollection,
       });
-
-      await Promise.all(
-        messages.map(async fromDB => {
-          const message = MessageController.register(fromDB.id, fromDB);
-
-          window.log.info('Message expired', {
-            sentAt: message.get('sent_at'),
-          });
-
-          // We delete after the trigger to allow the conversation time to process
-          //   the expiration before the message is removed from the database.
-          await window.Signal.Data.removeMessage(message.id, {
-            Message: Whisper.Message,
-          });
-
-          Whisper.events.trigger(
-            'messageExpired',
-            message.id,
-            message.conversationId
-          );
-
-          const conversation = message.getConversation();
-          if (conversation) {
-            conversation.trigger('expired', message);
-          }
-        })
+      window.log.info(
+        `destroyExpiredMessages: found ${messages.length} messages to expire`
       );
+
+      const messageIds = [];
+      const inMemoryMessages = [];
+      const messageCleanup = [];
+
+      messages.forEach(dbMessage => {
+        const message = MessageController.register(dbMessage.id, dbMessage);
+        messageIds.push(message.id);
+        inMemoryMessages.push(message);
+        messageCleanup.push(message.cleanup());
+      });
+
+      // We delete after the trigger to allow the conversation time to process
+      //   the expiration before the message is removed from the database.
+      await window.Signal.Data.removeMessages(messageIds);
+      await Promise.all(messageCleanup);
+
+      inMemoryMessages.forEach(message => {
+        window.log.info('Message expired', {
+          sentAt: message.get('sent_at'),
+        });
+
+        const conversation = message.getConversation();
+        if (conversation) {
+          // An expired message only counts as decrementing the message count, not
+          // the sent message count
+          conversation.decrementMessageCount();
+        }
+      });
     } catch (error) {
       window.log.error(
         'destroyExpiredMessages: Error deleting expired messages',
@@ -59,20 +62,15 @@
 
   let timeout;
   async function checkExpiringMessages() {
-    // Look up the next expiring message and set a timer to destroy it
-    const message = await window.Signal.Data.getNextExpiringMessage({
-      Message: Whisper.Message,
-    });
+    window.log.info('checkExpiringMessages: checking for expiring messages');
 
-    if (!message) {
+    const soonestExpiry = await window.Signal.Data.getSoonestMessageExpiry();
+    if (!soonestExpiry) {
+      window.log.info('checkExpiringMessages: found no messages to expire');
       return;
     }
 
-    const expiresAt = message.get('expires_at');
-    Whisper.ExpiringMessagesListener.nextExpiration = expiresAt;
-    window.log.info('next message expires', new Date(expiresAt).toISOString());
-
-    let wait = expiresAt - Date.now();
+    let wait = soonestExpiry - Date.now();
 
     // In the past
     if (wait < 0) {
@@ -84,6 +82,12 @@
       wait = 2147483647;
     }
 
+    window.log.info(
+      `checkExpiringMessages: next message expires ${new Date(
+        soonestExpiry
+      ).toISOString()}; waiting ${wait} ms before clearing`
+    );
+
     clearTimeout(timeout);
     timeout = setTimeout(destroyExpiredMessages, wait);
   }
@@ -93,66 +97,10 @@
   );
 
   Whisper.ExpiringMessagesListener = {
-    nextExpiration: null,
     init(events) {
       checkExpiringMessages();
       events.on('timetravel', debouncedCheckExpiringMessages);
     },
     update: debouncedCheckExpiringMessages,
   };
-
-  const TimerOption = Backbone.Model.extend({
-    getName() {
-      return (
-        i18n(['timerOption', this.get('time'), this.get('unit')].join('_')) ||
-        moment.duration(this.get('time'), this.get('unit')).humanize()
-      );
-    },
-    getAbbreviated() {
-      return i18n(
-        ['timerOption', this.get('time'), this.get('unit'), 'abbreviated'].join(
-          '_'
-        )
-      );
-    },
-  });
-  Whisper.ExpirationTimerOptions = new (Backbone.Collection.extend({
-    model: TimerOption,
-    getName(seconds = 0) {
-      const o = this.findWhere({ seconds });
-      if (o) {
-        return o.getName();
-      }
-      return [seconds, 'seconds'].join(' ');
-    },
-    getAbbreviated(seconds = 0) {
-      const o = this.findWhere({ seconds });
-      if (o) {
-        return o.getAbbreviated();
-      }
-      return [seconds, 's'].join('');
-    },
-  }))(
-    [
-      [0, 'seconds'],
-      [5, 'seconds'],
-      [10, 'seconds'],
-      [30, 'seconds'],
-      [1, 'minute'],
-      [5, 'minutes'],
-      [30, 'minutes'],
-      [1, 'hour'],
-      [6, 'hours'],
-      [12, 'hours'],
-      [1, 'day'],
-      [1, 'week'],
-    ].map(o => {
-      const duration = moment.duration(o[0], o[1]); // 5, 'seconds'
-      return {
-        time: o[0],
-        unit: o[1],
-        seconds: duration.asSeconds(),
-      };
-    })
-  );
 })();

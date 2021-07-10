@@ -1,8 +1,10 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* eslint-disable no-console */
 import { getCliOptions, getPrintableError } from './common';
 import { keyPair } from './curve';
 import { writeHexToPath } from './signature';
-
-/* tslint:disable:no-console */
 
 const OPTIONS = [
   {

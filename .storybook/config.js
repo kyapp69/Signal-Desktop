@@ -1,5 +1,8 @@
+// Copyright 2019-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import * as React from 'react';
-import { addDecorator, configure } from '@storybook/react';
+import { addDecorator, addParameters, configure } from '@storybook/react';
 import { withKnobs, boolean, optionsKnob } from '@storybook/addon-knobs';
 import classnames from 'classnames';
 import * as styles from './styles.scss';
@@ -11,31 +14,32 @@ const optionsConfig = {
   display: 'inline-radio',
 };
 
-const makeThemeKnob = pane =>
-  optionsKnob(
-    `${pane} Pane Theme`,
-    { Light: '', Dark: classnames('dark-theme', styles.darkTheme) },
-    '',
-    optionsConfig,
-    `${pane} Pane`
-  );
+const persistKnob = id => knob => {
+  const value = knob(localStorage.getItem(id));
+  localStorage.setItem(id, value);
+  return value;
+};
 
-const makeDeviceThemeKnob = pane =>
-  optionsKnob(
-    `${pane} Pane Device Theme`,
-    { Android: '', iOS: 'ios-theme' },
-    '',
-    optionsConfig,
-    `${pane} Pane`
+const makeThemeKnob = pane =>
+  persistKnob(`${pane}-pane-theme`)(localValue =>
+    optionsKnob(
+      `${pane} Pane Theme`,
+      { Light: '', Dark: classnames('dark-theme', styles.darkTheme) },
+      localValue || '',
+      optionsConfig,
+      `${pane} Pane`
+    )
   );
 
 const makeModeKnob = pane =>
-  optionsKnob(
-    `${pane} Pane Mode`,
-    { Mouse: 'mouse-mode', Keyboard: 'keyboard-mode' },
-    'mouse-mode',
-    optionsConfig,
-    `${pane} Pane`
+  persistKnob(`${pane}-pane-mode`)(localValue =>
+    optionsKnob(
+      `${pane} Pane Mode`,
+      { Mouse: 'mouse-mode', Keyboard: 'keyboard-mode' },
+      localValue || 'mouse-mode',
+      optionsConfig,
+      `${pane} Pane`
+    )
   );
 
 addDecorator(withKnobs);
@@ -43,37 +47,43 @@ addDecorator(withKnobs);
 addDecorator((storyFn /* , context */) => {
   const contents = storyFn();
   const firstPaneTheme = makeThemeKnob('First');
-  const firstPaneDeviceTheme = makeDeviceThemeKnob('First');
   const firstPaneMode = makeModeKnob('First');
 
-  const secondPane = boolean('Second Pane Active', false, 'Second Pane');
+  const secondPane = persistKnob('second-pane-active')(localValue =>
+    boolean('Second Pane Active', localValue !== 'false', 'Second Pane')
+  );
 
   const secondPaneTheme = makeThemeKnob('Second');
-  const secondPaneDeviceTheme = makeDeviceThemeKnob('Second');
   const secondPaneMode = makeModeKnob('Second');
+
+  // Adding it to the body as well so that we can cover modals and other
+  // components that are rendered outside of this decorator container
+  if (firstPaneTheme === '') {
+    document.body.classList.remove('dark-theme');
+  } else {
+    document.body.classList.add('dark-theme');
+  }
+
+  if (firstPaneMode === 'mouse-mode') {
+    document.body.classList.remove('keyboard-mode');
+    document.body.classList.add('mouse-mode');
+  } else {
+    document.body.classList.remove('mouse-mode');
+    document.body.classList.add('keyboard-mode');
+  }
 
   return (
     <div className={styles.container}>
       <ClassyProvider themes={['dark']}>
         <div
-          className={classnames(
-            styles.panel,
-            firstPaneTheme,
-            firstPaneDeviceTheme,
-            firstPaneMode
-          )}
+          className={classnames(styles.panel, firstPaneTheme, firstPaneMode)}
         >
           {contents}
         </div>
       </ClassyProvider>
       {secondPane ? (
         <div
-          className={classnames(
-            styles.panel,
-            secondPaneTheme,
-            secondPaneDeviceTheme,
-            secondPaneMode
-          )}
+          className={classnames(styles.panel, secondPaneTheme, secondPaneMode)}
         >
           {contents}
         </div>
@@ -87,14 +97,13 @@ addDecorator(Story => <Story />);
 
 addDecorator(story => <I18n messages={messages}>{story()}</I18n>);
 
+addParameters({
+  axe: {
+    disabledRules: ['html-has-lang'],
+  },
+});
+
 configure(() => {
-  // Load sticker creator stories
-  const stickerCreatorContext = require.context(
-    '../sticker-creator',
-    true,
-    /\.stories\.tsx?$/
-  );
-  stickerCreatorContext.keys().forEach(f => stickerCreatorContext(f));
   // Load main app stories
   const tsComponentsContext = require.context(
     '../ts/components',
@@ -102,4 +111,11 @@ configure(() => {
     /\.stories.tsx?$/
   );
   tsComponentsContext.keys().forEach(f => tsComponentsContext(f));
+  // Load sticker creator stories
+  const stickerCreatorContext = require.context(
+    '../sticker-creator',
+    true,
+    /\.stories\.tsx?$/
+  );
+  stickerCreatorContext.keys().forEach(f => stickerCreatorContext(f));
 }, module);

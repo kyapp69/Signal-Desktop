@@ -1,14 +1,16 @@
-import React from 'react';
-// import classNames from 'classnames';
+// Copyright 2019-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 
-interface Props {
+import React from 'react';
+
+export type Props = {
   duration: number;
   expiresAt: number;
   onComplete?: () => unknown;
-}
-interface State {
+};
+type State = {
   ratio: number;
-}
+};
 
 const CIRCUMFERENCE = 11.013 * 2 * Math.PI;
 
@@ -24,19 +26,19 @@ export class Countdown extends React.Component<Props, State> {
     this.state = { ratio };
   }
 
-  public componentDidMount() {
+  public componentDidMount(): void {
     this.startLoop();
   }
 
-  public componentDidUpdate() {
+  public componentDidUpdate(): void {
     this.startLoop();
   }
 
-  public componentWillUnmount() {
+  public componentWillUnmount(): void {
     this.stopLoop();
   }
 
-  public startLoop() {
+  public startLoop(): void {
     if (this.looping) {
       return;
     }
@@ -45,11 +47,11 @@ export class Countdown extends React.Component<Props, State> {
     requestAnimationFrame(this.loop);
   }
 
-  public stopLoop() {
+  public stopLoop(): void {
     this.looping = false;
   }
 
-  public loop = () => {
+  public loop = (): void => {
     const { onComplete, duration, expiresAt } = this.props;
     if (!this.looping) {
       return;
@@ -68,7 +70,7 @@ export class Countdown extends React.Component<Props, State> {
     }
   };
 
-  public render() {
+  public render(): JSX.Element {
     const { ratio } = this.state;
     const strokeDashoffset = ratio * CIRCUMFERENCE;
 

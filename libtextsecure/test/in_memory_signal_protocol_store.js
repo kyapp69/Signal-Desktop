@@ -1,9 +1,11 @@
+// Copyright 2016-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 function SignalProtocolStore() {
   this.store = {};
 }
 
 SignalProtocolStore.prototype = {
-  Direction: { SENDING: 1, RECEIVING: 2 },
   VerifiedStatus: {
     DEFAULT: 0,
     VERIFIED: 1,
@@ -22,21 +24,24 @@ SignalProtocolStore.prototype = {
       value === undefined ||
       key === null ||
       value === null
-    )
+    ) {
       throw new Error('Tried to store undefined/null');
+    }
     this.store[key] = value;
   },
   get(key, defaultValue) {
-    if (key === null || key === undefined)
+    if (key === null || key === undefined) {
       throw new Error('Tried to get value for undefined/null key');
+    }
     if (key in this.store) {
       return this.store[key];
     }
     return defaultValue;
   },
   remove(key) {
-    if (key === null || key === undefined)
+    if (key === null || key === undefined) {
       throw new Error('Tried to remove value for undefined/null key');
+    }
     delete this.store[key];
   },
 
@@ -54,15 +59,17 @@ SignalProtocolStore.prototype = {
     return Promise.resolve(identityKey === trusted);
   },
   loadIdentityKey(identifier) {
-    if (identifier === null || identifier === undefined)
+    if (identifier === null || identifier === undefined) {
       throw new Error('Tried to get identity key for undefined/null key');
+    }
     return new Promise(resolve => {
       resolve(this.get(`identityKey${identifier}`));
     });
   },
   saveIdentity(identifier, identityKey) {
-    if (identifier === null || identifier === undefined)
+    if (identifier === null || identifier === undefined) {
       throw new Error('Tried to put identity key for undefined/null key');
+    }
     return new Promise(resolve => {
       const existing = this.get(`identityKey${identifier}`);
       this.put(`identityKey${identifier}`, identityKey);
@@ -158,4 +165,15 @@ SignalProtocolStore.prototype = {
       resolve(deviceIds);
     });
   },
+
+  getUnprocessedCount: () => Promise.resolve(0),
+  getAllUnprocessed: () => Promise.resolve([]),
+  getUnprocessedById: () => Promise.resolve(null),
+  addUnprocessed: () => Promise.resolve(),
+  addMultipleUnprocessed: () => Promise.resolve(),
+  updateUnprocessedAttempts: () => Promise.resolve(),
+  updateUnprocessedWithData: () => Promise.resolve(),
+  updateUnprocessedsWithData: () => Promise.resolve(),
+  removeUnprocessed: () => Promise.resolve(),
+  removeAllUnprocessed: () => Promise.resolve(),
 };

@@ -1,11 +1,15 @@
-/* tslint:disable no-console non-literal-fs-path */
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* eslint-disable no-console */
+
 import fs from 'fs';
 import path from 'path';
 import rimraf from 'rimraf';
 import { execSync } from 'child_process';
 import packageJSON from '../../package.json';
 
-export function zipMacOSRelease() {
+export function zipMacOSRelease(): void {
   if (process.platform !== 'darwin') {
     return;
   }

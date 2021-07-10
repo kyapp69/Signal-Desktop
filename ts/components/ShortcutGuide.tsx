@@ -1,3 +1,6 @@
+// Copyright 2019-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import * as React from 'react';
 import classNames from 'classnames';
 import { useRestoreFocus } from '../util/hooks';
@@ -29,6 +32,7 @@ type KeyType =
   | 'J'
   | 'L'
   | 'M'
+  | 'N'
   | 'P'
   | 'R'
   | 'S'
@@ -80,6 +84,10 @@ const NAVIGATION_SHORTCUTS: Array<ShortcutType> = [
   {
     description: 'Keyboard--open-conversation-menu',
     keys: [['commandOrCtrl', 'shift', 'L']],
+  },
+  {
+    description: 'Keyboard--new-conversation',
+    keys: [['commandOrCtrl', 'N']],
   },
   {
     description: 'Keyboard--search',
@@ -185,7 +193,18 @@ const COMPOSER_SHORTCUTS: Array<ShortcutType> = [
   },
 ];
 
-export const ShortcutGuide = (props: Props) => {
+const CALLING_SHORTCUTS: Array<ShortcutType> = [
+  {
+    description: 'Keyboard--toggle-audio',
+    keys: [['shift', 'M']],
+  },
+  {
+    description: 'Keyboard--toggle-video',
+    keys: [['shift', 'V']],
+  },
+];
+
+export const ShortcutGuide = (props: Props): JSX.Element => {
   const focusRef = React.useRef<HTMLDivElement>(null);
   const { i18n, close, hasInstalledStickers, platform } = props;
   const isMacOS = platform === 'darwin';
@@ -200,9 +219,11 @@ export const ShortcutGuide = (props: Props) => {
           {i18n('Keyboard--header')}
         </div>
         <button
+          aria-label={i18n('close-popup')}
           className="module-shortcut-guide__header-close"
           onClick={close}
           title={i18n('close-popup')}
+          type="button"
         />
       </div>
       <div
@@ -248,6 +269,16 @@ export const ShortcutGuide = (props: Props) => {
               )}
             </div>
           </div>
+          <div className="module-shortcut-guide__section">
+            <div className="module-shortcut-guide__section-header">
+              {i18n('Keyboard--calling-header')}
+            </div>
+            <div className="module-shortcut-guide__section-list">
+              {CALLING_SHORTCUTS.map((shortcut, index) =>
+                renderShortcut(shortcut, index, isMacOS, i18n)
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -261,17 +292,17 @@ function renderShortcut(
   i18n: LocalizerType
 ) {
   return (
-    <div key={index} className="module-shortcut-guide__shortcut" tabIndex={0}>
+    <div key={index} className="module-shortcut-guide__shortcut">
       <div className="module-shortcut-guide__shortcut__description">
         {i18n(shortcut.description)}
       </div>
       <div className="module-shortcut-guide__shortcut__key-container">
-        {shortcut.keys.map((keys, outerIndex) => (
+        {shortcut.keys.map(keys => (
           <div
-            key={outerIndex}
+            key={`${shortcut.description}--${keys.map(k => k).join('-')}`}
             className="module-shortcut-guide__shortcut__key-inner-container"
           >
-            {keys.map((key, mapIndex) => {
+            {keys.map(key => {
               let label: string = key;
               let isSquare = true;
 
@@ -313,7 +344,7 @@ function renderShortcut(
 
               return (
                 <span
-                  key={mapIndex}
+                  key={`shortcut__key--${key}`}
                   className={classNames(
                     'module-shortcut-guide__shortcut__key',
                     isSquare

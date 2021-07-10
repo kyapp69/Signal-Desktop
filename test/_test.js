@@ -1,3 +1,6 @@
+// Copyright 2014-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /* global chai, Whisper, _, Backbone */
 
 mocha.setup('bdd');
@@ -72,15 +75,23 @@ function deleteIndexedDB() {
 
 /* Delete the database before running any tests */
 before(async () => {
+  window.Signal.Util.MessageController.install();
+
   await deleteIndexedDB();
+  try {
+    window.log.info('Initializing SQL in renderer');
+    const isTesting = true;
+    await window.sqlInitializer.initialize(isTesting);
+    window.log.info('SQL initialized in renderer');
+  } catch (err) {
+    window.log.error(
+      'SQL failed to initialize',
+      err && err.stack ? err.stack : err
+    );
+  }
   await window.Signal.Data.removeAll();
   await window.storage.fetch();
 });
-
-window.clearDatabase = async () => {
-  await window.Signal.Data.removeAll();
-  await window.storage.fetch();
-};
 
 window.Whisper = window.Whisper || {};
 window.Whisper.events = _.clone(Backbone.Events);

@@ -1,85 +1,53 @@
-// import { missingCaseError } from './missingCaseError';
+// Copyright 2018-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 
-type OldColor =
-  | 'amber'
-  | 'blue'
-  | 'blue_grey'
-  | 'brown'
-  | 'cyan'
-  | 'deep_orange'
-  | 'deep_purple'
-  | 'green'
-  | 'grey'
-  | 'indigo'
-  | 'lime'
-  | 'light_blue'
-  | 'light_green'
-  | 'orange'
-  | 'pink'
-  | 'purple'
-  | 'red'
-  | 'teal'
-  | 'yellow'
-  | 'ultramarine';
+import { AvatarColorType } from '../types/Colors';
 
-type NewColor =
-  | 'red'
-  | 'deep_orange'
-  | 'brown'
-  | 'pink'
-  | 'purple'
-  | 'indigo'
-  | 'blue'
-  | 'teal'
-  | 'green'
-  | 'light_green'
-  | 'blue_grey'
-  | 'grey'
-  | 'ultramarine';
-
-export function migrateColor(color: OldColor): NewColor {
+export function migrateColor(color?: string): AvatarColorType {
   switch (color) {
     // These colors no longer exist
     case 'orange':
     case 'amber':
-      return 'deep_orange';
-
+      return 'vermilion';
     case 'yellow':
-      return 'brown';
-
+      return 'burlap';
     case 'deep_purple':
-      return 'purple';
-
+      return 'violet';
     case 'light_blue':
       return 'blue';
-
     case 'cyan':
       return 'teal';
-
     case 'lime':
-      return 'light_green';
+      return 'wintergreen';
+
+    // Actual color names
+    case 'red':
+      return 'crimson';
+    case 'deep_orange':
+      return 'vermilion';
+    case 'brown':
+      return 'burlap';
+    case 'pink':
+      return 'plum';
+    case 'purple':
+      return 'violet';
+    case 'green':
+      return 'forest';
+    case 'light_green':
+      return 'wintergreen';
+    case 'blue_grey':
+      return 'steel';
+    case 'grey':
+      return 'steel';
 
     // These can stay as they are
-    case 'red':
-    case 'deep_orange':
-    case 'brown':
-    case 'pink':
-    case 'purple':
-    case 'indigo':
     case 'blue':
+    case 'indigo':
     case 'teal':
-    case 'green':
-    case 'light_green':
-    case 'blue_grey':
-    case 'grey':
     case 'ultramarine':
       return color;
 
-    // Can uncomment this to ensure that we've covered all potential cases
-    // default:
-    //   throw missingCaseError(color);
-
     default:
-      return 'grey';
+      return 'steel';
   }
 }

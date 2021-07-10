@@ -1,3 +1,6 @@
+// Copyright 2019-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /* global
   textsecure,
   Signal,
@@ -5,7 +8,7 @@
   navigator,
   reduxStore,
   reduxActions,
-  URL
+  URLSearchParams
 */
 
 const BLESSED_PACKS = {
@@ -27,12 +30,14 @@ const BLESSED_PACKS = {
   },
 };
 
+const VALID_PACK_ID_REGEXP = /^[0-9a-f]{32}$/i;
+
 const { isNumber, pick, reject, groupBy, values } = require('lodash');
 const pMap = require('p-map');
 const Queue = require('p-queue').default;
-const qs = require('qs');
 
 const { makeLookup } = require('../../ts/util/makeLookup');
+const { maybeParseUrl } = require('../../ts/util/url');
 const {
   base64ToArrayBuffer,
   deriveStickerPackKey,
@@ -65,6 +70,7 @@ module.exports = {
   load,
   maybeDeletePack,
   downloadQueuedPacks,
+  isPackIdValid,
   redactPackId,
   removeEphemeralPack,
   savePackMetadata,
@@ -72,7 +78,7 @@ module.exports = {
 
 let initialState = null;
 let packsToDownload = null;
-const downloadQueue = new Queue({ concurrency: 1 });
+const downloadQueue = new Queue({ concurrency: 1, timeout: 1000 * 60 * 2 });
 
 async function load() {
   const [packs, recentStickers] = await Promise.all([
@@ -90,18 +96,34 @@ async function load() {
 }
 
 function getDataFromLink(link) {
-  const { hash } = new URL(link);
+  const url = maybeParseUrl(link);
+  if (!url) {
+    return null;
+  }
+
+  const { hash } = url;
   if (!hash) {
     return null;
   }
 
-  const data = hash.slice(1);
-  const params = qs.parse(data);
+  let params;
+  try {
+    params = new URLSearchParams(hash.slice(1));
+  } catch (err) {
+    return null;
+  }
 
-  return {
-    id: params.pack_id,
-    key: params.pack_key,
-  };
+  const id = params.get('pack_id');
+  if (!isPackIdValid(id)) {
+    return null;
+  }
+
+  const key = params.get('pack_key');
+  if (!key) {
+    return null;
+  }
+
+  return { id, key };
 }
 
 function getInstalledStickerPacks() {
@@ -231,6 +253,10 @@ function getInitialState() {
   return initialState;
 }
 
+function isPackIdValid(packId) {
+  return typeof packId === 'string' && VALID_PACK_ID_REGEXP.test(packId);
+}
+
 function redactPackId(packId) {
   return `[REDACTED]${packId.slice(-3)}`;
 }
@@ -311,6 +337,7 @@ async function removeEphemeralPack(packId) {
   const paths = stickers.map(sticker => sticker.path);
   await pMap(paths, Signal.Migrations.deleteTempFile, {
     concurrency: 3,
+    timeout: 1000 * 60 * 2,
   });
 
   // Remove it from database in case it made it there
@@ -325,7 +352,12 @@ async function downloadEphemeralPack(packId, packKey) {
   } = getReduxStickerActions();
 
   const existingPack = getStickerPack(packId);
-  if (existingPack) {
+  if (
+    existingPack &&
+    (existingPack.status === 'downloaded' ||
+      existingPack.status === 'installed' ||
+      existingPack.status === 'pending')
+  ) {
     log.warn(
       `Ephemeral download for pack ${redactPackId(
         packId
@@ -404,7 +436,10 @@ async function downloadEphemeralPack(packId, packKey) {
     await downloadStickerJob(coverProto);
 
     // Then the rest
-    await pMap(nonCoverStickers, downloadStickerJob, { concurrency: 3 });
+    await pMap(nonCoverStickers, downloadStickerJob, {
+      concurrency: 3,
+      timeout: 1000 * 60 * 2,
+    });
   } catch (error) {
     // Because the user could install this pack while we are still downloading this
     //   ephemeral pack, we don't want to go change its status unless we're still in
@@ -585,7 +620,10 @@ async function doDownloadStickerPack(packId, packKey, options = {}) {
     await downloadStickerJob(coverProto);
 
     // Then the rest
-    await pMap(nonCoverStickers, downloadStickerJob, { concurrency: 3 });
+    await pMap(nonCoverStickers, downloadStickerJob, {
+      concurrency: 3,
+      timeout: 1000 * 60 * 2,
+    });
 
     // Allow for the user marking this pack as installed in the middle of our download;
     //   don't overwrite that status.
@@ -641,10 +679,7 @@ function getStickerPackStatus(packId) {
 }
 
 function getSticker(packId, stickerId) {
-  const state = reduxStore.getState();
-  const { stickers } = state;
-  const { packs } = stickers;
-  const pack = packs[packId];
+  const pack = getStickerPack(packId);
 
   if (!pack || !pack.stickers) {
     return null;
@@ -693,7 +728,7 @@ async function deletePackReference(messageId, packId) {
   const paths = await deleteStickerPackReference(messageId, packId);
 
   // If we don't get a list of paths back, then the sticker pack was not deleted
-  if (!paths) {
+  if (!paths || !paths.length) {
     return;
   }
 
@@ -702,6 +737,7 @@ async function deletePackReference(messageId, packId) {
 
   await pMap(paths, Signal.Migrations.deleteSticker, {
     concurrency: 3,
+    timeout: 1000 * 60 * 2,
   });
 }
 
@@ -721,5 +757,6 @@ async function deletePack(packId) {
 
   await pMap(paths, Signal.Migrations.deleteSticker, {
     concurrency: 3,
+    timeout: 1000 * 60 * 2,
   });
 }

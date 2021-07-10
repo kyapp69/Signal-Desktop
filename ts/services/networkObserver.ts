@@ -1,3 +1,6 @@
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import {
   CheckNetworkStatusPayloadType,
   NetworkActionType,
@@ -11,7 +14,9 @@ type NetworkActions = {
 
 const REFRESH_INTERVAL = 5000;
 
-export function initializeNetworkObserver(networkActions: NetworkActions) {
+export function initializeNetworkObserver(
+  networkActions: NetworkActions
+): void {
   const { log } = window;
   log.info(`Initializing network observer every ${REFRESH_INTERVAL}ms`);
 

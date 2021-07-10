@@ -1,11 +1,14 @@
+// Copyright 2020-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import React from 'react';
 
 import { LocalizerType } from '../types/Util';
 
-interface PropsType {
+type PropsType = {
   hasExpired: boolean;
   i18n: LocalizerType;
-}
+};
 
 export const ExpiredBuildDialog = ({
   hasExpired,
@@ -26,7 +29,9 @@ export const ExpiredBuildDialog = ({
           tabIndex={-1}
           target="_blank"
         >
-          <button className="upgrade">{i18n('upgrade')}</button>
+          <button type="button" className="upgrade">
+            {i18n('upgrade')}
+          </button>
         </a>
       </div>
     </div>

@@ -1,3 +1,6 @@
+// Copyright 2018-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 const { omit, compact, map } = require('lodash');
 
 const { toLogFormat } = require('./errors');
@@ -17,15 +20,17 @@ exports.parseAndWriteAvatar = upgradeAttachment => async (
   const { avatar } = contact;
 
   // This is to ensure that an omit() call doesn't pull in prototype props/methods
-  const contactShallowCopy = Object.assign({}, contact);
+  const contactShallowCopy = { ...contact };
 
   const contactWithUpdatedAvatar =
     avatar && avatar.avatar
-      ? Object.assign({}, contactShallowCopy, {
-          avatar: Object.assign({}, avatar, {
+      ? {
+          ...contactShallowCopy,
+          avatar: {
+            ...avatar,
             avatar: await upgradeAttachment(avatar.avatar, context),
-          }),
-        })
+          },
+        }
       : omit(contactShallowCopy, ['avatar']);
 
   // eliminates empty numbers, emails, and addresses; adds type if not provided
@@ -50,14 +55,13 @@ function parseContact(contact, options = {}) {
   const boundParsePhone = phoneNumber =>
     parsePhoneItem(phoneNumber, { regionCode });
 
-  return Object.assign(
-    {},
-    omit(contact, ['avatar', 'number', 'email', 'address']),
-    parseAvatar(contact.avatar),
-    createArrayKey('number', compact(map(contact.number, boundParsePhone))),
-    createArrayKey('email', compact(map(contact.email, parseEmailItem))),
-    createArrayKey('address', compact(map(contact.address, parseAddress)))
-  );
+  return {
+    ...omit(contact, ['avatar', 'number', 'email', 'address']),
+    ...parseAvatar(contact.avatar),
+    ...createArrayKey('number', compact(map(contact.number, boundParsePhone))),
+    ...createArrayKey('email', compact(map(contact.email, parseEmailItem))),
+    ...createArrayKey('address', compact(map(contact.address, parseAddress))),
+  };
 }
 
 function idForLogging(message) {
@@ -94,10 +98,11 @@ function parsePhoneItem(item, options = {}) {
     return null;
   }
 
-  return Object.assign({}, item, {
+  return {
+    ...item,
     type: item.type || DEFAULT_PHONE_TYPE,
     value: parsePhoneNumber(item.value, { regionCode }),
-  });
+  };
 }
 
 function parseEmailItem(item) {
@@ -105,9 +110,7 @@ function parseEmailItem(item) {
     return null;
   }
 
-  return Object.assign({}, item, {
-    type: item.type || DEFAULT_EMAIL_TYPE,
-  });
+  return { ...item, type: item.type || DEFAULT_EMAIL_TYPE };
 }
 
 function parseAddress(address) {
@@ -127,9 +130,7 @@ function parseAddress(address) {
     return null;
   }
 
-  return Object.assign({}, address, {
-    type: address.type || DEFAULT_ADDRESS_TYPE,
-  });
+  return { ...address, type: address.type || DEFAULT_ADDRESS_TYPE };
 }
 
 function parseAvatar(avatar) {
@@ -138,9 +139,7 @@ function parseAvatar(avatar) {
   }
 
   return {
-    avatar: Object.assign({}, avatar, {
-      isProfile: avatar.isProfile || false,
-    }),
+    avatar: { ...avatar, isProfile: avatar.isProfile || false },
   };
 }
 

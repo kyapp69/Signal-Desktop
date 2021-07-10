@@ -1,25 +1,72 @@
+// Copyright 2019-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { debounce, get, isNumber } from 'lodash';
-import React from 'react';
+import classNames from 'classnames';
+import React, { CSSProperties, ReactChild, ReactNode } from 'react';
 import {
   AutoSizer,
   CellMeasurer,
   CellMeasurerCache,
   List,
+  Grid,
 } from 'react-virtualized';
+import Measure from 'react-measure';
 
 import { ScrollDownButton } from './ScrollDownButton';
 
 import { LocalizerType } from '../../types/Util';
+import { ConversationType } from '../../state/ducks/conversations';
+import { assert } from '../../util/assert';
+import { missingCaseError } from '../../util/missingCaseError';
 
 import { PropsActions as MessageActionsType } from './Message';
 import { PropsActions as SafetyNumberActionsType } from './SafetyNumberNotification';
+import { Intl } from '../Intl';
+import { TimelineWarning } from './TimelineWarning';
+import { TimelineWarnings } from './TimelineWarnings';
+import { NewlyCreatedGroupInvitedContactsDialog } from '../NewlyCreatedGroupInvitedContactsDialog';
+import { ContactSpoofingType } from '../../util/contactSpoofing';
+import { ContactSpoofingReviewDialog } from './ContactSpoofingReviewDialog';
+import {
+  GroupNameCollisionsWithIdsByTitle,
+  hasUnacknowledgedCollisions,
+} from '../../util/groupMemberNameCollisions';
 
 const AT_BOTTOM_THRESHOLD = 15;
 const NEAR_BOTTOM_THRESHOLD = 15;
 const AT_TOP_THRESHOLD = 10;
 const LOAD_MORE_THRESHOLD = 30;
 const SCROLL_DOWN_BUTTON_THRESHOLD = 8;
-export const LOAD_COUNTDOWN = 2 * 1000;
+export const LOAD_COUNTDOWN = 1;
+
+export type WarningType =
+  | {
+      type: ContactSpoofingType.DirectConversationWithSameTitle;
+      safeConversation: ConversationType;
+    }
+  | {
+      type: ContactSpoofingType.MultipleGroupMembersWithSameTitle;
+      acknowledgedGroupNameCollisions: GroupNameCollisionsWithIdsByTitle;
+      groupNameCollisions: GroupNameCollisionsWithIdsByTitle;
+    };
+
+export type ContactSpoofingReviewPropType =
+  | {
+      type: ContactSpoofingType.DirectConversationWithSameTitle;
+      possiblyUnsafeConversation: ConversationType;
+      safeConversation: ConversationType;
+    }
+  | {
+      type: ContactSpoofingType.MultipleGroupMembersWithSameTitle;
+      collisionInfoByTitle: Record<
+        string,
+        Array<{
+          oldName?: string;
+          conversation: ConversationType;
+        }>
+      >;
+    };
 
 export type PropsDataType = {
   haveNewest: boolean;
@@ -38,41 +85,76 @@ export type PropsDataType = {
 
 type PropsHousekeepingType = {
   id: string;
+  areWeAdmin?: boolean;
+  isGroupV1AndDisabled?: boolean;
+  isIncomingMessageRequest: boolean;
+  typingContact?: unknown;
   unreadCount?: number;
-  typingContact?: Object;
+
   selectedMessageId?: string;
+  invitedContactsForNewlyCreatedGroup: Array<ConversationType>;
+
+  warning?: WarningType;
+  contactSpoofingReview?: ContactSpoofingReviewPropType;
 
   i18n: LocalizerType;
 
   renderItem: (
     id: string,
     conversationId: string,
-    actions: Object
+    onHeightChange: (messageId: string) => unknown,
+    actions: Record<string, unknown>
   ) => JSX.Element;
   renderLastSeenIndicator: (id: string) => JSX.Element;
+  renderHeroRow: (
+    id: string,
+    resizeHeroRow: () => unknown,
+    unblurAvatar: () => void,
+    updateSharedGroups: () => unknown
+  ) => JSX.Element;
   renderLoadingRow: (id: string) => JSX.Element;
   renderTypingBubble: (id: string) => JSX.Element;
 };
 
 type PropsActionsType = {
+  acknowledgeGroupMemberNameCollisions: (
+    groupNameCollisions: Readonly<GroupNameCollisionsWithIdsByTitle>
+  ) => void;
   clearChangedMessages: (conversationId: string) => unknown;
+  clearInvitedConversationsForNewlyCreatedGroup: () => void;
+  closeContactSpoofingReview: () => void;
   setLoadCountdownStart: (
     conversationId: string,
     loadCountdownStart?: number
   ) => unknown;
   setIsNearBottom: (conversationId: string, isNearBottom: boolean) => unknown;
+  reviewGroupMemberNameCollision: (groupConversationId: string) => void;
+  reviewMessageRequestNameCollision: (
+    _: Readonly<{
+      safeConversationId: string;
+    }>
+  ) => void;
 
   loadAndScroll: (messageId: string) => unknown;
   loadOlderMessages: (messageId: string) => unknown;
   loadNewerMessages: (messageId: string) => unknown;
   loadNewestMessages: (messageId: string, setFocus?: boolean) => unknown;
   markMessageRead: (messageId: string) => unknown;
+  onBlock: (conversationId: string) => unknown;
+  onBlockAndReportSpam: (conversationId: string) => unknown;
+  onDelete: (conversationId: string) => unknown;
+  onUnblock: (conversationId: string) => unknown;
+  removeMember: (conversationId: string) => unknown;
   selectMessage: (messageId: string, conversationId: string) => unknown;
   clearSelectedMessage: () => unknown;
+  unblurAvatar: () => void;
+  updateSharedGroups: () => unknown;
 } & MessageActionsType &
   SafetyNumberActionsType;
 
-type Props = PropsDataType & PropsHousekeepingType & PropsActionsType;
+export type PropsType = PropsDataType &
+  PropsHousekeepingType &
+  PropsActionsType;
 
 // from https://github.com/bvaughn/react-virtualized/blob/fb3484ed5dcc41bffae8eab029126c0fb8f7abc0/source/List/types.js#L5
 type RowRendererParamsType = {
@@ -80,8 +162,8 @@ type RowRendererParamsType = {
   isScrolling: boolean;
   isVisible: boolean;
   key: string;
-  parent: Object;
-  style: Object;
+  parent: Record<string, unknown>;
+  style: CSSProperties;
 };
 type OnScrollParamsType = {
   scrollTop: number;
@@ -110,7 +192,7 @@ type VisibleRowsType = {
   };
 };
 
-type State = {
+type StateType = {
   atBottom: boolean;
   atTop: boolean;
   oneTimeScrollRow?: number;
@@ -121,39 +203,59 @@ type State = {
 
   shouldShowScrollDownButton: boolean;
   areUnreadBelowCurrentPosition: boolean;
+
+  hasDismissedDirectContactSpoofingWarning: boolean;
+  lastMeasuredWarningHeight: number;
 };
 
-export class Timeline extends React.PureComponent<Props, State> {
+export class Timeline extends React.PureComponent<PropsType, StateType> {
   public cellSizeCache = new CellMeasurerCache({
     defaultHeight: 64,
     fixedWidth: true,
   });
-  public mostRecentWidth = 0;
-  public mostRecentHeight = 0;
-  public offsetFromBottom: number | undefined = 0;
-  public resizeFlag = false;
-  public listRef = React.createRef<any>();
-  public visibleRows: VisibleRowsType | undefined;
-  public loadCountdownTimeout: any;
 
-  constructor(props: Props) {
+  public mostRecentWidth = 0;
+
+  public mostRecentHeight = 0;
+
+  public offsetFromBottom: number | undefined = 0;
+
+  public resizeFlag = false;
+
+  public listRef = React.createRef<List>();
+
+  public visibleRows: VisibleRowsType | undefined;
+
+  public loadCountdownTimeout: NodeJS.Timeout | null = null;
+
+  constructor(props: PropsType) {
     super(props);
 
-    const { scrollToIndex } = this.props;
-    const oneTimeScrollRow = this.getLastSeenIndicatorRow();
+    const { scrollToIndex, isIncomingMessageRequest } = this.props;
+    const oneTimeScrollRow = isIncomingMessageRequest
+      ? undefined
+      : this.getLastSeenIndicatorRow();
+
+    // We only stick to the bottom if this is not an incoming message request.
+    const atBottom = !isIncomingMessageRequest;
 
     this.state = {
-      atBottom: true,
+      atBottom,
       atTop: false,
       oneTimeScrollRow,
       propScrollToIndex: scrollToIndex,
       prevPropScrollToIndex: scrollToIndex,
       shouldShowScrollDownButton: false,
       areUnreadBelowCurrentPosition: false,
+      hasDismissedDirectContactSpoofingWarning: false,
+      lastMeasuredWarningHeight: 0,
     };
   }
 
-  public static getDerivedStateFromProps(props: Props, state: State): State {
+  public static getDerivedStateFromProps(
+    props: PropsType,
+    state: StateType
+  ): StateType {
     if (
       isNumber(props.scrollToIndex) &&
       (props.scrollToIndex !== state.prevPropScrollToIndex ||
@@ -170,9 +272,9 @@ export class Timeline extends React.PureComponent<Props, State> {
     return state;
   }
 
-  public getList = () => {
+  public getList = (): List | null => {
     if (!this.listRef) {
-      return;
+      return null;
     }
 
     const { current } = this.listRef;
@@ -180,25 +282,30 @@ export class Timeline extends React.PureComponent<Props, State> {
     return current;
   };
 
-  public getGrid = () => {
+  public getGrid = (): Grid | undefined => {
     const list = this.getList();
     if (!list) {
       return;
     }
 
+    // eslint-disable-next-line consistent-return
     return list.Grid;
   };
 
-  public getScrollContainer = () => {
-    const grid = this.getGrid();
+  public getScrollContainer = (): HTMLDivElement | undefined => {
+    // We're using an internal variable (_scrollingContainer)) here,
+    // so cannot rely on the public type.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const grid: any = this.getGrid();
     if (!grid) {
       return;
     }
 
+    // eslint-disable-next-line consistent-return
     return grid._scrollingContainer as HTMLDivElement;
   };
 
-  public scrollToRow = (row: number) => {
+  public scrollToRow = (row: number): void => {
     const list = this.getList();
     if (!list) {
       return;
@@ -207,7 +314,7 @@ export class Timeline extends React.PureComponent<Props, State> {
     list.scrollToRow(row);
   };
 
-  public recomputeRowHeights = (row?: number) => {
+  public recomputeRowHeights = (row?: number): void => {
     const list = this.getList();
     if (!list) {
       return;
@@ -216,7 +323,7 @@ export class Timeline extends React.PureComponent<Props, State> {
     list.recomputeRowHeights(row);
   };
 
-  public onHeightOnlyChange = () => {
+  public onHeightOnlyChange = (): void => {
     const grid = this.getGrid();
     const scrollContainer = this.getScrollContainer();
     if (!grid || !scrollContainer) {
@@ -234,13 +341,18 @@ export class Timeline extends React.PureComponent<Props, State> {
     );
     const delta = newOffsetFromBottom - this.offsetFromBottom;
 
-    grid.scrollToPosition({ scrollTop: scrollContainer.scrollTop + delta });
+    // TODO: DESKTOP-687
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (grid as any).scrollToPosition({
+      scrollTop: scrollContainer.scrollTop + delta,
+    });
   };
 
-  public resize = (row?: number) => {
+  public resize = (row?: number): void => {
     this.offsetFromBottom = undefined;
     this.resizeFlag = false;
     if (isNumber(row) && row > 0) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.cellSizeCache.clearPlus(row, 0);
     } else {
@@ -250,7 +362,27 @@ export class Timeline extends React.PureComponent<Props, State> {
     this.recomputeRowHeights(row || 0);
   };
 
-  public onScroll = (data: OnScrollParamsType) => {
+  public resizeHeroRow = (): void => {
+    this.resize(0);
+  };
+
+  public resizeMessage = (messageId: string): void => {
+    const { items } = this.props;
+
+    if (!items || !items.length) {
+      return;
+    }
+
+    const index = items.findIndex(item => item === messageId);
+    if (index < 0) {
+      return;
+    }
+
+    const row = this.fromItemIndexToRow(index);
+    this.resize(row);
+  };
+
+  public onScroll = (data: OnScrollParamsType): void => {
     // Ignore scroll events generated as react-virtualized recursively scrolls and
     //   re-measures to get us where we want to go.
     if (
@@ -274,7 +406,6 @@ export class Timeline extends React.PureComponent<Props, State> {
     this.updateWithVisibleRows();
   };
 
-  // tslint:disable-next-line member-ordering
   public updateScrollMetrics = debounce(
     (data: OnScrollParamsType) => {
       const { clientHeight, clientWidth, scrollHeight, scrollTop } = data;
@@ -287,6 +418,7 @@ export class Timeline extends React.PureComponent<Props, State> {
         haveNewest,
         haveOldest,
         id,
+        isIncomingMessageRequest,
         setIsNearBottom,
         setLoadCountdownStart,
       } = this.props;
@@ -309,8 +441,12 @@ export class Timeline extends React.PureComponent<Props, State> {
         scrollHeight - clientHeight - scrollTop
       );
 
-      const atBottom =
-        haveNewest && this.offsetFromBottom <= AT_BOTTOM_THRESHOLD;
+      // If there's an active message request, we won't stick to the bottom of the
+      //   conversation as new messages come in.
+      const atBottom = isIncomingMessageRequest
+        ? false
+        : haveNewest && this.offsetFromBottom <= AT_BOTTOM_THRESHOLD;
+
       const isNearBottom =
         haveNewest && this.offsetFromBottom <= NEAR_BOTTOM_THRESHOLD;
       const atTop = scrollTop <= AT_TOP_THRESHOLD;
@@ -327,10 +463,14 @@ export class Timeline extends React.PureComponent<Props, State> {
         );
       }
 
+      // Variable collision
+      // eslint-disable-next-line react/destructuring-assignment
       if (loadCountdownStart !== this.props.loadCountdownStart) {
         setLoadCountdownStart(id, loadCountdownStart);
       }
 
+      // Variable collision
+      // eslint-disable-next-line react/destructuring-assignment
       if (isNearBottom !== this.props.isNearBottom) {
         setIsNearBottom(id, isNearBottom);
       }
@@ -346,7 +486,7 @@ export class Timeline extends React.PureComponent<Props, State> {
     { maxWait: 50 }
   );
 
-  public updateVisibleRows = () => {
+  public updateVisibleRows = (): void => {
     let newest;
     let oldest;
 
@@ -407,12 +547,12 @@ export class Timeline extends React.PureComponent<Props, State> {
     this.visibleRows = { newest, oldest };
   };
 
-  // tslint:disable-next-line member-ordering cyclomatic-complexity
   public updateWithVisibleRows = debounce(
     () => {
       const {
         unreadCount,
         haveNewest,
+        haveOldest,
         isLoadingMessages,
         items,
         loadNewerMessages,
@@ -428,22 +568,36 @@ export class Timeline extends React.PureComponent<Props, State> {
         return;
       }
 
-      const { newest } = this.visibleRows;
-      if (!newest || !newest.id) {
+      const { newest, oldest } = this.visibleRows;
+      if (!newest) {
         return;
       }
 
       markMessageRead(newest.id);
 
-      const rowCount = this.getRowCount();
+      const newestRow = this.getRowCount() - 1;
+      const oldestRow = this.fromItemIndexToRow(0);
 
-      const lastId = items[items.length - 1];
+      // Loading newer messages (that go below current messages) is pain-free and quick
+      //   we'll just kick these off immediately.
       if (
         !isLoadingMessages &&
         !haveNewest &&
-        newest.row > rowCount - LOAD_MORE_THRESHOLD
+        newest.row > newestRow - LOAD_MORE_THRESHOLD
       ) {
+        const lastId = items[items.length - 1];
         loadNewerMessages(lastId);
+      }
+
+      // Loading older messages is more destructive, as they requires a recalculation of
+      //   all locations of things below. So we need to be careful with these loads.
+      //   Generally we hid this behind a countdown spinner at the top of the window, but
+      //   this is a special-case for the situation where the window is so large and that
+      //   all the messages are visible.
+      const oldestVisible = Boolean(oldest && oldestRow === oldest.row);
+      const newestVisible = newestRow === newest.row;
+      if (oldestVisible && newestVisible && !haveOldest) {
+        this.loadOlderMessages();
       }
 
       const lastIndex = items.length - 1;
@@ -457,7 +611,7 @@ export class Timeline extends React.PureComponent<Props, State> {
       const shouldShowScrollDownButton = Boolean(
         !haveNewest ||
           areUnreadBelowCurrentPosition ||
-          newest.row < rowCount - SCROLL_DOWN_BUTTON_THRESHOLD
+          newest.row < newestRow - SCROLL_DOWN_BUTTON_THRESHOLD
       );
 
       this.setState({
@@ -469,7 +623,7 @@ export class Timeline extends React.PureComponent<Props, State> {
     { maxWait: 500 }
   );
 
-  public loadOlderMessages = () => {
+  public loadOlderMessages = (): void => {
     const {
       haveOldest,
       isLoadingMessages,
@@ -495,16 +649,20 @@ export class Timeline extends React.PureComponent<Props, State> {
     key,
     parent,
     style,
-  }: RowRendererParamsType) => {
+  }: RowRendererParamsType): JSX.Element => {
     const {
       id,
       haveOldest,
       items,
       renderItem,
+      renderHeroRow,
       renderLoadingRow,
       renderLastSeenIndicator,
       renderTypingBubble,
+      unblurAvatar,
+      updateSharedGroups,
     } = this.props;
+    const { lastMeasuredWarningHeight } = this.state;
 
     const styleWithWidth = {
       ...style,
@@ -513,9 +671,23 @@ export class Timeline extends React.PureComponent<Props, State> {
     const row = index;
     const oldestUnreadRow = this.getLastSeenIndicatorRow();
     const typingBubbleRow = this.getTypingBubbleRow();
-    let rowContents;
+    let rowContents: ReactNode;
 
-    if (!haveOldest && row === 0) {
+    if (haveOldest && row === 0) {
+      rowContents = (
+        <div data-row={row} style={styleWithWidth} role="row">
+          {this.getWarning() ? (
+            <div style={{ height: lastMeasuredWarningHeight }} />
+          ) : null}
+          {renderHeroRow(
+            id,
+            this.resizeHeroRow,
+            unblurAvatar,
+            updateSharedGroups
+          )}
+        </div>
+      );
+    } else if (!haveOldest && row === 0) {
       rowContents = (
         <div data-row={row} style={styleWithWidth} role="row">
           {renderLoadingRow(id)}
@@ -554,7 +726,7 @@ export class Timeline extends React.PureComponent<Props, State> {
           style={styleWithWidth}
           role="row"
         >
-          {renderItem(messageId, id, this.props)}
+          {renderItem(messageId, id, this.resizeMessage, this.props)}
         </div>
       );
     }
@@ -573,14 +745,11 @@ export class Timeline extends React.PureComponent<Props, State> {
     );
   };
 
-  public fromItemIndexToRow(index: number) {
-    const { haveOldest, oldestUnreadIndex } = this.props;
+  public fromItemIndexToRow(index: number): number {
+    const { oldestUnreadIndex } = this.props;
 
-    let addition = 0;
-
-    if (!haveOldest) {
-      addition += 1;
-    }
+    // We will always render either the hero row or the loading row
+    let addition = 1;
 
     if (isNumber(oldestUnreadIndex) && index >= oldestUnreadIndex) {
       addition += 1;
@@ -589,16 +758,13 @@ export class Timeline extends React.PureComponent<Props, State> {
     return index + addition;
   }
 
-  public getRowCount() {
-    const { haveOldest, oldestUnreadIndex, typingContact } = this.props;
+  public getRowCount(): number {
+    const { oldestUnreadIndex, typingContact } = this.props;
     const { items } = this.props;
     const itemsCount = items && items.length ? items.length : 0;
 
-    let extraRows = 0;
-
-    if (!haveOldest) {
-      extraRows += 1;
-    }
+    // We will always render either the hero row or the loading row
+    let extraRows = 1;
 
     if (isNumber(oldestUnreadIndex)) {
       extraRows += 1;
@@ -611,14 +777,14 @@ export class Timeline extends React.PureComponent<Props, State> {
     return itemsCount + extraRows;
   }
 
-  public fromRowToItemIndex(row: number, props?: Props): number | undefined {
-    const { haveOldest, items } = props || this.props;
+  public fromRowToItemIndex(
+    row: number,
+    props?: PropsType
+  ): number | undefined {
+    const { items } = props || this.props;
 
-    let subtraction = 0;
-
-    if (!haveOldest) {
-      subtraction += 1;
-    }
+    // We will always render either the hero row or the loading row
+    let subtraction = 1;
 
     const oldestUnreadRow = this.getLastSeenIndicatorRow();
     if (isNumber(oldestUnreadRow) && row > oldestUnreadRow) {
@@ -630,19 +796,21 @@ export class Timeline extends React.PureComponent<Props, State> {
       return;
     }
 
+    // eslint-disable-next-line consistent-return
     return index;
   }
 
-  public getLastSeenIndicatorRow(props?: Props) {
+  public getLastSeenIndicatorRow(props?: PropsType): number | undefined {
     const { oldestUnreadIndex } = props || this.props;
     if (!isNumber(oldestUnreadIndex)) {
       return;
     }
 
+    // eslint-disable-next-line consistent-return
     return this.fromItemIndexToRow(oldestUnreadIndex) - 1;
   }
 
-  public getTypingBubbleRow() {
+  public getTypingBubbleRow(): number | undefined {
     const { items } = this.props;
     if (!items || items.length < 0) {
       return;
@@ -650,10 +818,11 @@ export class Timeline extends React.PureComponent<Props, State> {
 
     const last = items.length - 1;
 
+    // eslint-disable-next-line consistent-return
     return this.fromItemIndexToRow(last) + 1;
   }
 
-  public onScrollToMessage = (messageId: string) => {
+  public onScrollToMessage = (messageId: string): void => {
     const { isLoadingMessages, items, loadAndScroll } = this.props;
     const index = items.findIndex(item => item === messageId);
 
@@ -669,7 +838,7 @@ export class Timeline extends React.PureComponent<Props, State> {
     }
   };
 
-  public scrollToBottom = (setFocus?: boolean) => {
+  public scrollToBottom = (setFocus?: boolean): void => {
     const { selectMessage, id, items } = this.props;
 
     if (setFocus && items && items.length > 0) {
@@ -678,18 +847,20 @@ export class Timeline extends React.PureComponent<Props, State> {
       selectMessage(lastMessageId, id);
     }
 
+    const oneTimeScrollRow =
+      items && items.length > 0 ? items.length - 1 : undefined;
+
     this.setState({
       propScrollToIndex: undefined,
-      oneTimeScrollRow: undefined,
-      atBottom: true,
+      oneTimeScrollRow,
     });
   };
 
-  public onClickScrollDownButton = () => {
+  public onClickScrollDownButton = (): void => {
     this.scrollDown(false);
   };
 
-  public scrollDown = (setFocus?: boolean) => {
+  public scrollDown = (setFocus?: boolean): void => {
     const {
       haveNewest,
       id,
@@ -737,22 +908,27 @@ export class Timeline extends React.PureComponent<Props, State> {
     }
   };
 
-  public componentDidMount() {
+  public componentDidMount(): void {
     this.updateWithVisibleRows();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     window.registerForActive(this.updateWithVisibleRows);
   }
 
-  public componentWillUnmount() {
+  public componentWillUnmount(): void {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     window.unregisterForActive(this.updateWithVisibleRows);
   }
 
-  // tslint:disable-next-line cyclomatic-complexity max-func-body-length
-  public componentDidUpdate(prevProps: Props) {
+  public componentDidUpdate(
+    prevProps: Readonly<PropsType>,
+    prevState: Readonly<StateType>
+  ): void {
     const {
-      id,
       clearChangedMessages,
+      id,
+      isIncomingMessageRequest,
       items,
       messageHeightChangeIndex,
       oldestUnreadIndex,
@@ -760,6 +936,15 @@ export class Timeline extends React.PureComponent<Props, State> {
       scrollToIndex,
       typingContact,
     } = this.props;
+
+    // Warnings can increase the size of the first row (adding padding for the floating
+    //   warning), so we recompute it when the warnings change.
+    const hadWarning = Boolean(
+      prevProps.warning && !prevState.hasDismissedDirectContactSpoofingWarning
+    );
+    if (hadWarning !== Boolean(this.getWarning())) {
+      this.recomputeRowHeights(0);
+    }
 
     // There are a number of situations which can necessitate that we forget about row
     //   heights previously calculated. We reset the minimum number of rows to minimize
@@ -777,10 +962,17 @@ export class Timeline extends React.PureComponent<Props, State> {
         this.resize();
       }
 
-      const oneTimeScrollRow = this.getLastSeenIndicatorRow();
+      // We want to come in at the top of the conversation if it's a message request
+      const oneTimeScrollRow = isIncomingMessageRequest
+        ? undefined
+        : this.getLastSeenIndicatorRow();
+      const atBottom = !isIncomingMessageRequest;
+
+      // TODO: DESKTOP-688
+      // eslint-disable-next-line react/no-did-update-set-state
       this.setState({
         oneTimeScrollRow,
-        atBottom: true,
+        atBottom,
         propScrollToIndex: scrollToIndex,
         prevPropScrollToIndex: scrollToIndex,
       });
@@ -795,7 +987,9 @@ export class Timeline extends React.PureComponent<Props, State> {
       prevProps.items.length > 0 &&
       items !== prevProps.items
     ) {
-      if (this.state.atTop) {
+      const { atTop } = this.state;
+
+      if (atTop) {
         const oldFirstIndex = 0;
         const oldFirstId = prevProps.items[oldFirstIndex];
 
@@ -811,6 +1005,8 @@ export class Timeline extends React.PureComponent<Props, State> {
         if (delta > 0) {
           // We're loading more new messages at the top; we want to stay at the top
           this.resize();
+          // TODO: DESKTOP-688
+          // eslint-disable-next-line react/no-did-update-set-state
           this.setState({ oneTimeScrollRow: newRow });
 
           return;
@@ -891,17 +1087,17 @@ export class Timeline extends React.PureComponent<Props, State> {
     this.updateWithVisibleRows();
   }
 
-  public getScrollTarget = () => {
+  public getScrollTarget = (): number | undefined => {
     const { oneTimeScrollRow, atBottom, propScrollToIndex } = this.state;
 
     const rowCount = this.getRowCount();
-    const targetMessage = isNumber(propScrollToIndex)
+    const targetMessageRow = isNumber(propScrollToIndex)
       ? this.fromItemIndexToRow(propScrollToIndex)
       : undefined;
     const scrollToBottom = atBottom ? rowCount - 1 : undefined;
 
-    if (isNumber(targetMessage)) {
-      return targetMessage;
+    if (isNumber(targetMessageRow)) {
+      return targetMessageRow;
     }
 
     if (isNumber(oneTimeScrollRow)) {
@@ -911,7 +1107,7 @@ export class Timeline extends React.PureComponent<Props, State> {
     return scrollToBottom;
   };
 
-  public handleBlur = (event: React.FocusEvent) => {
+  public handleBlur = (event: React.FocusEvent): void => {
     const { clearSelectedMessage } = this.props;
 
     const { currentTarget } = event;
@@ -935,7 +1131,7 @@ export class Timeline extends React.PureComponent<Props, State> {
     }, 0);
   };
 
-  public handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  public handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
     const { selectMessage, selectedMessageId, items, id } = this.props;
     const commandKey = get(window, 'platform') === 'darwin' && event.metaKey;
     const controlKey = get(window, 'platform') !== 'darwin' && event.ctrlKey;
@@ -1006,13 +1202,30 @@ export class Timeline extends React.PureComponent<Props, State> {
 
       event.preventDefault();
       event.stopPropagation();
-
-      return;
     }
   };
 
-  public render() {
-    const { i18n, id, items } = this.props;
+  public render(): JSX.Element | null {
+    const {
+      acknowledgeGroupMemberNameCollisions,
+      areWeAdmin,
+      clearInvitedConversationsForNewlyCreatedGroup,
+      closeContactSpoofingReview,
+      contactSpoofingReview,
+      i18n,
+      id,
+      invitedContactsForNewlyCreatedGroup,
+      isGroupV1AndDisabled,
+      items,
+      onBlock,
+      onBlockAndReportSpam,
+      onDelete,
+      onUnblock,
+      showContactModal,
+      removeMember,
+      reviewGroupMemberNameCollision,
+      reviewMessageRequestNameCollision,
+    } = this.props;
     const {
       shouldShowScrollDownButton,
       areUnreadBelowCurrentPosition,
@@ -1025,57 +1238,235 @@ export class Timeline extends React.PureComponent<Props, State> {
       return null;
     }
 
-    return (
-      <div
-        className="module-timeline"
-        role="group"
-        tabIndex={-1}
-        onBlur={this.handleBlur}
-        onKeyDown={this.handleKeyDown}
-      >
-        <AutoSizer>
-          {({ height, width }) => {
-            if (this.mostRecentWidth && this.mostRecentWidth !== width) {
-              this.resizeFlag = true;
+    const autoSizer = (
+      <AutoSizer>
+        {({ height, width }) => {
+          if (this.mostRecentWidth && this.mostRecentWidth !== width) {
+            this.resizeFlag = true;
 
-              setTimeout(this.resize, 0);
-            } else if (
-              this.mostRecentHeight &&
-              this.mostRecentHeight !== height
-            ) {
-              setTimeout(this.onHeightOnlyChange, 0);
-            }
+            setTimeout(this.resize, 0);
+          } else if (
+            this.mostRecentHeight &&
+            this.mostRecentHeight !== height
+          ) {
+            setTimeout(this.onHeightOnlyChange, 0);
+          }
 
-            this.mostRecentWidth = width;
-            this.mostRecentHeight = height;
+          this.mostRecentWidth = width;
+          this.mostRecentHeight = height;
 
-            return (
-              <List
-                deferredMeasurementCache={this.cellSizeCache}
-                height={height}
-                onScroll={this.onScroll as any}
-                overscanRowCount={10}
-                ref={this.listRef}
-                rowCount={rowCount}
-                rowHeight={this.cellSizeCache.rowHeight}
-                rowRenderer={this.rowRenderer}
-                scrollToAlignment="start"
-                scrollToIndex={scrollToIndex}
-                tabIndex={-1}
-                width={width}
-              />
-            );
-          }}
-        </AutoSizer>
-        {shouldShowScrollDownButton ? (
-          <ScrollDownButton
-            conversationId={id}
-            withNewMessages={areUnreadBelowCurrentPosition}
-            scrollDown={this.onClickScrollDownButton}
-            i18n={i18n}
-          />
-        ) : null}
-      </div>
+          return (
+            <List
+              deferredMeasurementCache={this.cellSizeCache}
+              height={height}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onScroll={this.onScroll as any}
+              overscanRowCount={10}
+              ref={this.listRef}
+              rowCount={rowCount}
+              rowHeight={this.cellSizeCache.rowHeight}
+              rowRenderer={this.rowRenderer}
+              scrollToAlignment="start"
+              scrollToIndex={scrollToIndex}
+              tabIndex={-1}
+              width={width}
+            />
+          );
+        }}
+      </AutoSizer>
     );
+
+    const warning = this.getWarning();
+    let timelineWarning: ReactNode;
+    if (warning) {
+      let text: ReactChild;
+      let onClose: () => void;
+      switch (warning.type) {
+        case ContactSpoofingType.DirectConversationWithSameTitle:
+          text = (
+            <Intl
+              i18n={i18n}
+              id="ContactSpoofing__same-name"
+              components={{
+                link: (
+                  <TimelineWarning.Link
+                    onClick={() => {
+                      reviewMessageRequestNameCollision({
+                        safeConversationId: warning.safeConversation.id,
+                      });
+                    }}
+                  >
+                    {i18n('ContactSpoofing__same-name__link')}
+                  </TimelineWarning.Link>
+                ),
+              }}
+            />
+          );
+          onClose = () => {
+            this.setState({
+              hasDismissedDirectContactSpoofingWarning: true,
+            });
+          };
+          break;
+        case ContactSpoofingType.MultipleGroupMembersWithSameTitle: {
+          const { groupNameCollisions } = warning;
+          text = (
+            <Intl
+              i18n={i18n}
+              id="ContactSpoofing__same-name-in-group"
+              components={{
+                count: Object.values(groupNameCollisions)
+                  .reduce(
+                    (result, conversations) => result + conversations.length,
+                    0
+                  )
+                  .toString(),
+                link: (
+                  <TimelineWarning.Link
+                    onClick={() => {
+                      reviewGroupMemberNameCollision(id);
+                    }}
+                  >
+                    {i18n('ContactSpoofing__same-name-in-group__link')}
+                  </TimelineWarning.Link>
+                ),
+              }}
+            />
+          );
+          onClose = () => {
+            acknowledgeGroupMemberNameCollisions(groupNameCollisions);
+          };
+          break;
+        }
+        default:
+          throw missingCaseError(warning);
+      }
+
+      timelineWarning = (
+        <Measure
+          bounds
+          onResize={({ bounds }) => {
+            if (!bounds) {
+              assert(false, 'We should be measuring the bounds');
+              return;
+            }
+            this.setState({ lastMeasuredWarningHeight: bounds.height });
+          }}
+        >
+          {({ measureRef }) => (
+            <TimelineWarnings ref={measureRef}>
+              <TimelineWarning i18n={i18n} onClose={onClose}>
+                <TimelineWarning.IconContainer>
+                  <TimelineWarning.GenericIcon />
+                </TimelineWarning.IconContainer>
+                <TimelineWarning.Text>{text}</TimelineWarning.Text>
+              </TimelineWarning>
+            </TimelineWarnings>
+          )}
+        </Measure>
+      );
+    }
+
+    let contactSpoofingReviewDialog: ReactNode;
+    if (contactSpoofingReview) {
+      const commonProps = {
+        i18n,
+        onBlock,
+        onBlockAndReportSpam,
+        onClose: closeContactSpoofingReview,
+        onDelete,
+        onShowContactModal: showContactModal,
+        onUnblock,
+        removeMember,
+      };
+
+      switch (contactSpoofingReview.type) {
+        case ContactSpoofingType.DirectConversationWithSameTitle:
+          contactSpoofingReviewDialog = (
+            <ContactSpoofingReviewDialog
+              {...commonProps}
+              type={ContactSpoofingType.DirectConversationWithSameTitle}
+              possiblyUnsafeConversation={
+                contactSpoofingReview.possiblyUnsafeConversation
+              }
+              safeConversation={contactSpoofingReview.safeConversation}
+            />
+          );
+          break;
+        case ContactSpoofingType.MultipleGroupMembersWithSameTitle:
+          contactSpoofingReviewDialog = (
+            <ContactSpoofingReviewDialog
+              {...commonProps}
+              type={ContactSpoofingType.MultipleGroupMembersWithSameTitle}
+              areWeAdmin={Boolean(areWeAdmin)}
+              collisionInfoByTitle={contactSpoofingReview.collisionInfoByTitle}
+            />
+          );
+          break;
+        default:
+          throw missingCaseError(contactSpoofingReview);
+      }
+    }
+
+    return (
+      <>
+        <div
+          className={classNames(
+            'module-timeline',
+            isGroupV1AndDisabled ? 'module-timeline--disabled' : null
+          )}
+          role="presentation"
+          tabIndex={-1}
+          onBlur={this.handleBlur}
+          onKeyDown={this.handleKeyDown}
+        >
+          {timelineWarning}
+
+          {autoSizer}
+
+          {shouldShowScrollDownButton ? (
+            <ScrollDownButton
+              conversationId={id}
+              withNewMessages={areUnreadBelowCurrentPosition}
+              scrollDown={this.onClickScrollDownButton}
+              i18n={i18n}
+            />
+          ) : null}
+        </div>
+
+        {Boolean(invitedContactsForNewlyCreatedGroup.length) && (
+          <NewlyCreatedGroupInvitedContactsDialog
+            contacts={invitedContactsForNewlyCreatedGroup}
+            i18n={i18n}
+            onClose={clearInvitedConversationsForNewlyCreatedGroup}
+          />
+        )}
+
+        {contactSpoofingReviewDialog}
+      </>
+    );
+  }
+
+  private getWarning(): undefined | WarningType {
+    const { warning } = this.props;
+    if (!warning) {
+      return undefined;
+    }
+
+    switch (warning.type) {
+      case ContactSpoofingType.DirectConversationWithSameTitle: {
+        const { hasDismissedDirectContactSpoofingWarning } = this.state;
+        return hasDismissedDirectContactSpoofingWarning ? undefined : warning;
+      }
+      case ContactSpoofingType.MultipleGroupMembersWithSameTitle:
+        return hasUnacknowledgedCollisions(
+          warning.acknowledgedGroupNameCollisions,
+          warning.groupNameCollisions
+        )
+          ? warning
+          : undefined;
+      default:
+        throw missingCaseError(warning);
+    }
   }
 }

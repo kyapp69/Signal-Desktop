@@ -1,16 +1,18 @@
-/* global libsignal, textsecure, storage, ConversationController */
+// Copyright 2015-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* global textsecure, storage, ConversationController */
 
 describe('SignalProtocolStore', () => {
-  // debugger;
   const store = textsecure.storage.protocol;
   const identifier = '+5558675309';
   const identityKey = {
-    pubKey: libsignal.crypto.getRandomBytes(33),
-    privKey: libsignal.crypto.getRandomBytes(32),
+    pubKey: window.Signal.Crypto.getRandomBytes(33),
+    privKey: window.Signal.Crypto.getRandomBytes(32),
   };
   const testKey = {
-    pubKey: libsignal.crypto.getRandomBytes(33),
-    privKey: libsignal.crypto.getRandomBytes(32),
+    pubKey: window.Signal.Crypto.getRandomBytes(33),
+    privKey: window.Signal.Crypto.getRandomBytes(32),
   };
   before(async () => {
     localStorage.clear();
@@ -38,7 +40,7 @@ describe('SignalProtocolStore', () => {
     assertEqualArrayBuffers(key, testKey.pubKey);
   });
   it('returns whether a key is trusted', async () => {
-    const newIdentity = libsignal.crypto.getRandomBytes(33);
+    const newIdentity = window.Signal.Crypto.getRandomBytes(33);
     await store.saveIdentity(identifier, testKey.pubKey);
 
     const trusted = await store.isTrustedIdentity(identifier, newIdentity);

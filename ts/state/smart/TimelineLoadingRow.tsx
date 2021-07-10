@@ -1,6 +1,9 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+import { isNumber } from 'lodash';
 import { connect } from 'react-redux';
 import { mapDispatchToProps } from '../actions';
-import { isNumber } from 'lodash';
 
 import {
   STATE_ENUM,
@@ -26,11 +29,16 @@ const mapStateToProps = (state: StateType, props: ExternalProps) => {
 
   const { isLoadingMessages, loadCountdownStart } = conversation;
 
-  const loadingState: STATE_ENUM = isLoadingMessages
-    ? 'loading'
-    : isNumber(loadCountdownStart)
-    ? 'countdown'
-    : 'idle';
+  let loadingState: STATE_ENUM;
+
+  if (isLoadingMessages) {
+    loadingState = 'loading';
+  } else if (isNumber(loadCountdownStart)) {
+    loadingState = 'countdown';
+  } else {
+    loadingState = 'idle';
+  }
+
   const duration = loadingState === 'countdown' ? LOAD_COUNTDOWN : undefined;
   const expiresAt =
     loadingState === 'countdown' && loadCountdownStart

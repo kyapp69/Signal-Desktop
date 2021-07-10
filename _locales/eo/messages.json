@@ -1,7 +1,19 @@
 {
+    "softwareAcknowledgments": {
+        "message": "Dankesprimoj pri la programaroj",
+        "description": "Shown in the about box for the link to software acknowledgments"
+    },
+    "privacyPolicy": {
+        "message": "Kondiĉoj de uzo kaj regularo pri privateco",
+        "description": "Shown in the about box for the link to https://signal.org/legal"
+    },
     "copyErrorAndQuit": {
         "message": "Kopii la eraron kaj eliri",
         "description": "Shown in the top-level error popup, allowing user to copy the error text and close the app"
+    },
+    "unknownContact": {
+        "message": "Nekonata kontakto",
+        "description": "Shown as the name of a contact if we don't have any displayable information about them"
     },
     "unknownGroup": {
         "message": "Nekonata grupo",
@@ -13,7 +25,7 @@
     },
     "deleteAndRestart": {
         "message": "Forigi ĉiujn datumojn kaj restarti",
-        "description": "Shown in a popup if the database cannot start up properly; allows user to dalete database and restart"
+        "description": "Shown in a popup if the database cannot start up properly; allows user to delete database and restart"
     },
     "mainMenuFile": {
         "message": "&Dosiero",
@@ -42,6 +54,10 @@
     "mainMenuSettings": {
         "message": "Agordoj…",
         "description": "The label that is used for the Preferences menu in the program main menu. This should be consistent with the standard naming for ‘Preferences’ on the operating system."
+    },
+    "appMenuServices": {
+        "message": "Services",
+        "description": "Application menu item for macOS 'Services'"
     },
     "appMenuHide": {
         "message": "Kaŝi",
@@ -89,7 +105,7 @@
     },
     "editMenuSelectAll": {
         "message": "Elekti ĉion",
-        "description": "Edit menu comand to select all of the text in selected text box"
+        "description": "Edit menu command to select all of the text in selected text box"
     },
     "editMenuStartSpeaking": {
         "message": "Komenci paroli",
@@ -113,7 +129,7 @@
     },
     "windowMenuBringAllToFront": {
         "message": "Porti ĉiujn al fronto",
-        "description": "Window menu command to bring all windows of current applicatinon to front"
+        "description": "Window menu command to bring all windows of current application to front"
     },
     "viewMenuResetZoom": {
         "message": "Efektiva grandeco",
@@ -143,9 +159,17 @@
         "message": "Agordi kiel memstaran aparaton",
         "description": "Only available on development modes, menu option to open up the standalone device setup sequence"
     },
+    "messageContextMenuButton": {
+        "message": "Pliaj agoj",
+        "description": "Label for context button next to each message"
+    },
     "contextMenuCopyLink": {
         "message": "Kopii ligilon",
         "description": "Shown in the context menu for a link to indicate that the user can copy the link"
+    },
+    "contextMenuCopyImage": {
+        "message": "Kopii la bildon",
+        "description": "Shown in the context menu for an image to indicate that the user can copy the image"
     },
     "contextMenuNoSuggestions": {
         "message": "Neniu propono",
@@ -153,6 +177,10 @@
     },
     "avatarMenuViewArchive": {
         "message": "Vidi arĥivon",
+        "description": "One of the menu options available in the Avatar Popup menu"
+    },
+    "avatarMenuChatColors": {
+        "message": "Chat Color",
         "description": "One of the menu options available in the Avatar Popup menu"
     },
     "loading": {
@@ -177,17 +205,41 @@
         "message": "Enarĥivigitaj interparoloj",
         "description": "Shown in place of the search box when showing archived conversation list"
     },
+    "LeftPane--pinned": {
+        "message": "Alpinglitaj",
+        "description": "Shown as a header for pinned conversations in the left pane"
+    },
+    "LeftPane--chats": {
+        "message": "Interparoloj",
+        "description": "Shown as a header for non-pinned conversations in the left pane"
+    },
     "archiveHelperText": {
         "message": "Tiuj interparoloj estas enarĥivigitaj kaj aperos en la ricevujo, nur se novaj mesaĝoj riceviĝas.",
-        "description": "Shown at the top of the archived converations list in the left pane"
+        "description": "Shown at the top of the archived conversations list in the left pane"
     },
     "archiveConversation": {
-        "message": "Enarĥivigi interparolon",
+        "message": "Enarĥivigi",
         "description": "Shown in menu for conversation, and moves conversation out of main conversation list"
     },
+    "markUnread": {
+        "message": "Marki kiel nelegitan",
+        "description": "Shown in menu for conversation, and marks conversation as unread"
+    },
     "moveConversationToInbox": {
-        "message": "Movi interparolon al la ricevujo",
+        "message": "Elarĥivigi",
         "description": "Undoes Archive Conversation action, and moves archived conversation back to the main conversation list"
+    },
+    "pinConversation": {
+        "message": "Alpingli la interparolon",
+        "description": "Shown in menu for conversation, and pins the conversation to the top of the conversation list"
+    },
+    "unpinConversation": {
+        "message": "Depingli la interparolon",
+        "description": "Undoes Archive Conversation action, and unpins the conversation from the top of the conversation list"
+    },
+    "pinnedConversationsFull": {
+        "message": "Vi povas alpingli maks. 4 interparolojn",
+        "description": ""
     },
     "chooseDirectory": {
         "message": "Elekti dosierujon",
@@ -264,8 +316,12 @@
         "description": "Used as a label on a button allowing user to see more information"
     },
     "youLeftTheGroup": {
-        "message": "You left the group.",
+        "message": "Vi ne plu estas ano de la grupo",
         "description": "Displayed when a user can't send a message because they have left the group"
+    },
+    "invalidConversation": {
+        "message": "Tiu ĉi grupo ne validas. Kreu novan grupon.",
+        "description": "Displayed when a user can't send a message because something has gone wrong in the conversation."
     },
     "scrollDown": {
         "message": "Rulumi al interparola malsupro",
@@ -294,7 +350,7 @@
         "description": "Shown in the conversation history when a user links a new device to explain what is not supported."
     },
     "youMarkedAsVerified": {
-        "message": "Vi markis vian sekurigan numeron kun $name$ konfirmita.",
+        "message": "Vi markis vian sekurigan numeron kun $name$ kiel konfirmitan.",
         "description": "Shown in the conversation history when the user marks a contact as verified.",
         "placeholders": {
             "name": {
@@ -304,7 +360,7 @@
         }
     },
     "youMarkedAsNotVerified": {
-        "message": "Vi markis vian sekurigan numeron kun $name$ kiel nekonfirmita.",
+        "message": "Vi markis vian sekurigan numeron kun $name$ kiel nekonfirmitan.",
         "description": "Shown in the conversation history when the user marks a contact as not verified, whether on the Safety Number screen or by dismissing a banner or dialog.",
         "placeholders": {
             "name": {
@@ -314,7 +370,7 @@
         }
     },
     "youMarkedAsVerifiedOtherDevice": {
-        "message": "Vi markis, el alia aparato, vian sekurigan numeron kun $name$ kiel konfirmita.",
+        "message": "Vi markis, el alia aparato, vian sekurigan numeron kun $name$ kiel konfirmitan.",
         "description": "Shown in the conversation history when we discover that the user marked a contact as verified on another device.",
         "placeholders": {
             "name": {
@@ -324,7 +380,7 @@
         }
     },
     "youMarkedAsNotVerifiedOtherDevice": {
-        "message": "Vi markis, el alia aparato, vian sekurigan numeron kun $name$ kiel nekonfirmita.",
+        "message": "Vi markis, el alia aparato, vian sekurigan numeron kun $name$ kiel nekonfirmitan.",
         "description": "Shown in the conversation history when we discover that the user marked a contact as not verified on another device.",
         "placeholders": {
             "name": {
@@ -337,50 +393,34 @@
         "message": "Viaj sekurigaj numeroj kun tiuj grupanoj ŝanĝigis de post via lasta kontrolo. Alklaku grupanon por vidi la novan sekurigan numeron kun li aŭ ŝi.",
         "description": "When there are multiple previously-verified group members with safety number changes, a banner will be shown. The list of contacts with safety number changes is shown, and this text introduces that list."
     },
-    "changedSinceVerifiedMultiple": {
-        "message": "Viaj sekurigaj numeroj kun pluraj grupanoj ŝanĝiĝis de post via lasta kontrolo. Tio povas aŭ signifi, ke iu provas interkapti viajn komunikojn, aŭ ke ili simple reinstalis Signal-on.",
-        "description": "Shown on confirmation dialog when user attempts to send a message"
-    },
-    "changedSinceVerified": {
-        "message": "La sekuriga numero de $name$ ŝanĝiĝis post kiam vi laste kontrolis ĝin. Tio eble signifas, ke oni klopodas forkapti viajn komunikaĵojn, aŭ ke $name$ nur denove instalis Signal-on.",
-        "description": "Shown on confirmation dialog when user attempts to send a message",
-        "placeholders": {
-            "name": {
-                "content": "$1",
-                "example": "Bob"
-            }
-        }
-    },
     "changedRightAfterVerify": {
-        "message": "La sekuriga numero, kiun vi kontrolas, ŝanĝiĝis. Bv. kontroli vian sekurigan numeron kun $name$. Atentu, ke tiu ŝanĝo eble signifas, ke iu klopodas forkapti viajn komunikojn, aŭ ke $name$ simple re-instalis Signal-on.",
+        "message": "La sekuriga numero, kiun vi kontrolas, ŝanĝiĝis. Bv. kontroli vian sekurigan numeron kun $name1$. Atentu, ke tiu ŝanĝo eble signifas, ke iu klopodas forkapti viajn komunikojn, aŭ ke $name2$ simple re-instalis Signal-on.",
         "description": "Shown on the safety number screen when the user has selected to verify/unverify a contact's safety number, and we immediately discover a safety number change",
         "placeholders": {
-            "name": {
+            "name1": {
                 "content": "$1",
+                "example": "Bob"
+            },
+            "name2": {
+                "content": "$2",
                 "example": "Bob"
             }
         }
     },
-    "changedRecentlyMultiple": {
-        "message": "Viaj sekurigaj numeroj kun pluraj grupanoj ŝanĝiĝis antaŭnelonge. Tio povas aŭ signifi, ke iu provas interkapti viajn komunikojn, aŭ ke ili simple reinstalis Signal-on.",
+    "changedVerificationWarning": {
+        "message": "La jenaj homoj eble restarigis aŭ ŝanĝis iliajn aparatojn. Kontrolu vian sekurigan numeron kun ili por certigi vian privatecon.",
         "description": "Shown on confirmation dialog when user attempts to send a message"
     },
-    "changedRecently": {
-        "message": "Via sekuriga numero kun $name$ ŝanĝiĝis. Tio povas aŭ signifi, ke iu provas interkapti viajn komunikojn, aŭ ke $name$ simple reinstalis Signal-on.",
-        "description": "Shown on confirmation dialog when user attempts to send a message",
-        "placeholders": {
-            "name": {
-                "content": "$1",
-                "example": "Bob"
-            }
-        }
-    },
     "identityKeyErrorOnSend": {
-        "message": "Via sekuriga numero kun $name$ ŝanĝiĝis. Tio povas aŭ signifi, ke iu provas interkapti viajn komunikojn, aŭ ke $name$ simple reinstalis Signal-on. Vi certe volos kontroli la sekurigan numeron kun tiu ĉi kontakto.",
+        "message": "Via sekuriga numero kun $name1$ ŝanĝiĝis. Tio povas aŭ signifi, ke iu provas interkapti viajn komunikojn, aŭ ke $name2$ simple reinstalis Signal-on. Vi certe volos kontroli la sekurigan numeron kun tiu ĉi kontakto.",
         "description": "Shown when user clicks on a failed recipient in the message detail view after an identity key change",
         "placeholders": {
-            "name": {
+            "name1": {
                 "content": "$1",
+                "example": "Bob"
+            },
+            "name2": {
+                "content": "$2",
                 "example": "Bob"
             }
         }
@@ -389,9 +429,17 @@
         "message": "Tamen sendi",
         "description": "Used on a warning dialog to make it clear that it might be risky to send the message."
     },
+    "callAnyway": {
+        "message": "Tamen alvoki",
+        "description": "Used on a warning dialog to make it clear that it might be risky to call the conversation."
+    },
+    "continueCall": {
+        "message": "Daŭrigi la alvokon",
+        "description": "Used on a warning dialog to make it clear that it might be risky to continue the group call."
+    },
     "noLongerVerified": {
         "message": "Via sekuriga numero kun $name$ ŝanĝiĝis kaj ne plu estas konfirmita. Alklaku por montri ĝin.",
-        "description": "Shown in converation banner when user's safety number has changed, but they were previously verified.",
+        "description": "Shown in conversation banner when user's safety number has changed, but they were previously verified.",
         "placeholders": {
             "name": {
                 "content": "$1",
@@ -411,6 +459,18 @@
         "message": "Eraro dum la alŝuto! Bv. konsideri mane aldoni la protokolo, al problemo, kiun vi raportas.",
         "description": ""
     },
+    "debugLogCopy": {
+        "message": "Kopii",
+        "description": "Shown as the text for the copy button on the debug log screen"
+    },
+    "debugLogCopyAlt": {
+        "message": "Kopii la ligilon tondujen",
+        "description": "Shown as the alt text for the copy button on the debug log screen"
+    },
+    "debugLogLinkCopied": {
+        "message": "Ligilo kopiita en la tondujo",
+        "description": "Shown in a toast to let the user know that the link to the debug log has been copied to their clipboard"
+    },
     "reportIssue": {
         "message": "Raporti problemon",
         "description": "Link to open the issue tracker"
@@ -428,11 +488,11 @@
         "description": "Label for a button to accept a new safety number"
     },
     "verify": {
-        "message": "Marki konfirmita",
+        "message": "Marki kiel konfirmitan",
         "description": ""
     },
     "unverify": {
-        "message": "Marki nekonfirmita",
+        "message": "Marki kiel nekonfirmitan",
         "description": ""
     },
     "isVerified": {
@@ -478,6 +538,10 @@
     "mediaEmptyState": {
         "message": "Vi havas neniun aŭdvidaĵon en tiu interparolo",
         "description": "Message shown to user in the media gallery when there are no messages with media attachments (images or video)"
+    },
+    "allMedia": {
+        "message": "Ĉiuj aŭvidaĵoj",
+        "description": "Header for the media gallery"
     },
     "documents": {
         "message": "Dokumentoj",
@@ -561,7 +625,7 @@
         "message": "Kiam oni enmetas nebildan kunsendaĵon, limo estas po unu kunsendaĵo mesaĝe.",
         "description": "An error popup when the user has attempted to add an attachment"
     },
-    "cannotMixImageAdnNonImageAttachments": {
+    "cannotMixImageAndNonImageAttachments": {
         "message": "Vi ne povas kunmeti nebildajn kaj bildajn kunsendaĵojn en unu mesaĝo.",
         "description": "An error popup when the user has attempted to add an attachment"
     },
@@ -613,6 +677,10 @@
         "message": "Montri la fulmklavojn",
         "description": "Item under the help menu, pops up a screen showing the application's keyboard shortcuts"
     },
+    "contactUs": {
+        "message": "Kontaktu nin",
+        "description": "Item under the help menu, takes you to the contact us support page"
+    },
     "goToReleaseNotes": {
         "message": "Iri al eldonaj notoj",
         "description": "Item under the help menu, takes you to GitHub page for release notes"
@@ -625,9 +693,9 @@
         "message": "Iri al helppaĝo",
         "description": "Item under the Help menu, takes you to the support page"
     },
-    "menuReportIssue": {
-        "message": "Raporti problemon",
-        "description": "Item under the Help menu, takes you to GitHub new issue form (title case)"
+    "joinTheBeta": {
+        "message": "Ekhavi la beta-version",
+        "description": "Item under the Help menu, takes you to an article describing how to install the beta release of Signal Desktop"
     },
     "signalDesktopPreferences": {
         "message": "Agordoj de Signal Desktop",
@@ -640,6 +708,10 @@
     "aboutSignalDesktop": {
         "message": "Pri Signal Desktop",
         "description": "Item under the Help menu, which opens a small about window"
+    },
+    "screenShareWindow": {
+        "message": "Sharing screen",
+        "description": "Title for screen sharing window"
     },
     "speech": {
         "message": "Parolo",
@@ -665,6 +737,10 @@
         "message": "Serĉi",
         "description": "Placeholder text in the search input"
     },
+    "clearSearch": {
+        "message": "Forviŝi serĉon",
+        "description": "Aria label for clear search button"
+    },
     "searchIn": {
         "message": "Serĉi en $conversationName$",
         "description": "Shown in the search box before text is entered when searching in a specific conversation",
@@ -685,11 +761,19 @@
             }
         }
     },
+    "noSearchResults--sms-only": {
+        "message": "SMS/MMS contacts are not available on Desktop.",
+        "description": "Shown in the search left pane when no results were found and primary device has SMS/MMS handling enabled"
+    },
     "noSearchResultsInConversation": {
         "message": "Neniu rezulto pri „$searchTerm$“ en $conversationName$",
         "description": "Shown in the search left pane when no results were found",
         "placeholders": {
             "searchTerm": {
+                "content": "$1",
+                "example": "dog"
+            },
+            "conversationName": {
                 "content": "$2",
                 "example": "Friends"
             }
@@ -701,6 +785,10 @@
     },
     "contactsHeader": {
         "message": "Kontaktaro",
+        "description": "Shown to separate the types of search results"
+    },
+    "groupsHeader": {
+        "message": "Grupoj",
         "description": "Shown to separate the types of search results"
     },
     "messagesHeader": {
@@ -717,7 +805,11 @@
     },
     "typingAlt": {
         "message": "Tajp-indikiloj por tiu interparolo",
-        "description": "Used as the 'title' attibute for the typing animation"
+        "description": "Used as the 'title' attribute for the typing animation"
+    },
+    "contactInAddressBook": {
+        "message": "Tiu persono estas en viaj kontaktoj.",
+        "description": "Description of icon denoting that contact is from your address book"
     },
     "contactAvatarAlt": {
         "message": "Avataro el kontakto $name$",
@@ -831,11 +923,19 @@
     },
     "audioPermissionNeeded": {
         "message": "Por sendi aŭdajn mesaĝojn, donu al Signal Desktop permeson uzi vian mikrofonon.",
-        "description": "Shown if the user attempts to send an audio message without audio permssions turned on"
+        "description": "Shown if the user attempts to send an audio message without audio permissions turned on"
+    },
+    "audioCallingPermissionNeeded": {
+        "message": "Por alvoki, donu al Signal Desktop permeson uzi vian mikrofonon.",
+        "description": "Shown if the user attempts access the microphone for calling without audio permissions turned on"
+    },
+    "videoCallingPermissionNeeded": {
+        "message": "Por vid-alvoki, donu al Signal Desktop permeson uzi vian fotilon.",
+        "description": "Shown if the user attempts access the camera for video calling without video permissions turned on"
     },
     "allowAccess": {
         "message": "Permesi",
-        "description": "Button shown in popup asking to enable microphon/video permissions to send audio messages"
+        "description": "Button shown in popup asking to enable microphone/video permissions to send audio messages"
     },
     "showSettings": {
         "message": "Montri agordojn",
@@ -909,9 +1009,25 @@
         "message": "Forigi",
         "description": ""
     },
-    "deleteWarning": {
-        "message": "Ĉu vi pricertas? Per alklako de „Forigi“, tiu mesaĝo porĉiame foriĝos nur de ĉi tiu aparato.",
+    "accept": {
+        "message": "Akcepti",
         "description": ""
+    },
+    "on": {
+        "message": "Ŝaltita",
+        "description": "Label for when something is turned on"
+    },
+    "off": {
+        "message": "Malŝaltita",
+        "description": "Label for when something is turned off"
+    },
+    "deleteWarning": {
+        "message": "Tiu mesaĝo estos forigita de tiu aparato.",
+        "description": "Text shown in the confirmation dialog for deleting a message locally"
+    },
+    "deleteForEveryoneWarning": {
+        "message": "Tiu ĉi mesaĝo estos porĉiame forviŝita por ĉiuj en la interparolo, se ili uzas freŝdatan version de Signal. Ili vidos, ke vi forviŝis mesaĝon.",
+        "description": "Text shown in the confirmation dialog for deleting a message for everyone"
     },
     "deleteThisMessage": {
         "message": "Forigi tiun ĉi mesaĝon",
@@ -957,8 +1073,8 @@
         "message": "Montri sekurigan numeron",
         "description": ""
     },
-    "viewAllMedia": {
-        "message": "Montru ĉiujn aŭdvidaĵojn",
+    "viewRecentMedia": {
+        "message": "Vidu lastajn aŭdvidaĵojn",
         "description": "This is a menu item for viewing all media (images + video) in a conversation, using the imperative case, as in a command."
     },
     "verifyHelp": {
@@ -975,20 +1091,36 @@
         "message": "Vi ankoraŭ ne interŝanĝis mesaĝojn kun tiu ĉi kontakto. La sekuriga numero nur disponeblos post la unua mesaĝo.",
         "description": ""
     },
+    "back": {
+        "message": "Reen",
+        "description": "Generic label for back"
+    },
+    "goBack": {
+        "message": "Reen",
+        "description": "Label for back button in a conversation"
+    },
     "moreInfo": {
-        "message": "Pli da informoj…",
+        "message": "Pli da informoj",
         "description": "Shown on the drop-down menu for an individual message, takes you to message detail screen"
     },
     "retrySend": {
         "message": "Klopodi resendi",
-        "description": "Shown on the drop-down menu for an indinvidaul message, but only if it is an outgoing message that failed to send"
+        "description": "Shown on the drop-down menu for an individual message, but only if it is an outgoing message that failed to send"
+    },
+    "forwardMessage": {
+        "message": "Plusendi mesaĝon",
+        "description": "Shown on the drop-down menu for an individual message, forwards a message"
     },
     "deleteMessage": {
-        "message": "Forigi mesaĝon",
+        "message": "Forviŝi mesaĝon por mi",
         "description": "Shown on the drop-down menu for an individual message, deletes single message"
     },
+    "deleteMessageForEveryone": {
+        "message": "Forviŝi mesaĝon por ĉiuj",
+        "description": "Shown on the drop-down menu for an individual message, deletes single message for everyone"
+    },
     "deleteMessages": {
-        "message": "Forigi mesaĝojn",
+        "message": "Forigi",
         "description": "Menu item for deleting messages, title case."
     },
     "deleteConversationConfirmation": {
@@ -998,6 +1130,54 @@
     "sessionEnded": {
         "message": "Sekura seanco restariĝis",
         "description": "This is a past tense, informational message. In other words, your secure session has been reset."
+    },
+    "ChatRefresh--notification": {
+        "message": "Interparola seanco aktualigita",
+        "description": "Shown in timeline when a error happened, and the session was automatically reset."
+    },
+    "ChatRefresh--learnMore": {
+        "message": "Scii pli",
+        "description": "Shown in timeline when session is automatically reset, to provide access to a popup info dialog"
+    },
+    "ChatRefresh--summary": {
+        "message": "Signal uzas tutvojan ĉifradon kaj ĝi eble bezonas kelkfoje aktualigi vian interparolan seancon. Tio ne koncernas la sekurecon de viaj interparoloj, sed eble mesaĝo ne atingis vin el tiu ĉi kontakto: vi povas peti al li aŭ ŝi resendi ĝin.",
+        "description": "Shown on explainer dialog available from chat session refreshed timeline events"
+    },
+    "ChatRefresh--contactSupport": {
+        "message": "Kontakti subtenon",
+        "description": "Shown on explainer dialog available from chat session refreshed timeline events"
+    },
+    "DeliveryIssue--preview": {
+        "message": "Delivery issue",
+        "description": "Shown in left pane preview when message delivery issue happens"
+    },
+    "DeliveryIssue--notification": {
+        "message": "A message from $sender$ couldn’t be delivered",
+        "description": "Shown in timeline when message delivery issue happens",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "DeliveryIssue--learnMore": {
+        "message": "Scii pli",
+        "description": "Shown in timeline when message delivery issue happens, to provide access to a popup info dialog"
+    },
+    "DeliveryIssue--title": {
+        "message": "Delivery Issue",
+        "description": "Shown on explainer dialog available from delivery issue timeline events"
+    },
+    "DeliveryIssue--summary": {
+        "message": "A message, sticker, reaction, read receipt or media couldn’t be delivered to you from $sender$. They may have tried sending it to you directly, or in a group.",
+        "description": "Shown on explainer dialog available from delivery issue timeline events",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
     },
     "quoteThumbnailAlt": {
         "message": "Bildominiaturo el citita mesaĝo",
@@ -1021,11 +1201,11 @@
     },
     "addACaption": {
         "message": "Aldoni priskribon...",
-        "description": ""
+        "description": "Used as the placeholder text in the caption editor text field"
     },
     "save": {
         "message": "Konservi",
-        "description": ""
+        "description": "Used as a 'commit changes' button in the Caption Editor for outgoing image attachments"
     },
     "fileIconAlt": {
         "message": "Dosierpiktogramo",
@@ -1041,7 +1221,7 @@
     },
     "linkYourPhone": {
         "message": "Ligi vian poŝtelefonon al Signal Desktop",
-        "description": "Shown on the front page when the application first starst, above the QR code"
+        "description": "Shown on the front page when the application first starts, above the QR code"
     },
     "signalSettings": {
         "message": "Agordoj de Signal",
@@ -1083,20 +1263,282 @@
         "message": "Bedaŭrinde, vi havas tro da ligitaj aparatoj. Provu malligi kelkajn.",
         "description": ""
     },
-    "settings": {
-        "message": "Agordoj",
-        "description": "Menu item and header for global settings"
+    "installTooOld": {
+        "message": "Ĝisdatigi Signal-on ĉi-aparate por ligi vian telefonon",
+        "description": ""
+    },
+    "installErrorHeader": {
+        "message": "Ho ve! Okazis eraro!",
+        "description": ""
+    },
+    "installTryAgain": {
+        "message": "Provi denove",
+        "description": ""
     },
     "theme": {
         "message": "Etoso",
         "description": "Header for theme settings"
+    },
+    "calling": {
+        "message": "Alvoko",
+        "description": "Header for calling options on the settings screen"
+    },
+    "calling__start": {
+        "message": "Ekalvoki",
+        "description": "Button label in the call lobby for starting a call"
+    },
+    "calling__join": {
+        "message": "Eniri la alvokon",
+        "description": "Button label in the call lobby for joining a call"
+    },
+    "calling__return": {
+        "message": "Reiri al la alvoko",
+        "description": "Button label in the call lobby for returning to a call"
+    },
+    "calling__call-is-full": {
+        "message": "La alvoko plenas",
+        "description": "Button label in the call lobby when you can't join because the call is full"
+    },
+    "calling__button--video-disabled": {
+        "message": "Fotilo malŝaltita",
+        "description": "Button tooltip label when the camera is disabled"
+    },
+    "calling__button--video-off": {
+        "message": "Malaktivigi la fotilon",
+        "description": "Button tooltip label for turning off the camera"
+    },
+    "calling__button--video-on": {
+        "message": "Aktivigi la fotilon",
+        "description": "Button tooltip label for turning on the camera"
+    },
+    "calling__button--audio-disabled": {
+        "message": "Mikrofono malŝaltita",
+        "description": "Button tooltip label when the microphone is disabled"
+    },
+    "calling__button--audio-off": {
+        "message": "Silentigi la mikrofonon",
+        "description": "Button tooltip label for turning off the microphone"
+    },
+    "calling__button--audio-on": {
+        "message": "Malsilentigi la mikrofonon",
+        "description": "Button tooltip label for turning on the microphone"
+    },
+    "calling__button--presenting-disabled": {
+        "message": "Presenting disabled",
+        "description": "Button tooltip label for when screen sharing is disabled"
+    },
+    "calling__button--presenting-on": {
+        "message": "Start presenting",
+        "description": "Button tooltip label for starting to share screen"
+    },
+    "calling__button--presenting-off": {
+        "message": "Stop presenting",
+        "description": "Button tooltip label for stopping screen sharing"
+    },
+    "calling__your-video-is-off": {
+        "message": "Via fotilo estas malŝaltita",
+        "description": "Label in the calling lobby indicating that your camera is off"
+    },
+    "calling__lobby-summary--zero": {
+        "message": "Neniu alia ĉeestas",
+        "description": "Shown in the calling lobby to describe who is in the call"
+    },
+    "calling__lobby-summary--single": {
+        "message": "$first$ estas en tiu alvoko",
+        "description": "Shown in the calling lobby to describe who is in the call",
+        "placeholders": {
+            "first": {
+                "content": "$1",
+                "example": "Sam"
+            }
+        }
+    },
+    "calling__lobby-summary--self": {
+        "message": "Unu el viaj aliaj aparatoj estas en tiu alvoko",
+        "description": "Shown in the calling lobby to describe when it is just you"
+    },
+    "calling__lobby-summary--double": {
+        "message": "$first$ kaj $second$ estas en tiu alvoko",
+        "description": "Shown in the calling lobby to describe who is in the call",
+        "placeholders": {
+            "first": {
+                "content": "$1",
+                "example": "Sam"
+            },
+            "second": {
+                "content": "$2",
+                "example": "Cayce"
+            }
+        }
+    },
+    "calling__lobby-summary--triple": {
+        "message": "$first$, $second$ kaj $third$ estas en tiu alvoko",
+        "description": "Shown in the calling lobby to describe who is in the call",
+        "placeholders": {
+            "first": {
+                "content": "$1",
+                "example": "Sam"
+            },
+            "second": {
+                "content": "$2",
+                "example": "Cayce"
+            },
+            "third": {
+                "content": "$3",
+                "example": "April"
+            }
+        }
+    },
+    "calling__lobby-summary--many": {
+        "message": "$first$, $second$ kaj $others$ aliaj estas en tiu alvoko",
+        "description": "Shown in the calling lobby to describe who is in the call",
+        "placeholders": {
+            "first": {
+                "content": "$1",
+                "example": "Sam"
+            },
+            "second": {
+                "content": "$2",
+                "example": "Cayce"
+            },
+            "others": {
+                "content": "$3",
+                "example": "5"
+            }
+        }
+    },
+    "calling__in-this-call--zero": {
+        "message": "Neniu alia ĉeestas",
+        "description": "Shown in the participants list to describe how many people are in the call"
+    },
+    "calling__in-this-call--one": {
+        "message": "En tiu ĉi alvoko ⋅ 1 homo",
+        "description": "Shown in the participants list to describe how many people are in the call"
+    },
+    "calling__in-this-call--many": {
+        "message": "En tiu ĉi alvoko ⋅ $people$ homoj",
+        "description": "Shown in the participants list to describe how many people are in the call",
+        "placeholders": {
+            "people": {
+                "content": "$1",
+                "example": "15"
+            }
+        }
+    },
+    "calling__you-have-blocked": {
+        "message": "Vi blokis „$name$“",
+        "description": "when you block someone and cannot view their video",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Henry Richard"
+            }
+        }
+    },
+    "calling__block-info": {
+        "message": "Vi ne ricevos ilian sonon aŭ videon, kaj ili ne ricevos viajn.",
+        "description": "Shown in the modal dialog to describe how blocking works in a gorup call"
+    },
+    "calling__overflow__scroll-up": {
+        "message": "Rulumi supren",
+        "description": "Label for the \"scroll up\" button in a call's overflow area"
+    },
+    "calling__overflow__scroll-down": {
+        "message": "Rulumi malsupren",
+        "description": "Label for the \"scroll down\" button in a call's overflow area"
+    },
+    "calling__presenting--notification-title": {
+        "message": "You're presenting to everyone.",
+        "description": "Title for the share screen notification"
+    },
+    "calling__presenting--notification-body": {
+        "message": "Click here to return to the call when you're ready to stop presenting.",
+        "description": "Body text for the share screen notification"
+    },
+    "calling__presenting--info": {
+        "message": "Signal is sharing $window$.",
+        "description": "Text that appears in the screen sharing controller to inform person that they are presenting",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Application"
+            }
+        }
+    },
+    "calling__presenting--stop": {
+        "message": "Stop sharing",
+        "description": "Button for stopping screen sharing"
+    },
+    "calling__presenting--you-stopped": {
+        "message": "You stopped presenting",
+        "description": "Toast that appears when someone stops presenting"
+    },
+    "calling__presenting--person-ongoing": {
+        "message": "$name$ is presenting",
+        "description": "Title of call when someone is presenting",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Maddie"
+            }
+        }
+    },
+    "calling__presenting--person-stopped": {
+        "message": "$name$ stopped presenting",
+        "description": "Toast that appears when someone stops presenting",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Maddie"
+            }
+        }
+    },
+    "calling__presenting--permission-title": {
+        "message": "Permission needed",
+        "description": "Shown as the title for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--macos-permission-description": {
+        "message": "Signal needs permission to access your computer's screen recording.",
+        "description": "Shown as the description for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--permission-instruction-step1": {
+        "message": "Go to System Preferences.",
+        "description": "Shown as the description for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--permission-instruction-step2": {
+        "message": "Click on the lock icon on the bottom left and enter your computer’s password.",
+        "description": "Shown as the description for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--permission-instruction-step3": {
+        "message": "On the right, check the box next to Signal. If you don’t see Signal in the list, click the + to add it.",
+        "description": "Shown as the description for the modal that requests screen recording permissions"
+    },
+    "calling__presenting--permission-open": {
+        "message": "Open System Preferences",
+        "description": "The button that opens your system preferences for the needs screen record permissions modal"
+    },
+    "calling__presenting--permission-cancel": {
+        "message": "Ignori",
+        "description": "The cancel button for the needs screen record permissions modal"
+    },
+    "alwaysRelayCallsDescription": {
+        "message": "Ĉiam trapasigi la alvokojn per Signal-servilo",
+        "description": "Description of the always relay calls setting"
+    },
+    "alwaysRelayCallsDetail": {
+        "message": "Trapasigi ĉiujn alvokojn tra la Signal-servilo por eviti sciigi vian IP-adreson al via kontakto. Tio malaltigos la alvokan kvaliton.",
+        "description": "Details describing the always relay calls setting"
     },
     "permissions": {
         "message": "Permesoj",
         "description": "Header for permissions section of settings"
     },
     "mediaPermissionsDescription": {
-        "message": "Permesi aliron al la fotilo kaj la mikrofono",
+        "message": "Permesi aliron al la mikrofono",
+        "description": "Description of the media permission description"
+    },
+    "mediaCameraPermissionsDescription": {
+        "message": "Permesi aliron al la fotilo",
         "description": "Description of the media permission description"
     },
     "general": {
@@ -1104,8 +1546,8 @@
         "description": "Header for general options on the settings screen"
     },
     "spellCheckDescription": {
-        "message": "Ŝalti literumilon de teksto entajpita en mesaĝa verkejo",
-        "description": "Description of the media permission description"
+        "message": "Enable spell check",
+        "description": "Description of the spell check setting"
     },
     "spellCheckWillBeEnabled": {
         "message": "La literumado ebliĝos, kiam Signal restartos.",
@@ -1114,6 +1556,10 @@
     "spellCheckWillBeDisabled": {
         "message": "La literumado malebliĝos, kiam Signal restartos.",
         "description": "Shown when the user disables spellcheck to indicate that they must restart Signal."
+    },
+    "autoLaunchDescription": {
+        "message": "Open at computer login",
+        "description": "Description for the automatic launch setting"
     },
     "clearDataHeader": {
         "message": "Forviŝi datumojn",
@@ -1143,6 +1589,14 @@
         "message": "Malkonektado kaj forigado de ĉiuj datumoj",
         "description": "Message shown to user when app is disconnected and data deleted"
     },
+    "deleteOldIndexedDBData": {
+        "message": "Vi havas malaktualajn datumojn el antaŭa instalaĵo de Signal Desktop. Se vi elektas plui, ili forviŝiĝos, kaj vi komenciĝos de nulo.",
+        "description": "Shown if user last ran Signal Desktop before October 2018"
+    },
+    "deleteOldData": {
+        "message": "Forigi antaŭajn datumojn",
+        "description": "Button to make the delete happen"
+    },
     "notifications": {
         "message": "Sciigojn",
         "description": "Header for notification settings"
@@ -1156,53 +1610,37 @@
         "description": "Label for disabling notifications"
     },
     "nameAndMessage": {
-        "message": "Ambaŭ sendanto-nomon kaj mesaĝon",
+        "message": "Nomon, enhavon kaj agoj",
         "description": "Label for setting notifications to display name and message text"
     },
     "noNameOrMessage": {
-        "message": "Nek nomon nek mesaĝon",
+        "message": "Neniun nomon aŭ enhavon",
         "description": "Label for setting notifications to display no name and no message text"
     },
     "nameOnly": {
-        "message": "Nur la sendanto-nomon",
+        "message": "Nur nomon",
         "description": "Label for setting notifications to display sender name only"
     },
     "newMessage": {
         "message": "Novan mesaĝon",
         "description": "Displayed in notifications for only 1 message"
     },
-    "newMessages": {
-        "message": "Novajn mesaĝojn",
-        "description": "Displayed in notifications for multiple messages"
-    },
-    "notificationMostRecentFrom": {
-        "message": "Lasta de:",
-        "description": "Displayed in notifications when setting is 'name only' and more than one message is waiting"
-    },
-    "notificationFrom": {
-        "message": "De:",
-        "description": "Displayed in notifications when setting is 'name only' and one message is waiting"
-    },
-    "notificationMostRecent": {
-        "message": "Lasta:",
-        "description": "Displayed in notifications when setting is 'name and message' and more than one message is waiting"
-    },
-    "notificationReaction": {
-        "message": "$sender$ reagis per  $emoji$ al via mesaĝo",
-        "description": "",
+    "notificationSenderInGroup": {
+        "message": "$sender$ en $group$",
+        "description": "Displayed in notifications for messages in a group",
         "placeholders": {
             "sender": {
                 "content": "$1",
                 "example": "John"
             },
-            "emoji": {
-                "content": "$2",
-                "example": "👍"
+            "group": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
             }
         }
     },
-    "notificationReactionMostRecent": {
-        "message": "Plej lasta:  $sender$ reagis per  $emoji$ al via mesaĝo",
+    "notificationReaction": {
+        "message": "$sender$ reagis per  $emoji$ al via mesaĝo",
         "description": "",
         "placeholders": {
             "sender": {
@@ -1233,27 +1671,17 @@
             }
         }
     },
-    "notificationReactionMessageMostRecent": {
-        "message": "Plej lasta:  $sender$ reagis per  $emoji$ al:  $message$",
-        "description": "",
-        "placeholders": {
-            "sender": {
-                "content": "$1",
-                "example": "John"
-            },
-            "emoji": {
-                "content": "$2",
-                "example": "👍"
-            },
-            "message": {
-                "content": "$3",
-                "example": "Sounds good."
-            }
-        }
-    },
     "sendFailed": {
         "message": "Sendo malsukcesis",
         "description": "Shown on outgoing message if it fails to send"
+    },
+    "sendPaused": {
+        "message": "Send paused",
+        "description": "Shown on outgoing message if it cannot be sent immediately"
+    },
+    "partiallySent": {
+        "message": "Nekomplete sendita; alklaku por detaloj",
+        "description": "Shown on outgoing message if it is partially sent"
     },
     "showMore": {
         "message": "Detaloj",
@@ -1360,7 +1788,7 @@
         "description": "Brief message shown when trying to message a blocked group"
     },
     "youChangedTheTimer": {
-        "message": "Vi agordis la malaperon de la memviŝontaj mesaĝoj al $time$",
+        "message": "Vi agordis la malaperon de la memviŝontaj mesaĝoj al $time$.",
         "description": "Message displayed when you change the message expiration timer in a conversation.",
         "placeholders": {
             "time": {
@@ -1370,7 +1798,7 @@
         }
     },
     "timerSetOnSync": {
-        "message": "Ĝisdatiĝis la malapero de la memviŝontaj mesaĝoj al $time$",
+        "message": "Ĝisdatiĝis la malapero de la memviŝontaj mesaĝoj al $time$.",
         "description": "Message displayed when timer is set on initial link of desktop device.",
         "placeholders": {
             "time": {
@@ -1379,8 +1807,18 @@
             }
         }
     },
+    "timerSetByMember": {
+        "message": "Ano agordis la malaperon de la memviŝontaj mesaĝoj al $time$.",
+        "description": "Message displayed when timer is by an unknown group member.",
+        "placeholders": {
+            "time": {
+                "content": "$1",
+                "example": "10m"
+            }
+        }
+    },
     "theyChangedTheTimer": {
-        "message": "$name$ agordis la malaperon de la memviŝontaj mesaĝoj al $time$",
+        "message": "$name$ agordis la malaperon de la memviŝontaj mesaĝoj al $time$.",
         "description": "Message displayed when someone else changes the message expiration timer in a conversation.",
         "placeholders": {
             "name": {
@@ -1393,112 +1831,24 @@
             }
         }
     },
-    "timerOption_0_seconds": {
+    "disappearingMessages__off": {
         "message": "malŝaltita",
         "description": "Label for option to turn off message expiration in the timer menu"
     },
-    "timerOption_5_seconds": {
-        "message": "5 sekundojn",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_10_seconds": {
-        "message": "10 sekundojn",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_30_seconds": {
-        "message": "30 sekundojn",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_1_minute": {
-        "message": "1 minuton",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_5_minutes": {
-        "message": "5 minutojn",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_30_minutes": {
-        "message": "30 minutojn",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_1_hour": {
-        "message": "1 horon",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_6_hours": {
-        "message": "6 horojn",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_12_hours": {
-        "message": "12 horojn",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_1_day": {
-        "message": "1 tagon",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
-    "timerOption_1_week": {
-        "message": "1 semajnon",
-        "description": "Label for a selectable option in the message expiration timer menu"
-    },
     "disappearingMessages": {
         "message": "Memviŝontaj mesaĝoj",
-        "description": "Conversation menu option to enable disappearing messages"
-    },
-    "timerOption_0_seconds_abbreviated": {
-        "message": "malŝaltita",
-        "description": "Short format indicating current timer setting in the conversation list snippet"
-    },
-    "timerOption_5_seconds_abbreviated": {
-        "message": "5s",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_10_seconds_abbreviated": {
-        "message": "10s",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_30_seconds_abbreviated": {
-        "message": "30s",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_1_minute_abbreviated": {
-        "message": "1m",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_5_minutes_abbreviated": {
-        "message": "5m",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_30_minutes_abbreviated": {
-        "message": "30m",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_1_hour_abbreviated": {
-        "message": "1h",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_6_hours_abbreviated": {
-        "message": "6h",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_12_hours_abbreviated": {
-        "message": "12h",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_1_day_abbreviated": {
-        "message": "1t",
-        "description": "Very short format indicating current timer setting in the conversation header"
-    },
-    "timerOption_1_week_abbreviated": {
-        "message": "1sem",
-        "description": "Very short format indicating current timer setting in the conversation header"
+        "description": "Conversation menu option to enable disappearing messages. Title of the settings section for Disappearing Messages"
     },
     "disappearingMessagesDisabled": {
         "message": "Memviŝontaj mesaĝoj malŝaltitaj",
         "description": "Displayed in the left pane when the timer is turned off"
     },
+    "disappearingMessagesDisabledByMember": {
+        "message": "Ano malŝaltis memviŝontajn mesaĝojn.",
+        "description": "Displayed in the left pane when the timer is turned off"
+    },
     "disabledDisappearingMessages": {
-        "message": "$name$ malŝaltis memviŝontajn mesaĝojn",
+        "message": "$name$ malŝaltis memviŝontajn mesaĝojn.",
         "description": "Displayed in the conversation list when the timer is turned off",
         "placeholders": {
             "name": {
@@ -1508,7 +1858,7 @@
         }
     },
     "youDisabledDisappearingMessages": {
-        "message": "Vi malŝaltis memviŝontajn mesaĝojn",
+        "message": "Vi malŝaltis memviŝontajn mesaĝojn.",
         "description": "Displayed in the conversation list when the timer is turned off"
     },
     "timerSetTo": {
@@ -1525,9 +1875,57 @@
         "message": "Ludi sonan sciigon",
         "description": "Description for audio notification setting"
     },
+    "callRingtoneNotificationDescription": {
+        "message": "Ludi alvoko-sonojn",
+        "description": "Description for call ringtone notification setting"
+    },
+    "callSystemNotificationDescription": {
+        "message": "Montri sciigoj pri alvokoj",
+        "description": "Description for call notification setting"
+    },
+    "incomingCallNotificationDescription": {
+        "message": "Ebligi envenajn alvokojn",
+        "description": "Description for incoming calls setting"
+    },
+    "contactChangedProfileName": {
+        "message": "$sender$ ŝanĝis sian profilnomon de $oldProfile$ al $newProfile$.",
+        "description": "Description for incoming calls setting",
+        "placeholders": {
+            "sender": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "oldProfile": {
+                "content": "$2",
+                "example": ".x8Skillz8x."
+            },
+            "newProfile": {
+                "content": "$3",
+                "example": "Bob Smith"
+            }
+        }
+    },
+    "changedProfileName": {
+        "message": "$oldProfile$ ŝanĝis sian profilnomon al $newProfile$.",
+        "description": "Shown when a contact not in your address book changes their profile name",
+        "placeholders": {
+            "oldProfile": {
+                "content": "$2",
+                "example": ".x8Skillz8x."
+            },
+            "newProfile": {
+                "content": "$3",
+                "example": "Bob Smith"
+            }
+        }
+    },
     "safetyNumberChanged": {
         "message": "Sekuriga numero ŝanĝiĝis",
         "description": "A notification shown in the conversation when a contact reinstalls"
+    },
+    "safetyNumberChanges": {
+        "message": "Ŝanĝoj pri la sekuriga numero",
+        "description": "Title for safety number changed modal"
     },
     "safetyNumberChangedGroup": {
         "message": "Sekuriga numero kun $name$ ŝanĝiĝis",
@@ -1543,11 +1941,15 @@
         "message": "Kontroli sekurigan numeron",
         "description": "Label on button included with safety number change notification in the conversation"
     },
+    "cannotGenerateSafetyNumber": {
+        "message": "Tiu uzanto ne pavas esti kontrolita, ĝis vi ekinterparolas kun li aŭ ŝi.",
+        "description": "Shown on the safety number screen if you have never exchanged messages with that contact"
+    },
     "yourSafetyNumberWith": {
-        "message": "Via sekuriga numero kun $name$:",
+        "message": "Via sekuriga numero kun $name1$:",
         "description": "Heading for safety number view",
         "placeholders": {
-            "name": {
+            "name1": {
                 "content": "$1",
                 "example": "John"
             }
@@ -1569,6 +1971,14 @@
         "message": "Noto al mi mem",
         "description": "Name for the conversation with your own phone number"
     },
+    "noteToSelfHero": {
+        "message": "Vi povas aldoni notojn al vi mem en tiu interparolo. Se via konto estas ligita al aliaj aparatoj, novaj notoj sinkroniĝos.",
+        "description": "Description for the Note to Self conversation"
+    },
+    "notificationDrawAttention": {
+        "message": "Atentigi pri tiu fenestro, kiam sciigo okazas",
+        "description": "Label text for the setting that controls whether new notifications draw attention to the window"
+    },
     "hideMenuBar": {
         "message": "Kaŝi la menubreton",
         "description": "Label text for menu bar visibility setting"
@@ -1576,6 +1986,116 @@
     "startConversation": {
         "message": "Krei novan interparolon...",
         "description": "Label underneath number a user enters that is not an existing contact"
+    },
+    "newConversation": {
+        "message": "Nova interparolo",
+        "description": "Label for header when starting a new conversation"
+    },
+    "contactSearchPlaceholder": {
+        "message": "Serĉi per nomo aŭ telefonnumero",
+        "description": "Placeholder to use when searching for contacts in the composer"
+    },
+    "noContactsFound": {
+        "message": "Neniu kontakto trovita",
+        "description": "Label shown when there are no contacts to compose to"
+    },
+    "noConversationsFound": {
+        "message": "No conversations found",
+        "description": "Label shown when there are no conversations to compose to"
+    },
+    "chooseGroupMembers__title": {
+        "message": "Elekti grupanojn",
+        "description": "The title for the 'choose group members' left pane screen"
+    },
+    "chooseGroupMembers__back-button": {
+        "message": "Reen",
+        "description": "Used as alt-text of the back button on the 'choose group members' left pane screen"
+    },
+    "chooseGroupMembers__skip": {
+        "message": "Preterpasi",
+        "description": "The 'skip' button text in the 'choose group members' left pane screen"
+    },
+    "chooseGroupMembers__next": {
+        "message": "Sekva",
+        "description": "The 'next' button text in the 'choose group members' left pane screen"
+    },
+    "chooseGroupMembers__maximum-group-size__title": {
+        "message": "Maksimuma grupgrando atingita",
+        "description": "Shown in the alert when you add the maximum number of group members"
+    },
+    "chooseGroupMembers__maximum-group-size__body": {
+        "message": "Signal-grupoj povas maksimume enteni $max$  anojn.",
+        "description": "Shown in the alert when you add the maximum number of group members",
+        "placeholders": {
+            "max": {
+                "content": "$1",
+                "example": "1000"
+            }
+        }
+    },
+    "chooseGroupMembers__maximum-recommended-group-size__title": {
+        "message": "Konsilita limo de anoj atingita",
+        "description": "Shown in the alert when you add the maximum recommended number of group members"
+    },
+    "chooseGroupMembers__maximum-recommended-group-size__body": {
+        "message": "Signal-grupoj pli bone funkcias kun maksimume $max$ anoj. Aldono de pliaj anoj okazigos malfruon por sendi aŭ ricevi mesaĝojn.",
+        "description": "Shown in the alert when you add the maximum recommended number of group members",
+        "placeholders": {
+            "max": {
+                "content": "$1",
+                "example": "150"
+            }
+        }
+    },
+    "chooseGroupMembers__cant-add-member__title": {
+        "message": "Ano ne sukcese estis aldonita",
+        "description": "Shown in the alert when you try to add someone who can't be added to a group"
+    },
+    "chooseGroupMembers__cant-add-member__body": {
+        "message": "„$name$“ ne povas esti aldonita al la grupo, ĉar ŝi aŭ li uzas malnovan version de Signal. Vi povos aldoni ŝin aŭ lin, kiam ŝi aŭ li ĝisdatigos Signal-on.",
+        "description": "Shown in the alert when you try to add someone who can't be added to a group",
+        "placeholders": {
+            "max": {
+                "content": "$1",
+                "example": "Jane Doe"
+            }
+        }
+    },
+    "setGroupMetadata__title": {
+        "message": "Nomi tiun grupon",
+        "description": "The title for the 'set group metadata' left pane screen"
+    },
+    "setGroupMetadata__back-button": {
+        "message": "Reiri al elekto de anoj",
+        "description": "Used as alt-text of the back button on the 'set group metadata' left pane screen"
+    },
+    "setGroupMetadata__group-name-placeholder": {
+        "message": "Grupnomo (nepra)",
+        "description": "The placeholder for the group name placeholder"
+    },
+    "setGroupMetadata__group-description-placeholder": {
+        "message": "Description",
+        "description": "The placeholder for the group description"
+    },
+    "setGroupMetadata__create-group": {
+        "message": "Krei",
+        "description": "The 'create group' button text in the 'set group metadata' left pane screen"
+    },
+    "setGroupMetadata__members-header": {
+        "message": "Anoj",
+        "description": "The header for the members list in the 'set group metadata' left pane screen"
+    },
+    "setGroupMetadata__error-message": {
+        "message": "La grupo ne povis esti kreita. Kontrolu la retkonekton, kaj provu denove.",
+        "description": "Shown in the modal when we can't create a group"
+    },
+    "updateGroupAttributes__title": {
+        "message": "Modifi grupon",
+        "description": "Shown in the modal when we want to update a group"
+    },
+    "updateGroupAttributes__error-message": {
+        "message": "La grupo ne povis esti ĝisdatigita. Kontrolu la retkonekton, kaj provu denove.",
+        "description": "Shown in the modal when we can't update a group"
     },
     "notSupportedSMS": {
         "message": "SMS- kaj MMS-mesaĝoj ne estas subtenataj.",
@@ -1622,7 +2142,7 @@
         "description": ""
     },
     "leftTheGroup": {
-        "message": "$name$ left the group.",
+        "message": "$name$ forlasis la grupon.",
         "description": "Shown in the conversation history when a single person leaves the group",
         "placeholders": {
             "name": {
@@ -1632,7 +2152,7 @@
         }
     },
     "multipleLeftTheGroup": {
-        "message": "$name$ left the group.",
+        "message": "$name$ forlasis la grupon.",
         "description": "Shown in the conversation history when multiple people leave the group",
         "placeholders": {
             "name": {
@@ -1642,7 +2162,7 @@
         }
     },
     "updatedTheGroup": {
-        "message": "$name$ updated the group.",
+        "message": "$name$ĝisdatigis la grupon.",
         "description": "Shown in the conversation history when someone updates the group",
         "placeholders": {
             "name": {
@@ -1656,11 +2176,11 @@
         "description": "Shown in the conversation history when you update a group"
     },
     "updatedGroupAvatar": {
-        "message": "Group avatar was updated.",
+        "message": "La avataro de la grupo ĝisdatiĝis.",
         "description": "Shown in the conversation history when someone updates the group"
     },
     "titleIsNow": {
-        "message": "Group name is now '$name$'.",
+        "message": "La grupnomo estas nun „$name$“.",
         "description": "Shown in the conversation history when someone changes the title of the group",
         "placeholders": {
             "name": {
@@ -1670,11 +2190,11 @@
         }
     },
     "youJoinedTheGroup": {
-        "message": "You joined the group.",
+        "message": "Vi aniĝis al la grupo.",
         "description": "Shown in the conversation history when you are added to a group."
     },
     "joinedTheGroup": {
-        "message": "$name$ joined the group.",
+        "message": "$name$ grupaniĝis.",
         "description": "Shown in the conversation history when a single person joins the group",
         "placeholders": {
             "name": {
@@ -1684,7 +2204,7 @@
         }
     },
     "multipleJoinedTheGroup": {
-        "message": "$names$ joined the group.",
+        "message": "$names$ grupaniĝis.",
         "description": "Shown in the conversation history when more than one person joins the group",
         "placeholders": {
             "names": {
@@ -1693,13 +2213,55 @@
             }
         }
     },
+    "ConversationListItem--message-request": {
+        "message": "Mesaĝopeto",
+        "description": "Preview shown for conversation if the user has not yet accepted an incoming message request"
+    },
     "ConversationListItem--draft-prefix": {
         "message": "Malneto:",
         "description": "Prefix shown in italic in conversation view when a draft is saved"
     },
+    "message--getNotificationText--gif": {
+        "message": "GIF",
+        "description": "Shown in notifications and in the left pane when a GIF is received."
+    },
+    "message--getNotificationText--photo": {
+        "message": "Foto",
+        "description": "Shown in notifications and in the left pane when a photo is received."
+    },
+    "message--getNotificationText--video": {
+        "message": "Videaĵo",
+        "description": "Shown in notifications and in the left pane when a video is received."
+    },
+    "message--getNotificationText--voice-message": {
+        "message": "Voĉa mesaĝo",
+        "description": "Shown in notifications and in the left pane when a voice message is received."
+    },
+    "message--getNotificationText--audio-message": {
+        "message": "Sonmesaĝo",
+        "description": "Shown in notifications and in the left pane when an audio message is received."
+    },
+    "message--getNotificationText--file": {
+        "message": "Dosiero",
+        "description": "Shown in notifications and in the left pane when a generic file is received."
+    },
     "message--getNotificationText--stickers": {
         "message": "Glumarka mesaĝo",
         "description": "Shown in notifications and in the left pane instead of sticker image."
+    },
+    "message--getNotificationText--text-with-emoji": {
+        "message": "$emoji$ $text$",
+        "description": "Shown in notifications and in the left pane when text has an emoji. Probably always [emoji] [text] on LTR languages and [text] [emoji] on RTL languages.",
+        "placeholders": {
+            "emoji": {
+                "content": "$1",
+                "example": "📷"
+            },
+            "text": {
+                "content": "$2",
+                "example": "Photo"
+            }
+        }
     },
     "message--getDescription--unsupported-message": {
         "message": "Nesubtenata mesaĝo",
@@ -1707,15 +2269,19 @@
     },
     "message--getDescription--disappearing-media": {
         "message": "Nurunufoje videbla aŭdvidaĵo",
-        "description": "Shown in notifications and in the left pane after view-once message is deleted."
+        "description": "Shown in notifications and in the left pane after view-once message is deleted. Also shown when quoting a view once media."
     },
     "message--getDescription--disappearing-photo": {
         "message": "Nurunufoje videbla foto",
-        "description": "Shown in notifications and in the left pane when a message is a view once photo."
+        "description": "Shown in notifications and in the left pane when a message is a view once photo. Also shown when quoting a view once photo."
     },
     "message--getDescription--disappearing-video": {
         "message": "Nurunufoje videbla videaĵo",
-        "description": "Shown in notifications and in the left pane when a message is a view once video."
+        "description": "Shown in notifications and in the left pane when a message is a view once video. Also shown when quoting a view once video."
+    },
+    "message--deletedForEveryone": {
+        "message": "Tiu ĉi mesaĝo forviŝiĝis.",
+        "description": "Shown in a message's bubble when the message has been deleted for everyone."
     },
     "stickers--toast--InstallFailed": {
         "message": "Glumarkaro ne eblis instaliĝi",
@@ -1769,6 +2335,26 @@
         "message": "Kial uzi vortojn, kiam vi povas uzi glumarkojn?",
         "description": "Shown as the body on a tooltip when the user upgrades to a version of Signal supporting stickers."
     },
+    "stickers--StickerPicker--Open": {
+        "message": "Malfermi la elektilon de glumarkoj",
+        "description": "Label for the open button for the sticker picker"
+    },
+    "stickers--StickerPicker--AddPack": {
+        "message": "Aldoni glumarkaron",
+        "description": "Label for the add pack button in the sticker picker"
+    },
+    "stickers--StickerPicker--NextPage": {
+        "message": "Sekva paĝo",
+        "description": "Label for the next page button in the sticker picker"
+    },
+    "stickers--StickerPicker--PrevPage": {
+        "message": "Antaŭa paĝo",
+        "description": "Label for the previous page button in the sticker picker"
+    },
+    "stickers--StickerPicker--Recents": {
+        "message": "Lastaj glumarkojn",
+        "description": "Label for the recent stickers button in the sticker picker"
+    },
     "stickers--StickerPicker--DownloadError": {
         "message": "Kelkaj glumarkaj ne eblis elŝutiĝi.",
         "description": "Shown in the sticker picker when one or more stickers could not be downloaded."
@@ -1819,6 +2405,42 @@
             }
         }
     },
+    "EmojiPicker__button--recents": {
+        "message": "Lastaj",
+        "description": "Label for recents emoji picker button"
+    },
+    "EmojiPicker__button--emoji": {
+        "message": "Emoĝio",
+        "description": "Label for emoji emoji picker button"
+    },
+    "EmojiPicker__button--animal": {
+        "message": "Bestoj",
+        "description": "Label for animal emoji picker button"
+    },
+    "EmojiPicker__button--food": {
+        "message": "Manĝo",
+        "description": "Label for food emoji picker button"
+    },
+    "EmojiPicker__button--activity": {
+        "message": "Aktivaĵoj",
+        "description": "Label for activity emoji picker button"
+    },
+    "EmojiPicker__button--travel": {
+        "message": "Vojaĝo",
+        "description": "Label for travel emoji picker button"
+    },
+    "EmojiPicker__button--object": {
+        "message": "Objektoj",
+        "description": "Label for object emoji picker button"
+    },
+    "EmojiPicker__button--symbol": {
+        "message": "Simboloj",
+        "description": "Label for symbol emoji picker button"
+    },
+    "EmojiPicker__button--flag": {
+        "message": "Flagoj",
+        "description": "Label for flag emoji picker button"
+    },
     "confirmation-dialog--Cancel": {
         "message": "Nuligi",
         "description": "Appears on the cancel button in confirmation dialogs."
@@ -1861,7 +2483,7 @@
     },
     "Message--tap-to-view--outgoing": {
         "message": "Aŭdvidaĵo",
-        "description": "Text shown on outgoing messages with with individual timers (inaccessble)"
+        "description": "Text shown on outgoing messages with with individual timers (inaccessible)"
     },
     "Message--tap-to-view--incoming--expired-toast": {
         "message": "Vi jam vidis tiun mesaĝon",
@@ -1919,6 +2541,10 @@
         "message": "Malfermi la menuon pri interparoloj",
         "description": "Shown in the shortcuts guide"
     },
+    "Keyboard--new-conversation": {
+        "message": "Krei novan interparolon",
+        "description": "Shown in the shortcuts guide"
+    },
     "Keyboard--archive-conversation": {
         "message": "Enarĥivigi interparolon",
         "description": "Shown in the shortcuts guide"
@@ -1968,7 +2594,7 @@
         "description": "Shown in the shortcuts guide"
     },
     "Keyboard--toggle-reaction-picker": {
-        "message": "Baskuligi elektilon de reago por la elektita mesaĝo",
+        "message": "Baskuligi elektilon de emoĝi-reago por la elektita mesaĝo",
         "description": "Shown in the shortcuts guide"
     },
     "Keyboard--save-attachment": {
@@ -2003,6 +2629,10 @@
         "message": "Forigi ĉiujn kunsendaĵojn",
         "description": "Shown in the shortcuts guide"
     },
+    "Keyboard--conversation-by-index": {
+        "message": "Salti al interparolo",
+        "description": "A shortcut allowing direct navigation to conversations 1 to 9 in list"
+    },
     "Keyboard--Key--ctrl": {
         "message": "Stir",
         "description": "Key shown in shortcut combination in shortcuts guide"
@@ -2022,6 +2652,14 @@
     "Keyboard--Key--enter": {
         "message": "Eniga",
         "description": "Key shown in shortcut combination in shortcuts guide"
+    },
+    "Keyboard--Key--tab": {
+        "message": "Tab",
+        "description": "Key shown in shortcut combination in shortcuts guide"
+    },
+    "Keyboard--Key--one-to-nine-range": {
+        "message": "1 ĝis 9",
+        "description": "Expresses that 1, 2, 3, up to 9 are available shortcut keys"
     },
     "Keyboard--header": {
         "message": "Fulmklavoj",
@@ -2051,6 +2689,18 @@
         "message": "Fermi la aktivan interparolon",
         "description": "Shown in the shortcuts guide"
     },
+    "Keyboard--calling-header": {
+        "message": "Alvoko",
+        "description": "Header of the keyboard shortcuts guide - calling section"
+    },
+    "Keyboard--toggle-audio": {
+        "message": "Baskuligi silenton",
+        "description": "Shown in the shortcuts guide"
+    },
+    "Keyboard--toggle-video": {
+        "message": "Baskuligi videon",
+        "description": "Shown in the shortcuts guide"
+    },
     "close-popup": {
         "message": "Fermi ŝprucfenestron",
         "description": "Used as alt text for any button closing a popup"
@@ -2074,6 +2724,10 @@
     "conversationReturnedToInbox": {
         "message": "Interparolo remetita al la ricevujo",
         "description": "A toast that shows up when the user unarchives a conversation"
+    },
+    "conversationMarkedUnread": {
+        "message": "Interparolo markita kiel nelegitan",
+        "description": "A toast that shows up when user marks a conversation as unread"
     },
     "StickerCreator--title": {
         "message": "Kreilo de glumarkaro",
@@ -2128,7 +2782,7 @@
         "description": "Title for the drop stage of the sticker creator"
     },
     "StickerCreator--DropStage--help": {
-        "message": "Glumarkoj estu en PNG- aŭ WebP-dosierformo kun travidebla fono kaj granda je 512×512 bilderoj. Oni rekomendas 16-bilderan marĝenon.",
+        "message": "Glumarkoj estu en PNG-, APNG- aŭ WebP-dosierformo kun travidebla fono kaj granda je 512×512 bilderoj. Oni rekomendas 16-bilderan marĝenon.",
         "description": "Help text for the drop stage of the sticker creator"
     },
     "StickerCreator--DropStage--showMargins": {
@@ -2248,7 +2902,7 @@
         }
     },
     "StickerCreator--Toasts--animated": {
-        "message": "Animaciitaj glumarkoj ne eblas nuntempe",
+        "message": "Animaciaj glumarkoj ne eblas nuntempe",
         "description": "Text for the toast when an image that is animated was dropped on the sticker creator"
     },
     "StickerCreator--Toasts--tooLarge": {
@@ -2257,7 +2911,23 @@
     },
     "StickerCreator--Toasts--errorProcessing": {
         "message": "Eraro dum traktado de la bildo",
-        "description": "Text for the toast when an image cannot be processed was dropped on the sticker creator"
+        "description": "Text for the toast when an image cannot be processed was dropped on the sticker creator with a generic error"
+    },
+    "StickerCreator--Toasts--APNG--notSquare": {
+        "message": "Animaciaj PNG-glumarkoj estu kvadrata",
+        "description": "Text for the toast when someone tries to upload a non-square APNG"
+    },
+    "StickerCreator--Toasts--mustLoopForever": {
+        "message": "Animaciaj glumarkoj ripetu senfine",
+        "description": "Text for the toast when an image in the sticker creator does not animate forever"
+    },
+    "StickerCreator--Toasts--APNG--dimensionsTooLarge": {
+        "message": "La dimensioj de la animacia PNG-glumarko estas tro grandaj",
+        "description": "Text for the toast when an APNG image in the sticker creator is too large"
+    },
+    "StickerCreator--Toasts--APNG--dimensionsTooSmall": {
+        "message": "La dimensioj de la animacia PNG-glumarko estas tro malgrandaj",
+        "description": "Text for the toast when an APNG image in the sticker creator is too small"
     },
     "StickerCreator--Toasts--errorUploading": {
         "message": "Eraro dum alŝuto de la glumarkaro; $message$",
@@ -2289,12 +2959,2666 @@
         "message": "Sendo de reago malsukcesis. Reprovu.",
         "description": "Shown when a reaction fails to send"
     },
+    "ReactionsViewer--more": {
+        "message": "Pli",
+        "description": "Use in the reaction picker as the alt text for the 'more' button"
+    },
     "ReactionsViewer--all": {
         "message": "Ĉiuj",
         "description": "Shown in reaction viewer as the title for the 'all' category"
     },
-    "privacyPolicy": {
-        "message": "Kondiĉoj de uzo kaj regularo pri privateco",
-        "description": "Shown in the about box for the link to https://signal.org/legal"
+    "MessageRequests--message-direct": {
+        "message": "Ĉu vi volas, ke $name$ mesaĝu al vi, kaj ke ŝi aŭ li vidu vian nomon kaj foton? Ŝi aŭ li ne scios, ke vi vidis ŝian aŭ lian mesaĝojn ĝis via akcepto.",
+        "description": "Shown as the message for a message request in a direct message",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce"
+            }
+        }
+    },
+    "MessageRequests--message-direct-blocked": {
+        "message": "Ĉu vi volas, ke $name$ mesaĝu al vi, kaj ke ŝi aŭ li vidu vian nomon kaj foton? Vi ricevos neniun mesaĝon, se vi ne malblokas ŝin aŭ lin.",
+        "description": "Shown as the message for a message request in a direct message with a blocked account",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce"
+            }
+        }
+    },
+    "MessageRequests--message-group": {
+        "message": "Ĉu vi volas aliĝi al tiu grupo kaj kunhavigi vian nomon kaj foton? La grupo ne scios, ke vi vidis ĝiajn mesaĝojn ĝis via akcepto.",
+        "description": "Shown as the message for a message request in a group",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--message-group-blocked": {
+        "message": "Ĉu malbloki tiun grupon kaj kunhavigi vian nomon kaj foton kun la anoj? Vi ne ricevos mesaĝojn, se vi ne malblokas ĝin.",
+        "description": "Shown as the message for a message request in a blocked group"
+    },
+    "MessageRequests--block": {
+        "message": "Bloki",
+        "description": "Shown as a button to let the user block a message request"
+    },
+    "MessageRequests--unblock": {
+        "message": "Malbloki",
+        "description": "Shown as a button to let the user unblock a message request"
+    },
+    "MessageRequests--unblock-confirm-title": {
+        "message": "Ĉu malbloki $name$?",
+        "description": "Shown as a button to let the user unblock a message request",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--unblock-direct-confirm-body": {
+        "message": "Vi povos mesaĝi kaj alvoki unu la alian.",
+        "description": "Shown as the body in the confirmation modal for unblocking a private message request",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--unblock-group-confirm-body": {
+        "message": "Grupanoj povos denove aldoni vin al tiu ĉi grupo.",
+        "description": "Shown as the body in the confirmation modal for unblocking a group message request",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--block-and-report-spam": {
+        "message": "Report Spam and Block",
+        "description": "Shown as a button to let the user block a message request and report spam"
+    },
+    "MessageRequests--block-and-report-spam-success-toast": {
+        "message": "Reported as spam and blocked.",
+        "description": "Shown in a toast when you successfully block a user and report them as spam"
+    },
+    "MessageRequests--block-direct-confirm-title": {
+        "message": "Ĉu bloki $name$?",
+        "description": "Shown as the title in the confirmation modal for blocking a private message request",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Cayce Pollard"
+            }
+        }
+    },
+    "MessageRequests--block-direct-confirm-body": {
+        "message": "Blokitaj kontaktoj ne eblos sendi al vi mesaĝojn aŭ alvoki vin.",
+        "description": "Shown as the body in the confirmation modal for blocking a private message request"
+    },
+    "MessageRequests--block-group-confirm-title": {
+        "message": "Ĉu bloki kaj forlasi $group$?",
+        "description": "Shown as the title in the confirmation modal for blocking a group message request",
+        "placeholders": {
+            "group": {
+                "content": "$1",
+                "example": "Friends 🌿"
+            }
+        }
+    },
+    "MessageRequests--block-group-confirm-body": {
+        "message": "Vi ne plu ricevos mesaĝojn kaj ĝisdatigojn el tiu ĉi grupo kaj grupanoj ne plu povos realdoni vin al ĉi tiu grupo.",
+        "description": "Shown as the body in the confirmation modal for blocking a group message request"
+    },
+    "MessageRequests--delete": {
+        "message": "Forigi",
+        "description": "Shown as a button to let the user delete any message request"
+    },
+    "MessageRequests--delete-direct-confirm-title": {
+        "message": "Ĉu forviŝi konversacion?",
+        "description": "Shown as the title in the confirmation modal for deleting a private message request"
+    },
+    "MessageRequests--delete-direct-confirm-body": {
+        "message": "Tiu interparolo foriĝos el ĉiuj viaj aparatoj.",
+        "description": "Shown as the body in the confirmation modal for deleting a private message request"
+    },
+    "MessageRequests--delete-group-confirm-title": {
+        "message": "Ĉu forigi kaj forlasi $group$?",
+        "description": "Shown as the title in the confirmation modal for deleting a group message request",
+        "placeholders": {
+            "group": {
+                "content": "$1",
+                "example": "Friends 🌿"
+            }
+        }
+    },
+    "MessageRequests--delete-direct": {
+        "message": "Forigi",
+        "description": "Shown as a button to let the user delete a direct message request"
+    },
+    "MessageRequests--delete-group": {
+        "message": "Forigi kaj forlasi",
+        "description": "Shown as a button to let the user delete a group message request"
+    },
+    "MessageRequests--delete-group-confirm-body": {
+        "message": "Vi forlasos tiun grupon, kaj ĝi foriĝos el ĉiuj viaj aparatoj.",
+        "description": "Shown as the body in the confirmation modal for deleting a group message request"
+    },
+    "MessageRequests--accept": {
+        "message": "Akcepti",
+        "description": "Shown as a button to let the user accept a message request"
+    },
+    "MessageRequests--continue": {
+        "message": "Daŭrigi",
+        "description": "Shown as a button to share your profile, necessary to continue messaging in a conversation"
+    },
+    "MessageRequests--profile-sharing--group": {
+        "message": "Ĉu plu interparoli al tiu grupo kaj kunhavigi vian nomon kaj foton kun la anoj? $learnMore$",
+        "description": "Shown when user hasn't shared their profile in a group yet",
+        "placeholders": {
+            "learnMore": {
+                "content": "$1",
+                "example": "Learn More."
+            }
+        }
+    },
+    "MessageRequests--profile-sharing--direct": {
+        "message": "Ĉu plu interparoli al $firstName$ kaj kunhavigi vian nomon kaj foton kun li aŭ ŝi? $learnMore$",
+        "description": "Shown when user hasn't shared their profile in a 1:1 conversation yet",
+        "placeholders": {
+            "firstName": {
+                "content": "$1",
+                "example": "Alice"
+            },
+            "learnMore": {
+                "content": "$2",
+                "example": "Learn More."
+            }
+        }
+    },
+    "MessageRequests--learn-more": {
+        "message": "Scii pli.",
+        "description": "Shown at the end of profile sharing messages as a link."
+    },
+    "ConversationHero--members": {
+        "message": "$count$ anoj",
+        "description": "Specifies the number of members in a group conversation",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "22"
+            }
+        }
+    },
+    "ConversationHero--members-1": {
+        "message": "1 ano",
+        "description": "Specifies the number of members in a group conversation when there is one member",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "22"
+            }
+        }
+    },
+    "member-of-1-group": {
+        "message": "Ano de $group$",
+        "description": "Shown in the conversation hero to indicate this user is a member of a mutual group",
+        "placeholders": {
+            "group": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
+            }
+        }
+    },
+    "member-of-2-groups": {
+        "message": "Ano de $group1$ kaj $group2$",
+        "description": "Shown in the conversation hero to indicate this user is a member of at least two mutual groups",
+        "placeholders": {
+            "group1": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
+            },
+            "group2": {
+                "content": "$2",
+                "example": "Dinner Party"
+            }
+        }
+    },
+    "member-of-3-groups": {
+        "message": "Ano de $group1$, $group2$ kaj $group3$",
+        "description": "Shown in the conversation hero to indicate this user is a member of at least three mutual groups",
+        "placeholders": {
+            "group1": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
+            },
+            "group2": {
+                "content": "$2",
+                "example": "Dinner Party"
+            },
+            "group3": {
+                "content": "$3",
+                "example": "Friends 🌿"
+            }
+        }
+    },
+    "member-of-more-than-3-groups": {
+        "message": "Ano de $group1$, $group2$, $group3$ kaj $remainingCount$  pliaj",
+        "description": "Shown in the conversation hero to indicate this user is a member of at least three mutual groups",
+        "placeholders": {
+            "group1": {
+                "content": "$1",
+                "example": "NYC Rock Climbers"
+            },
+            "group2": {
+                "content": "$2",
+                "example": "Dinner Party"
+            },
+            "group3": {
+                "content": "$3",
+                "example": "Friends 🌿"
+            },
+            "remainingCount": {
+                "content": "$4",
+                "example": "3"
+            }
+        }
+    },
+    "ConversationHero--membership-added": {
+        "message": "$name$ aldonis vin al la grupo.",
+        "description": "Shown Indicates that you were added to a group by a given individual.",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Jeff Smith"
+            }
+        }
+    },
+    "no-groups-in-common": {
+        "message": "Neniu komuna grupo",
+        "description": "Shown to indicate this user is not a member of any groups"
+    },
+    "no-groups-in-common-warning": {
+        "message": "Neniu komuna grupo. Kontroli la petojn zorgeme.",
+        "description": "When a user has no common groups, show this warning"
+    },
+    "acceptCall": {
+        "message": "Respondi",
+        "description": "Shown in tooltip for the button to accept a call (audio or video)"
+    },
+    "acceptCallWithoutVideo": {
+        "message": "Respondi sen video",
+        "description": "Shown in tooltip for the button to accept a video call without video"
+    },
+    "declineCall": {
+        "message": "Malakcepti",
+        "description": "Shown in tooltip for the button to decline a call (audio or video)"
+    },
+    "declinedIncomingAudioCall": {
+        "message": "Vi rifuzis aŭdalvokon",
+        "description": "Shown in conversation history when you declined an incoming audio call"
+    },
+    "declinedIncomingVideoCall": {
+        "message": "Vi rifuzi vidalvokon",
+        "description": "Shown in conversation history when you declined an incoming video call"
+    },
+    "acceptedIncomingAudioCall": {
+        "message": "Envena aŭdalvoko",
+        "description": "Shown in conversation history when you accepted an incoming audio call"
+    },
+    "acceptedIncomingVideoCall": {
+        "message": "Envena vidalvoko",
+        "description": "Shown in conversation history when you accepted an incoming video call"
+    },
+    "missedIncomingAudioCall": {
+        "message": "Maltrafita aŭdalvoko",
+        "description": "Shown in conversation history when you missed an incoming audio call"
+    },
+    "missedIncomingVideoCall": {
+        "message": "Maltrafita vidalvoko",
+        "description": "Shown in conversation history when you missed an incoming video call"
+    },
+    "acceptedOutgoingAudioCall": {
+        "message": "Elira aŭdalvoko",
+        "description": "Shown in conversation history when you made an outgoing audio call"
+    },
+    "acceptedOutgoingVideoCall": {
+        "message": "Elira vidalvoko",
+        "description": "Shown in conversation history when you made an outgoing video call"
+    },
+    "missedOrDeclinedOutgoingAudioCall": {
+        "message": "Senresponda aŭdalvoko",
+        "description": "Shown in conversation history when your audio call is missed or declined"
+    },
+    "missedOrDeclinedOutgoingVideoCall": {
+        "message": "Senresponda vidalvoko",
+        "description": "Shown in conversation history when your video call is missed or declined"
+    },
+    "incomingAudioCall": {
+        "message": "Envena aŭdalvoko...",
+        "description": "Shown in both the incoming call bar and notification for an incoming audio call"
+    },
+    "incomingVideoCall": {
+        "message": "Envena vidalvoko...",
+        "description": "Shown in both the incoming call bar and notification for an incoming video call"
+    },
+    "outgoingCallPrering": {
+        "message": "Konektado...",
+        "description": "Shown in the call screen when placing an outgoing call that isn't ringing yet"
+    },
+    "outgoingCallRinging": {
+        "message": "Sonorado...",
+        "description": "Shown in the call screen when placing an outgoing call that is now ringing"
+    },
+    "makeOutgoingCall": {
+        "message": "Ekalvoki",
+        "description": "Title for the call button in a conversation"
+    },
+    "makeOutgoingVideoCall": {
+        "message": "Ek-vidalvoki",
+        "description": "Title for the video call button in a conversation"
+    },
+    "joinOngoingCall": {
+        "message": "Aniĝi",
+        "description": "Text that appears in a group when a call is active"
+    },
+    "callNeedPermission": {
+        "message": "$title$ havos mesaĝopeton el vi. Vi povos alvoki, tuj post la akcepto de via peto.",
+        "description": "Shown when a call is rejected because the other party hasn't approved the message/call request",
+        "placeholders": {
+            "title": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "callReconnecting": {
+        "message": "Rekonektado...",
+        "description": "Shown in the call screen when the call is reconnecting due to network issues"
+    },
+    "callDuration": {
+        "message": "Signal $duration$",
+        "description": "Shown in the call screen to indicate how long the call has been connected",
+        "placeholders": {
+            "duration": {
+                "content": "$1",
+                "example": "00:01"
+            }
+        }
+    },
+    "callingDeviceSelection__settings": {
+        "message": "Agordoj",
+        "description": "Title for device selection settings"
+    },
+    "calling__participants": {
+        "message": "$people$ en la alvoko",
+        "description": "Title for participants list toggle",
+        "placeholders": {
+            "people": {
+                "content": "$1",
+                "example": "16"
+            }
+        }
+    },
+    "calling__call-notification__ended": {
+        "message": "La grupalvoko finiĝis",
+        "description": "Notification message when a group call has ended"
+    },
+    "calling__call-notification__started-by-someone": {
+        "message": "Grupalvoko komenciĝis",
+        "description": "Notification message when a group call has started, but we don't know who started it"
+    },
+    "calling__call-notification__started-by-you": {
+        "message": "Vi komencis grupalvokon",
+        "description": "Notification message when a group call has started by you"
+    },
+    "calling__call-notification__started": {
+        "message": "$name$ komencis grupalvokon",
+        "description": "Notification message when a group call has started",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "calling__call-notification__button__in-another-call-tooltip": {
+        "message": "Vi jam estas en alvoko",
+        "description": "Tooltip in disabled notification button when you're on another call"
+    },
+    "calling__call-notification__button__call-full-tooltip": {
+        "message": "La alvoko atingis sian maksimuman nombron de $max$ partoprenantoj",
+        "description": "Tooltip in disabled notification button when the call is full",
+        "placeholders": {
+            "max": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "calling__pip--on": {
+        "message": "Plejetigi la alvokon",
+        "description": "Title for picture-in-picture toggle"
+    },
+    "calling__pip--off": {
+        "message": "Plenekranigi la alvokon",
+        "description": "Title for picture-in-picture toggle"
+    },
+    "calling__switch-view--to-grid": {
+        "message": "Iri al la krada vido",
+        "description": "Title for grid/speaker view toggle when on a call"
+    },
+    "calling__switch-view--to-speaker": {
+        "message": "Iri al la parolantovido",
+        "description": "Title for grid/speaker view toggle when on a call"
+    },
+    "calling__hangup": {
+        "message": "Forlasi la alvokon",
+        "description": "Title for hang up button"
+    },
+    "calling__SelectPresentingSourcesModal--title": {
+        "message": "Share your screen",
+        "description": "Title for the select your screen sharing sources modal"
+    },
+    "calling__SelectPresentingSourcesModal--confirm": {
+        "message": "Share screen",
+        "description": "Confirm button for sharing screen modal"
+    },
+    "calling__SelectPresentingSourcesModal--entireScreen": {
+        "message": "Entire screen",
+        "description": "Title for the select your screen sharing sources modal and 'Entire Screen' source"
+    },
+    "calling__SelectPresentingSourcesModal--screen": {
+        "message": "Screen $id$",
+        "description": "Title for `Screen #N` source in screen sharing sources modal and overlay",
+        "placeholders": {
+            "id": {
+                "content": "$1",
+                "example": "1"
+            }
+        }
+    },
+    "calling__SelectPresentingSourcesModal--window": {
+        "message": "A window",
+        "description": "Title for the select your screen sharing sources modal"
+    },
+    "callingDeviceSelection__label--video": {
+        "message": "Videaĵo",
+        "description": "Label for video input selector"
+    },
+    "callingDeviceSelection__label--audio-input": {
+        "message": "Mikrofono",
+        "description": "Label for audio input selector"
+    },
+    "callingDeviceSelection__label--audio-output": {
+        "message": "Laŭtparolilo",
+        "description": "Label for audio output selector"
+    },
+    "callingDeviceSelection__select--no-device": {
+        "message": "Neniu aparato disponebla",
+        "description": "Message for when there are no available devices to select for input/output audio or video"
+    },
+    "callingDeviceSelection__select--default": {
+        "message": "Defaŭlta",
+        "description": "Shown when the device is the default device"
+    },
+    "muteNotificationsTitle": {
+        "message": "Silentigi sciigojn",
+        "description": "Label for the mute notifications drop-down selector"
+    },
+    "muteHour": {
+        "message": "Silentigi dum 1 horo",
+        "description": "Label for muting the conversation"
+    },
+    "muteEightHours": {
+        "message": "Mute for eight hours",
+        "description": "Label for muting the conversation"
+    },
+    "muteDay": {
+        "message": "Silentigi dum 1 tago",
+        "description": "Label for muting the conversation"
+    },
+    "muteWeek": {
+        "message": "Silentigi dum 1 semajno",
+        "description": "Label for muting the conversation"
+    },
+    "muteAlways": {
+        "message": "Mute always",
+        "description": "Label for muting the conversation"
+    },
+    "unmute": {
+        "message": "Malsilentigi",
+        "description": "Label for unmuting the conversation"
+    },
+    "muteExpirationLabelAlways": {
+        "message": "Muted always",
+        "description": "Shown in the mute notifications submenu whenever a conversation has been muted"
+    },
+    "muteExpirationLabel": {
+        "message": "Silentigita ĝis $duration$",
+        "description": "Shown in the mute notifications submenu whenever a conversation has been muted",
+        "placeholders": {
+            "duration": {
+                "content": "$1",
+                "example": "10/23/2023, 7:10 PM"
+            }
+        }
+    },
+    "EmojiButton__label": {
+        "message": "Emoĝio",
+        "description": "Label for emoji button"
+    },
+    "ErrorModal--title": {
+        "message": "Ho ve! Okazis eraro!",
+        "description": "Title of pop-up dialog when user-initiated task has gone wrong"
+    },
+    "ErrorModal--description": {
+        "message": "Reprovu aŭ kontaktu la helpservon.",
+        "description": "Description text in pop-up dialog when user-initiated task has gone wrong"
+    },
+    "Confirmation--confirm": {
+        "message": "Bone",
+        "description": "Button to dismiss pop-up dialog when user-initiated task has gone wrong"
+    },
+    "unknown-sgnl-link": {
+        "message": "Aĥ, tiu ligilo „sgnl://“ ne funkcias!",
+        "description": "Shown if you click on a sgnl:// link not currently supported by Desktop"
+    },
+    "GroupV2--join--invalid-link--title": {
+        "message": "Nevalida ligilo",
+        "description": "Shown if we are unable to parse a group link"
+    },
+    "GroupV2--join--invalid-link": {
+        "message": "Tio ne estas valida grupligilo. Kontrolu, ĉu la ligilo estas kompleta.",
+        "description": "Shown if we are unable to parse a group link"
+    },
+    "GroupV2--join--prompt": {
+        "message": "Ĉu vi volas aniĝi al tiu grupo kaj kunhavigi vian nomon kaj foton kun la anoj?",
+        "description": "Shown when you click on a group link to confirm"
+    },
+    "GroupV2--join--already-in-group": {
+        "message": "Vi jam estas en tiu ĉi grupo.",
+        "description": "Shown if you click a group link for a group where you're already a member"
+    },
+    "GroupV2--join--already-awaiting-approval": {
+        "message": "Vi jam petis aprobon por anigi tiun grupon.",
+        "description": "Shown if you click a group link for a group where you've already requested approval'"
+    },
+    "GroupV2--join--unknown-link-version--title": {
+        "message": "Tiu grupligilo ne plu validas",
+        "description": "This group link is no longer valid."
+    },
+    "GroupV2--join--unknown-link-version": {
+        "message": "Tiun grupligilon ne subtenas tiu versio de „Signal Desktop“.",
+        "description": "Shown if you click a group link and we can't get information about it"
+    },
+    "GroupV2--join--link-revoked--title": {
+        "message": "Ne eblas anigi la grupon.",
+        "description": "Shown if you click a group link and we can't get information about it"
+    },
+    "GroupV2--join--link-revoked": {
+        "message": "Tiu grupligilo ne plu validas",
+        "description": "Shown if you click a group link and we can't get information about it"
+    },
+    "GroupV2--join--prompt-with-approval": {
+        "message": "Tiugrupa administranto aprobu vian peton, antaŭ ol vi povas aniĝi. Se aprobo venas, viaj nomo kaj foto kunhaviĝos kun la anoj.",
+        "description": "Shown when you click on a group link to confirm, if it requires admin approval"
+    },
+    "GroupV2--join--join-button": {
+        "message": "Aniĝi",
+        "description": "The button to join the group"
+    },
+    "GroupV2--join--request-to-join-button": {
+        "message": "Peti aniĝon",
+        "description": "The button to join the group, if approval is required"
+    },
+    "GroupV2--join--cancel-request-to-join": {
+        "message": "Nuligi la peton",
+        "description": "The button to cancel request to join the group"
+    },
+    "GroupV2--join--cancel-request-to-join--confirmation": {
+        "message": "Ĉu nuligi vian peton anigi tiun grupon?",
+        "description": "A confirmation message that shows after you click the button"
+    },
+    "GroupV2--join--cancel-request-to-join--yes": {
+        "message": "Jes",
+        "description": "Choosing to continue in the cancel join confirmation dialog"
+    },
+    "GroupV2--join--cancel-request-to-join--no": {
+        "message": "Ne",
+        "description": "Choosing not to continue in the cancel join confirmation dialog"
+    },
+    "GroupV2--join--member-count--single": {
+        "message": "1 ano",
+        "description": "Shown in the metadata section if group has just one member"
+    },
+    "GroupV2--join--member-count--multiple": {
+        "message": "$count$ anoj",
+        "description": "Shown in the metadata section if group has more than one member",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "12"
+            }
+        }
+    },
+    "GroupV2--join--group-metadata": {
+        "message": "Grupo ⋅ $memberCount$",
+        "description": "A holder for two pieces of information - the type of conversation, and the member count",
+        "placeholders": {
+            "memberCount": {
+                "content": "$1",
+                "example": "12 members"
+            }
+        }
+    },
+    "GroupV2--join--requested": {
+        "message": "Via peto por aniĝi sendiĝis al la grupadministranto. Oni diras al vi per sciigo, kiam ŝi aŭ ĝi respondas.",
+        "description": "Shown in composition area when you've requested to join a group"
+    },
+    "GroupV2--join--general-join-failure--title": {
+        "message": "Eraro de ligilo",
+        "description": "Shown if something went wrong when you try to join via a group link"
+    },
+    "GroupV2--join--general-join-failure": {
+        "message": "Aniĝo per la ligilo malsukcesis. Reprovu poste.",
+        "description": "Shown if something went wrong when you try to join via a group link"
+    },
+    "GroupV2--admin": {
+        "message": "Administranto",
+        "description": "Label for a group administrator"
+    },
+    "GroupV2--only-admins": {
+        "message": "Nur administrantoj",
+        "description": "Label for group administrators -- used in drop-downs to select permissions that apply to admins"
+    },
+    "GroupV2--all-members": {
+        "message": "Ĉiuj grupanoj",
+        "description": "Label for describing the general non-privileged members of a group"
+    },
+    "updating": {
+        "message": "Ĝisdatigo...",
+        "description": "Shown along with a spinner when an update operation takes longer than one second"
+    },
+    "GroupV2--create--you": {
+        "message": "Vi kreis la grupon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--create--other": {
+        "message": "$memberName$ kreis la grupon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--create--unknown": {
+        "message": "La grupo estis kreita.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--title--change--other": {
+        "message": "$memberName$ ŝanĝis la grupnomon al „$newTitle$“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "newTitle": {
+                "content": "$2",
+                "example": "Saturday Hiking"
+            }
+        }
+    },
+    "GroupV2--title--change--you": {
+        "message": "Vi ŝanĝis la grupnomon al „$newTitle$“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "newTitle": {
+                "content": "$1",
+                "example": "Saturday Hiking"
+            }
+        }
+    },
+    "GroupV2--title--change--unknown": {
+        "message": "Ano ŝanĝis la grupnomon al „$newTitle$“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "newTitle": {
+                "content": "$1",
+                "example": "Saturday Hiking"
+            }
+        }
+    },
+    "GroupV2--title--remove--other": {
+        "message": "$memberName$ forigis la grupnomon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--title--remove--you": {
+        "message": "Vi forigis la grupnomon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--title--remove--unknown": {
+        "message": "Ano forigis la grupnomon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--avatar--change--other": {
+        "message": "$memberName$ ŝanĝis la grupavataron.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--avatar--change--you": {
+        "message": "Vi ŝanĝis la grupavataron.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--avatar--change--unknown": {
+        "message": "Ano ŝanĝis la grupavataron.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--avatar--remove--other": {
+        "message": "$memberName$ forigis la grupavataron.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--avatar--remove--you": {
+        "message": "Vi forigis la grupavataron.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--avatar--remove--unknown": {
+        "message": "Ano forigis la grupavataron.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-attributes--admins--other": {
+        "message": "$adminName$ ŝanĝis tiun, kiu povas modifi la grupinformojn al „Nur administrantoj“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--access-attributes--admins--you": {
+        "message": "Vi ŝanĝis tiun, kiu povas modifi la grupinformojn al „Nur administrantoj“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-attributes--admins--unknown": {
+        "message": "Administranto ŝanĝis tiun, kiu povas modifi la grupinformojn al „Nur administrantoj“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-attributes--all--other": {
+        "message": "$adminName$ ŝanĝis tiun, kiu povas modifi la grupinformojn al „Ĉiuj anoj“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--access-attributes--all--you": {
+        "message": "Vi ŝanĝis tiun, kiu povas modifi la grupinformojn al „Ĉiuj anoj“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-attributes--all--unknown": {
+        "message": "Administranto ŝanĝis tiun, kiu povas modifi la grupinformojn al „Ĉiuj anoj“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-members--admins--other": {
+        "message": "$adminName$ ŝanĝis tiun, kiu povas modifi la grupmembrecon al „Nur administrantoj“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--access-members--admins--you": {
+        "message": "Vi ŝanĝis tiun, kiu povas modifi la grupmembrecon al „Nur administrantoj“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-members--admins--unknown": {
+        "message": "Administranto ŝanĝis tiun, kiu povas modifi la grupmembrecon al „Nur administrantoj“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-members--all--other": {
+        "message": "$adminName$  ŝanĝis tiun, kiu povas modifi la grupmembrecon al „Ĉiuj anoj“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--access-members--all--you": {
+        "message": "Vi ŝanĝis tiun, kiu povas modifi la grupmembrecon al „Ĉiuj anoj“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-members--all--unknown": {
+        "message": "Administranto ŝanĝis tiun, kiu povas modifi la grupmembrecon al „Ĉiuj anoj“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-invite-link--disabled--you": {
+        "message": "Vi malŝaltis la administranto-aprobon pri la grupligilo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-invite-link--disabled--other": {
+        "message": "$adminName$ malŝaltis la administranto-aprobon pri la grupligilo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--access-invite-link--disabled--unknown": {
+        "message": "Oni malŝaltis la administranto-aprobon pri la grupligilo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-invite-link--enabled--you": {
+        "message": "Vi ŝaltis la administranto-aprobon pri la grupligilo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--access-invite-link--enabled--other": {
+        "message": "$adminName$ ŝaltis la administranto-aprobon pri la grupligilo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--access-invite-link--enabled--unknown": {
+        "message": "Administranto-aprobon pri la grupligilo estis ŝaltita.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add--invited--you": {
+        "message": "Vi aldonis invititon $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add--invited--other": {
+        "message": "$memberName$ aldonis invititon $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Alice"
+            },
+            "inviteeName": {
+                "content": "$2",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--invited--unknown": {
+        "message": "Ano aldonis invititon $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add--from-invite--other": {
+        "message": "$inviteeName$ akceptis la inviton al la grupo de $inviterName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Alice"
+            },
+            "inviterName": {
+                "content": "$2",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--from-invite--other-no-from": {
+        "message": "$inviteeName$ akceptis la inviton al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add--from-invite--you": {
+        "message": "Vi akceptis la inviton al la grupo de $inviterName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviterName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--from-invite--you-no-from": {
+        "message": "Vi akceptis la inviton al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add--from-invite--from-you": {
+        "message": "$inviteeName$ akceptis vian inviton al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--other--other": {
+        "message": "$adderName$ aldonis „$addeeName$“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adderName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "addeeName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add--other--you": {
+        "message": "Vi aldonis $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--other--unknown": {
+        "message": "Ano aldonis $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--you--other": {
+        "message": "$memberName$ aldonis vin al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-add--you--you": {
+        "message": "Vi aniĝis al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add--you--unknown": {
+        "message": "Oni aldonis vin al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add-from-link--you--you": {
+        "message": "Vi anigis la grupon per la grupligilo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add-from-link--other": {
+        "message": "$memberName$ anigis la grupon per la grupligilo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add-from-admin-approval--you--other": {
+        "message": "$adminName$ aprobis vian peton por anigi la grupon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add-from-admin-approval--you--unknown": {
+        "message": "Oni aprobis vian peton por anigi la grupon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-add-from-admin-approval--other--you": {
+        "message": "Vi aprobis peton por anigi la grupon el $joinerName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add-from-admin-approval--other--other": {
+        "message": "$adminName$ aprobis peton por anigi la grupon el $joinerName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-add-from-admin-approval--other--unknown": {
+        "message": "Oni aprobis la peton el $joinerName$ por anigi la grupon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-remove--other--other": {
+        "message": "$adminName$ forigis „$memberName$“.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-remove--other--self": {
+        "message": "$memberName$ forlasis la grupon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-remove--other--you": {
+        "message": "Vi forigis $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-remove--other--unknown": {
+        "message": "Ano forigis $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-remove--you--other": {
+        "message": "$adminName$ forigis vin.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-remove--you--you": {
+        "message": "Vi forlasis la grupon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-remove--you--unknown": {
+        "message": "Oni forigis vin el la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-privilege--promote--other--other": {
+        "message": "$adminName$ donis la rolon de administranto al $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-privilege--promote--other--you": {
+        "message": "Vi donis la rolon de administranto al $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--promote--other--unknown": {
+        "message": "Administranto donis la rolon de administranto al $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--promote--you--other": {
+        "message": "$adminName$ donis la rolon de administranto al vi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--promote--you--unknown": {
+        "message": "Administranto donis la rolon de administranto al vi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-privilege--demote--other--other": {
+        "message": "$adminName$ forigis la rolon de administranto de $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--member-privilege--demote--other--you": {
+        "message": "Vi forigis la rolon de administranto de $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--demote--other--unknown": {
+        "message": "Administranto forigis la rolon de administranto de $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--member-privilege--demote--you--other": {
+        "message": "$adminName$forigis vian rolon de administranto.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--member-privilege--demote--you--unknown": {
+        "message": "Administranto forigis vian rolon de administranto.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--pending-add--one--other--other": {
+        "message": "$memberName$ invitis 1 homon al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-add--one--other--you": {
+        "message": "Vi invitis $inviteeName$ al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-add--one--other--unknown": {
+        "message": "Oni invitis vin al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-add--one--you--other": {
+        "message": "$memberName$ invitis vin al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-add--one--you--unknown": {
+        "message": "Vi estis invitita al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--pending-add--many--other": {
+        "message": "$memberName$ invitis $count$ homojn al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "count": {
+                "content": "$2",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-add--many--you": {
+        "message": "Vi invitis $count$ homojn al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-add--many--unknown": {
+        "message": "Oni invitis $count$ homojn al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--decline--other": {
+        "message": "1 homo invitita de $memberName$ malakceptis la inviton al la grupo. ",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--decline--you": {
+        "message": "$inviteeName$ malakceptis vian inviton al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--decline--from-you": {
+        "message": "Vi malakceptis la inviton al la grupo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--pending-remove--decline--unknown": {
+        "message": "1 homo malakceptis la inviton al la grupo. ",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--pending-remove--revoke--one--other": {
+        "message": "$memberName$ senvalidigis la inviton al la grupo pri 1 homo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--one--you": {
+        "message": "Vi senvalidigis la inviton al la grupo pri 1 homo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-own--to-you": {
+        "message": "$inviterName$ senvalidigis ŝian aŭ lian inviton al vi.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviterName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-own--unknown": {
+        "message": "$inviterName$ senvalidigis ŝian aŭ lian inviton al 1 homo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviterName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--one--unknown": {
+        "message": "Administranto senvalidigis la inviton al la grupo pri 1 homo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--many--other": {
+        "message": "$memberName$ senvalidigis invitojn al la grupo pri $count$ homoj.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "count": {
+                "content": "$2",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--many--you": {
+        "message": "Vi senvalidigis invitojn al la grupo pri $count$ homoj.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke--many--unknown": {
+        "message": "Administranto senvalidigis invitojn al la grupo pri $count$ homoj.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--one--other": {
+        "message": "$adminName$ senvalidigis inviton al la grupo pri 1 homo invitita de $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--one--you": {
+        "message": "Vi senvalidigis inviton al la grupo pri 1 homo invitita de $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--one--unknown": {
+        "message": "Administranto senvalidigis inviton al la grupo pri 1 homo invitita de $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "memberName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--one--other": {
+        "message": "$adminName$ senvalidigis la inviton al la grupo, kiun vi sendis al $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--one--you": {
+        "message": "Vi nuligis vian inviton al $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--one--unknown": {
+        "message": "Administranto senvalidigis la inviton al la grupo, kiun vi sendis al $inviteeName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "inviteeName": {
+                "content": "$1",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--many--other": {
+        "message": "$adminName$ senvalidigis inviton al la grupo pri $count$ homoj invititaj de $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--many--you": {
+        "message": "Vi senvalidigis invitojn al la grupo pri $count$ homoj invititaj de $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from--many--unknown": {
+        "message": "Administranto senvalidigis invitojn al la grupo pri $count$ homoj invititaj de $memberName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            },
+            "memberName": {
+                "content": "$2",
+                "example": "Bob"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--many--other": {
+        "message": "$adminName$ senvalidigis la invitojn al la grupo, kiujn vi sendis al $count$ homoj.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "count": {
+                "content": "$2",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--many--you": {
+        "message": "Vi nuligis vian inviton al $count$ homoj.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--pending-remove--revoke-invite-from-you--many--unknown": {
+        "message": "Administranto senvalidigis la invitojn al la grupo, kiujn vi sendis al $count$ homoj.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV2--admin-approval-add-one--you": {
+        "message": "Vi sendis peton por anigi la grupon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--admin-approval-add-one--other": {
+        "message": "$joinerName$ sendis peton por anigi per grupligilo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--admin-approval-remove-one--you--you": {
+        "message": "Vi nuligis vian peton anigi la grupon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--admin-approval-remove-one--you--unknown": {
+        "message": "Administranto malaprobis vian peton por anigi la grupon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--admin-approval-remove-one--other--you": {
+        "message": "Vi malaprobis peton por anigi la grupon el $joinerName$.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--admin-approval-remove-one--other--own": {
+        "message": "$joinerName$ nuligis sian peton anigi la grupon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "joinerName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--admin-approval-remove-one--other--other": {
+        "message": "$adminName$ malaprobis peton el $joinerName$ por anigi la grupon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Bob"
+            },
+            "joinerName": {
+                "content": "$2",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-add--disabled--you": {
+        "message": "Vi ŝaltis grupligilon sen bezono de administranto-aprobo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-add--disabled--other": {
+        "message": "$adminName$ ŝaltis la grupligilon sen bezono de administranto-aprobo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-add--disabled--unknown": {
+        "message": "Oni ŝaltis grupligilon sen bezono de administranto-aprobo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-add--enabled--you": {
+        "message": "Vi ŝaltis grupligilon kun administranto-aprobo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-add--enabled--other": {
+        "message": "$adminName$ ŝaltis grupligilon kun administranto-aprobo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-add--enabled--unknown": {
+        "message": "Oni ŝaltis grupligilon kun administranto-aprobo.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-remove--you": {
+        "message": "Vi malŝaltis la grupligilon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-remove--other": {
+        "message": "$adminName$ malŝaltis la grupligilon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-remove--unknown": {
+        "message": "La grupligilo malŝaltiĝis.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-reset--you": {
+        "message": "Vi restarigis la grupligilon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--group-link-reset--other": {
+        "message": "$adminName$ restarigis la grupligilon.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--group-link-reset--unknown": {
+        "message": "La grupligilo restariĝis.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--description--remove--you": {
+        "message": "You removed the group description.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--description--remove--other": {
+        "message": "$memberName$ removed the group description.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--description--remove--unknown": {
+        "message": "The group description was removed.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--description--change--you": {
+        "message": "You changed the group description.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV2--description--change--other": {
+        "message": "$memberName$ changed the group description.",
+        "description": "Shown in timeline or conversation preview when v2 group changes",
+        "placeholders": {
+            "adminName": {
+                "content": "$1",
+                "example": "Alice"
+            }
+        }
+    },
+    "GroupV2--description--change--unknown": {
+        "message": "The group description was changed.",
+        "description": "Shown in timeline or conversation preview when v2 group changes"
+    },
+    "GroupV1--Migration--disabled": {
+        "message": "Ĝisdatigu tiun grupon por uzi novajn funkciojn kiel @menciojn kaj administrantojn. Anoj, kiuj ne kunhavis ilian nomon aŭ foton kun la grupo estos invititaj anigi. $learnMore$",
+        "description": "Shown instead of composition area when user is forced to migrate a legacy group (GV1).",
+        "placeholders": {
+            "learnMore": {
+                "content": "$1",
+                "example": "Learn more."
+            }
+        }
+    },
+    "GroupV1--Migration--was-upgraded": {
+        "message": "Tiu ĉi grupo ĝisdatiĝis al novtipa grupo.",
+        "description": "Shown in timeline when a legacy group (GV1) is upgraded to a new group (GV2)"
+    },
+    "GroupV1--Migration--learn-more": {
+        "message": "Scii pli",
+        "description": "Shown on a bubble below a 'group was migrated' timeline notification, or as button on Migrate dialog"
+    },
+    "GroupV1--Migration--migrate": {
+        "message": "Ĝisdatigi",
+        "description": "Shown on Migrate dialog to kick off the process"
+    },
+    "GroupV1--Migration--info--title": {
+        "message": "Kio estas novtipaj grupoj?",
+        "description": "Shown on Learn More popup after GV1 migration"
+    },
+    "GroupV1--Migration--migrate--title": {
+        "message": "Ĝisdatigi al novtipa grupo",
+        "description": "Shown on Migration popup after choosing to migrate group"
+    },
+    "GroupV1--Migration--info--summary": {
+        "message": "Novtipaj grupoj havas trajtojn kiel @menciojn kaj grupadministrantojn, kaj pliajn estontece.",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--keep-history": {
+        "message": "Ĉiuj mesaĝoj kaj aŭdvidaĵoj konserviĝis tiel, kiel ili estis antaŭ la ĝisdatigon.",
+        "description": "Shown on Learn More popup after GV1 migration"
+    },
+    "GroupV1--Migration--migrate--keep-history": {
+        "message": "Ĉiuj mesaĝoj kaj aŭdvidaĵoj konserviĝis tiel, kiel ili estis antaŭ la ĝisdatigon.",
+        "description": "Shown on Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--invited--you": {
+        "message": "Vi bezonos akcepti inviton por anigi tiun grupon ree, kaj vi ne ricevos grupmesaĝojn ĝis via akcepto.",
+        "description": "Shown on Learn More popup after GV1 migration"
+    },
+    "GroupV1--Migration--info--invited--many": {
+        "message": "Tiuj ĉi anoj bezonos akcepti inviton por anigi la grupon ree, kaj ili ne ricevos mesaĝojn el la grupo ĝis ilia akcepto:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--invited--one": {
+        "message": "Tiu ĉi ano bezonos akcepti inviton por anigi la grupon ree, kaj ne ricevos mesaĝojn el la grupo, ĝis li aŭ ŝi akceptas ĝin:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--removed--before--many": {
+        "message": "Tiuj ĉi anoj ne povas anigi novtipajn grupojn, kaj ili foriĝos de la grupo:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--removed--before--one": {
+        "message": "Tiu ĉi ano ne povas anigi novtipajn grupojn, kaj estos forigita de la grupo:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--removed--after--many": {
+        "message": "Tiuj ĉi anoj ne povas anigi novtipajn grupojn, kaj ili estos forigitaj de la grupo:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--info--removed--after--one": {
+        "message": "Tiu ĉi ano ne povis anigi novtipajn grupojn, kaj estis forigitaj de la grupo:",
+        "description": "Shown on Learn More popup after or Migration popup before GV1 migration"
+    },
+    "GroupV1--Migration--invited--you": {
+        "message": "Vi ne povis re-aldoniĝi al la novtipa grupo kaj vi estis invitita aniĝi.",
+        "description": "Shown in timeline when a group is upgraded and you were invited instead of added"
+    },
+    "GroupV1--Migration--invited--one": {
+        "message": "$contact$ ne povis esti aldonita al la novtipa grupo, kaj estis invitita anigi.",
+        "description": "Shown in timeline when a group is upgraded and one person was invited, instead of added",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV1--Migration--invited--many": {
+        "message": "$count$ grupanoj ne povis esti aldonitaj al la novtipa grupo, kaj estis invititaj anigi.",
+        "description": "Shown in timeline when a group is upgraded and some people were invited, instead of added",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV1--Migration--removed--one": {
+        "message": "$contact$ estis forigita el la grupo.",
+        "description": "Shown in timeline when a group is upgraded and one person was removed entirely during the upgrade",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "GroupV1--Migration--removed--many": {
+        "message": "$count$ grupanoj estis forigitaj el la grupo.",
+        "description": "Shown in timeline when a group is upgraded and some people were removed entirely during the upgrade",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "close": {
+        "message": "Fermi",
+        "description": "Generic close label"
+    },
+    "previous": {
+        "message": "antaŭa",
+        "description": "Generic previous label"
+    },
+    "next": {
+        "message": "sekva",
+        "description": "Generic next label"
+    },
+    "CompositionArea--expand": {
+        "message": "Pligrandigi",
+        "description": "Aria label for expanding composition area"
+    },
+    "CompositionArea--attach-file": {
+        "message": "Aldoni dosieron",
+        "description": "Aria label for file attachment button in composition area"
+    },
+    "CompositionArea--sms-only__title": {
+        "message": "This person isn’t using Signal",
+        "description": "Title for the composition area for the SMS-only contact"
+    },
+    "CompositionArea--sms-only__body": {
+        "message": "Signal Desktop does not support messaging non-Signal contacts. Ask this person to install Signal for a more secure messaging experience.",
+        "description": "Body for the composition area for the SMS-only contact"
+    },
+    "CompositionArea--sms-only__spinner-label": {
+        "message": "Checking contact's registration status",
+        "description": "Displayed while checking if the contact is SMS-only"
+    },
+    "countMutedConversationsDescription": {
+        "message": "Enkalkuligi la silentigitajn interparolojn en la ŝilda nombrilo",
+        "description": "Description for counting muted conversations in badge setting"
+    },
+    "ContactModal--message": {
+        "message": "Mesaĝo",
+        "description": "Button text for send message button in Group Contact Details modal"
+    },
+    "ContactModal--rm-admin": {
+        "message": "Forigi kiel administranton",
+        "description": "Button text for removing as admin button in Group Contact Details modal"
+    },
+    "ContactModal--make-admin": {
+        "message": "Estigi administranton",
+        "description": "Button text for make admin button in Group Contact Details modal"
+    },
+    "ContactModal--make-admin-info": {
+        "message": "$contact$ povos modifi tiun grupon kaj ties anojn.",
+        "description": "Shown in a confirmation dialog when you are about to grant admin privileges to someone",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "Homer"
+            }
+        }
+    },
+    "ContactModal--rm-admin-info": {
+        "message": "Forigi $contact$ kiel grupadministranton",
+        "description": "Shown in a confirmation dialog when you are about to remove admin privileges from someone",
+        "placeholders": {
+            "contact": {
+                "content": "$1",
+                "example": "Homer"
+            }
+        }
+    },
+    "ContactModal--remove-from-group": {
+        "message": "Forigi el la grupo",
+        "description": "Button text for remove from group button in Group Contact Details modal"
+    },
+    "showChatColorEditor": {
+        "message": "Koloro de interparolo",
+        "description": "This is a button in the conversation context menu to show the chat color editor"
+    },
+    "showConversationDetails": {
+        "message": "Grup-agordoj",
+        "description": "This is a button in the conversation context menu to show group settings"
+    },
+    "ConversationDetails--group-link": {
+        "message": "Grupligilo",
+        "description": "This is the label for the group link management panel"
+    },
+    "ConversationDetails--disappearing-messages-label": {
+        "message": "Memviŝontaj mesaĝoj",
+        "description": "This is the label for the disappearing messages setting panel"
+    },
+    "ConversationDetails--disappearing-messages-info": {
+        "message": "Kiam ŝaltita, mesaĝoj senditaj kaj ricevitaj en tiu ĉi interparolo malaperos post sia legiĝo.",
+        "description": "This is the info about the disappearing messages setting"
+    },
+    "ConversationDetails--group-info-label": {
+        "message": "Kiu povas modifi grupan informon",
+        "description": "This is the label for the 'who can edit the group' panel"
+    },
+    "ConversationDetails--group-info-info": {
+        "message": "Choose who can edit group name, photo, description, and disappearing messages timer.",
+        "description": "This is the additional info for the 'who can edit the group' panel"
+    },
+    "ConversationDetails--add-members-label": {
+        "message": "Kiu povas aldoni novajn anojn",
+        "description": "This is the label for the 'who can add members' panel"
+    },
+    "ConversationDetails--add-members-info": {
+        "message": "Elekti tiun, kiu povas aldoni anojn en tiu grupo.",
+        "description": "This is the additional info for the 'who can add members' panel"
+    },
+    "ConversationDetails--requests-and-invites": {
+        "message": "Petoj kaj invitoj",
+        "description": "This is a button to display which members have been invited but have not joined yet"
+    },
+    "ConversationDetailsActions--leave-group": {
+        "message": "Forlasi la grupon",
+        "description": "This is a button to leave a group"
+    },
+    "ConversationDetailsActions--block-group": {
+        "message": "Bloki la grupon",
+        "description": "This is a button to block a group"
+    },
+    "ConversationDetailsActions--leave-group-must-choose-new-admin": {
+        "message": "Antaŭ ol foriri, vi devas elekti almenaŭ unu novan administraton por tiu ĉi grupo.",
+        "description": "Shown if, before leaving a group, you need to choose an admin"
+    },
+    "ConversationDetailsActions--leave-group-modal-title": {
+        "message": "Ĉu vi certas, ke vi volas forlasi ĉi tiun grupon?",
+        "description": "This is the modal title for confirming leaving a group"
+    },
+    "ConversationDetailsActions--leave-group-modal-content": {
+        "message": "Vi ne plu povos ricevi aŭ sendi mesaĝojn en tiu grupo.",
+        "description": "This is the modal content for confirming leaving a group"
+    },
+    "ConversationDetailsActions--leave-group-modal-confirm": {
+        "message": "Forlasi",
+        "description": "This is the modal button to confirm leaving a group"
+    },
+    "ConversationDetailsActions--block-group-modal-title": {
+        "message": "Ĉu bloki kaj forlasi la grupon „$groupName$“?",
+        "description": "This is the modal title for confirming blocking a group",
+        "placeholders": {
+            "groupName": {
+                "content": "$1",
+                "example": "Our Conversation"
+            }
+        }
+    },
+    "ConversationDetailsActions--block-group-modal-content": {
+        "message": "Vi ne plu ricevos mesaĝojn kaj ĝisdatigojn el tiu grupo.",
+        "description": "This is the modal content for confirming blocking a group"
+    },
+    "ConversationDetailsActions--block-group-modal-confirm": {
+        "message": "Bloki",
+        "description": "This is the modal button to confirm blocking a group"
+    },
+    "ConversationDetailsHeader--members": {
+        "message": "$number$ membroj",
+        "description": "This is the number of members in a group",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "10"
+            }
+        }
+    },
+    "ConversationDetailsMediaList--shared-media": {
+        "message": "Aŭdvidaĵoj kunhavigitaj",
+        "description": "Title for the media thumbnails in the conversation details screen"
+    },
+    "ConversationDetailsMediaList--show-all": {
+        "message": "Vidu ĉiujn",
+        "description": "This is a button on the conversation details to show all media"
+    },
+    "ConversationDetailsMembershipList--title": {
+        "message": "$number$ membroj",
+        "description": "The title of the membership list panel",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "10"
+            }
+        }
+    },
+    "ConversationDetailsMembershipList--add-members": {
+        "message": "Aldoni anojn",
+        "description": "The button that you can click to add new members"
+    },
+    "ConversationDetailsMembershipList--show-all": {
+        "message": "Vidu ĉiujn",
+        "description": "This is a button on the conversation details to show all members"
+    },
+    "GroupLinkManagement--clipboard": {
+        "message": "Grupligilo kopiita.",
+        "description": "Shown in a toast when a user selects to copy group link"
+    },
+    "GroupLinkManagement--share": {
+        "message": "Kopii ligilon",
+        "description": "This lets users share their group link"
+    },
+    "GroupLinkManagement--confirm-reset": {
+        "message": "Ĉu vi certas, ke vi volas restarigi la grupligilon? Homoj ne plu povos aniĝi pere de la nuna ligilo.",
+        "description": "Shown in the confirmation dialog when an admin is about to reset the group link"
+    },
+    "GroupLinkManagement--reset": {
+        "message": "Restarigi ligilon",
+        "description": "This lets users generate a new group link"
+    },
+    "GroupLinkManagement--approve-label": {
+        "message": "Aprobi novajn anojn",
+        "description": "Title for the approve new members select area"
+    },
+    "GroupLinkManagement--approve-info": {
+        "message": "Postuli, ke administranto aprobas novajn anojn, kiuj aniĝas per la grupligilo.",
+        "description": "Description for the approve new members select area"
+    },
+    "PendingInvites--tab-requests": {
+        "message": "Petoj ($count$)",
+        "description": "Label for the tab to view pending requests",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "4"
+            }
+        }
+    },
+    "PendingInvites--tab-invites": {
+        "message": "Invitoj ($count$)",
+        "description": "Label for the tab to view pending invites",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "2"
+            }
+        }
+    },
+    "PendingRequests--approve-for": {
+        "message": "Ĉu aprobi la peton el „$name$“?",
+        "description": "This is the modal content when confirming approving a group request to join",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Meowsy Purrington"
+            }
+        }
+    },
+    "PendingRequests--deny-for": {
+        "message": "Ĉu malaprobi la peton el „$name$“?",
+        "description": "This is the modal content when confirming denying a group request to join",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Meowsy Purrington"
+            }
+        }
+    },
+    "PendingInvites--invites": {
+        "message": "Invitita de vi",
+        "description": "This is the title list of all invites"
+    },
+    "PendingInvites--invited-by-you": {
+        "message": "Invitita de vi",
+        "description": "This is the title for the list of members you have invited"
+    },
+    "PendingInvites--invited-by-others": {
+        "message": "Invititaj de aliaj grupanoj",
+        "description": "This is the title for the list of members who have invited other people"
+    },
+    "PendingInvites--invited-count": {
+        "message": "$number$ invititaj",
+        "description": "This is the label for the number of members someone has invited",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "3"
+            }
+        }
+    },
+    "PendingInvites--revoke-for-label": {
+        "message": "Senvalidigi grupan inviton",
+        "description": "This is aria label for revoking a group invite icon"
+    },
+    "PendingInvites--revoke-for": {
+        "message": "Ĉu senvalidigi inviton de „$name$“?",
+        "description": "This is the modal content when confirming revoking a single invite",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "3"
+            },
+            "name": {
+                "content": "$2",
+                "example": "Fred Riley III"
+            }
+        }
+    },
+    "PendingInvites--revoke-from-singular": {
+        "message": "Ĉu senvalidigi inviton sendita de „$name$“?",
+        "description": "This is the modal content when confirming revoking a single invite",
+        "placeholders": {
+            "name": {
+                "content": "$2",
+                "example": "Fred Riley III"
+            }
+        }
+    },
+    "PendingInvites--revoke-from-plural": {
+        "message": "Ĉu senvalidigi $number$ invitojn senditaj de „$name$“?",
+        "description": "This is the modal content when confirming revoking multiple invites",
+        "placeholders": {
+            "number": {
+                "content": "$1",
+                "example": "3"
+            },
+            "name": {
+                "content": "$2",
+                "example": "Fred Riley III"
+            }
+        }
+    },
+    "PendingInvites--revoke": {
+        "message": "Senvalidigi",
+        "description": "This is the modal button to confirm revoking invites"
+    },
+    "PendingRequests--approve": {
+        "message": "Aprobi la peton",
+        "description": "This is the modal button to approve group request to join"
+    },
+    "PendingRequests--deny": {
+        "message": "Malaprobi la peton",
+        "description": "This is the modal button to deny group request to join"
+    },
+    "PendingRequests--info": {
+        "message": "Homoj en tiu listo provas anigi „$name$“ per la grupligilo.",
+        "description": "Inforamtion shown below the pending admin approval list",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Tahoe List"
+            }
+        }
+    },
+    "PendingInvites--info": {
+        "message": "Detaloj pri homoj invititaj en tiu grupo ne montriĝos ĝis ilia aniĝo. Invititoj vidos mesaĝojn nur post sia aniĝo.",
+        "description": "Information shown below the invite list"
+    },
+    "AvatarInput--no-photo-label--group": {
+        "message": "Aldoni grupfoton",
+        "description": "The label for the avatar uploader when no group photo is selected"
+    },
+    "AvatarInput--change-photo-label": {
+        "message": "Ŝanĝi foton",
+        "description": "The label for the avatar uploader when a photo is selected"
+    },
+    "AvatarInput--upload-photo-choice": {
+        "message": "Alŝuti foton",
+        "description": "The button text when you click on an uploaded avatar and want to upload a new one"
+    },
+    "AvatarInput--remove-photo-choice": {
+        "message": "Forviŝi profilfoton",
+        "description": "The button text when you click on an uploaded avatar and want to remove it"
+    },
+    "ContactPill--remove": {
+        "message": "Forigi la kontakton",
+        "description": "The label for the 'remove' button on the contact pill"
+    },
+    "ComposeErrorDialog--close": {
+        "message": "Bone",
+        "description": "The text on the button when there's an error in the composer"
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--title--one": {
+        "message": "Invito sendita",
+        "description": "When creating a new group and inviting users, this is shown in the dialog"
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--title--many": {
+        "message": "$count$ invitoj senditaj",
+        "description": "When creating a new group and inviting users, this is shown in the dialog",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "3"
+            }
+        }
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--body--user-paragraph--one": {
+        "message": "„$name$“ ne povas aŭtomate esti aldonita al tiu grupo fare de vi.",
+        "description": "When creating a new group and inviting users, this is shown in the dialog",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Jane Doe"
+            }
+        }
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--body--user-paragraph--many": {
+        "message": "Tiuj uzantoj ne povas aŭtomate esti aldonitaj al tiu grupo fare de vi.",
+        "description": "When creating a new group and inviting users, this is shown in the dialog"
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--body--info-paragraph": {
+        "message": "Ili estis invititaj por anigi la grupon, kaj ili ne vidos la mesaĝojn el la grupo ĝis ilia akcepto.",
+        "description": "When creating a new group and inviting users, this is shown in the dialog"
+    },
+    "NewlyCreatedGroupInvitedContactsDialog--body--learn-more": {
+        "message": "Scii pli",
+        "description": "When creating a new group and inviting users, this is shown in the dialog"
+    },
+    "AddGroupMembersModal--title": {
+        "message": "Aldoni anojn",
+        "description": "When adding new members to an existing group, this is shown in the dialog"
+    },
+    "AddGroupMembersModal--continue-to-confirm": {
+        "message": "Ĝisdatigi",
+        "description": "When adding new members to an existing group, this is shown in the dialog"
+    },
+    "AddGroupMembersModal--confirm-title--one": {
+        "message": "Ĉu aldoni „$person$“ al la grupo „$group$“?",
+        "description": "When adding new members to an existing group, this is shown in the confirmation dialog",
+        "placeholders": {
+            "person": {
+                "content": "$1",
+                "example": "Jane Doe"
+            },
+            "group": {
+                "content": "$2",
+                "example": "Tahoe Trip"
+            }
+        }
+    },
+    "AddGroupMembersModal--confirm-title--many": {
+        "message": "Ĉu aldoni $count$ anojn al la grupo „$group$“?",
+        "description": "When adding new members to an existing group, this is shown in the confirmation dialog",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "5"
+            },
+            "group": {
+                "content": "$2",
+                "example": "Tahoe Trip"
+            }
+        }
+    },
+    "AddGroupMembersModal--confirm-button--one": {
+        "message": "Aldoni anon",
+        "description": "When adding new members to an existing group, this is shown on the confirmation dialog button"
+    },
+    "AddGroupMembersModal--confirm-button--many": {
+        "message": "Aldoni anojn",
+        "description": "When adding new members to an existing group, this is shown on the confirmation dialog button"
+    },
+    "createNewGroupButton": {
+        "message": "Nova grupo",
+        "description": "The text of the button to create new groups"
+    },
+    "selectContact": {
+        "message": "Elekti kontakton",
+        "description": "The label for contact checkboxes that are non-selected (clicking them should select the contact)"
+    },
+    "deselectContact": {
+        "message": "Malelekti kontakton",
+        "description": "The label for contact checkboxes that are selected (clicking them should de-select the contact)"
+    },
+    "cannotSelectContact": {
+        "message": "Kontakto ne elektebla",
+        "description": "The label for contact checkboxes that are disabled"
+    },
+    "alreadyAMember": {
+        "message": "Jam grupano",
+        "description": "The label for contact checkboxes that are disabled because they're already a member"
+    },
+    "MessageAudio--play": {
+        "message": "Ludi aŭdan kunsendaĵon",
+        "description": "Aria label for audio attachment's Play button"
+    },
+    "MessageAudio--pause": {
+        "message": "Paŭzigi aŭdan kunsendaĵon",
+        "description": "Aria label for audio attachment's Pause button"
+    },
+    "MessageAudio--download": {
+        "message": "Elŝuti aŭdan kunsendaĵon",
+        "description": "Aria label for audio attachment's Download button"
+    },
+    "MessageAudio--pending": {
+        "message": "Elŝuto de aŭda kunsendaĵo...",
+        "description": "Aria label for pending audio attachment spinner"
+    },
+    "MessageAudio--slider": {
+        "message": "Lud-progreso de aŭda kunsendaĵo",
+        "description": "Aria label for audio attachment's playback time slider"
+    },
+    "emptyInboxMessage": {
+        "message": "Click the $composeIcon$ above and search for your contacts or groups to message.",
+        "description": "Shown in the left-pane when the inbox is empty",
+        "placeholders": {
+            "composeIcon": {
+                "content": "$1",
+                "example": "compose button"
+            }
+        }
+    },
+    "composeIcon": {
+        "message": "compose button",
+        "description": "Shown in the left-pane when the inbox is empty. Describes the button that composes a new message."
+    },
+    "ForwardMessageModal--continue": {
+        "message": "Daŭrigi",
+        "description": "aria-label for the 'next' button in the forward a message modal dialog"
+    },
+    "MessageRequestWarning__learn-more": {
+        "message": "Scii pli",
+        "description": "Shown on the message request warning. Clicking this button will open a dialog with more information"
+    },
+    "MessageRequestWarning__dialog__details": {
+        "message": "Vi havas neniun komunan grupon kun tiu homo. Kontroli la petojn zorgeme antaŭ via akcepto por ne sendi nedeziratajn mesaĝojn.",
+        "description": "Shown in the message request warning dialog. Gives more information about message requests"
+    },
+    "MessageRequestWarning__dialog__learn-even-more": {
+        "message": "About Message Requests",
+        "description": "Shown in the message request warning dialog. Clicking this button will open a page on Signal's support site"
+    },
+    "ContactSpoofing__same-name": {
+        "message": "Review requests carefully. Signal found another contact with the same name. $link$",
+        "description": "Shown in the timeline warning when you have a message request from someone with the same name as someone else",
+        "placeholders": {
+            "link": {
+                "content": "$1",
+                "example": "Review request"
+            }
+        }
+    },
+    "ContactSpoofing__same-name-in-group": {
+        "message": "$count$ group members have the same name. $link$",
+        "description": "Shown in the timeline warning when you multiple group members have the same name",
+        "placeholders": {
+            "count": {
+                "content": "$1",
+                "example": "3"
+            },
+            "link": {
+                "content": "$2",
+                "example": "Tap to review"
+            }
+        }
+    },
+    "ContactSpoofing__same-name__link": {
+        "message": "Review request",
+        "description": "Shown in the timeline warning when you have a message request from someone with the same name as someone else"
+    },
+    "ContactSpoofing__same-name-in-group__link": {
+        "message": "Click to review",
+        "description": "Shown in the timeline warning when you multiple group members have the same name"
+    },
+    "ContactSpoofingReviewDialog__title": {
+        "message": "Review request",
+        "description": "Title for the contact name spoofing review dialog"
+    },
+    "ContactSpoofingReviewDialog__description": {
+        "message": "Se vi ne certas pri tiu, kiu faris la peton, vidu la kontaktojn ĉi-sube, kaj elekti tion, kion fari.",
+        "description": "Description for the contact spoofing review dialog"
+    },
+    "ContactSpoofingReviewDialog__possibly-unsafe-title": {
+        "message": "Peto",
+        "description": "Header in the contact spoofing review dialog, shown above the potentially-unsafe user"
+    },
+    "ContactSpoofingReviewDialog__safe-title": {
+        "message": "Via kontakto",
+        "description": "Header in the contact spoofing review dialog, shown above the \"safe\" user"
+    },
+    "ContactSpoofingReviewDialog__group__title": {
+        "message": "Review members",
+        "description": "Title for the contact name spoofing review dialog in groups"
+    },
+    "ContactSpoofingReviewDialog__group__description": {
+        "message": "$count$ group members have similar names. Review the members below or choose to take action.",
+        "description": "Description for the group contact spoofing review dialog"
+    },
+    "ContactSpoofingReviewDialog__group__members-header": {
+        "message": "Anoj",
+        "description": "Header in the group contact spoofing review dialog. After this header, there will be a list of members"
+    },
+    "ContactSpoofingReviewDialog__group__name-change-info": {
+        "message": "Recently changed their profile name from $oldName$ to $newName$",
+        "description": "In the group contact spoofing review dialog, this text is shown when someone has changed their name recently",
+        "placeholders": {
+            "oldName": {
+                "content": "$1",
+                "example": "Jane Doe"
+            },
+            "newName": {
+                "content": "$2",
+                "example": "Doe Jane"
+            }
+        }
+    },
+    "RemoveGroupMemberConfirmation__remove-button": {
+        "message": "Forigi el la grupo",
+        "description": "When confirming the removal of a group member, show this text in the button"
+    },
+    "RemoveGroupMemberConfirmation__description": {
+        "message": "Remove \"$name$\" from the group?",
+        "description": "When confirming the removal of a group member, show this text in the dialog",
+        "placeholders": {
+            "name": {
+                "content": "$1",
+                "example": "Jane Doe"
+            }
+        }
+    },
+    "CaptchaDialog__title": {
+        "message": "Verify to continue messaging",
+        "description": "Header in the captcha dialog"
+    },
+    "CaptchaDialog__first-paragraph": {
+        "message": "To help prevent spam on Signal, please complete verification.",
+        "description": "First paragraph in the captcha dialog"
+    },
+    "CaptchaDialog__second-paragraph": {
+        "message": "After verifying, you can continue messaging. Any paused messages will automatically be sent.",
+        "description": "First paragraph in the captcha dialog"
+    },
+    "CaptchaDialog--can-close__title": {
+        "message": "Continue Without Verifying?",
+        "description": "Header in the captcha dialog that can be closed"
+    },
+    "CaptchaDialog--can-close__body": {
+        "message": "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.",
+        "description": "Body of the captcha dialog that can be closed"
+    },
+    "CaptchaDialog--can_close__skip-verification": {
+        "message": "Skip verification",
+        "description": "Skip button of the captcha dialog that can be closed"
+    },
+    "verificationComplete": {
+        "message": "Verification complete.",
+        "description": "Displayed after successful captcha"
+    },
+    "verificationFailed": {
+        "message": "Verification failed. Please retry later.",
+        "description": "Displayed after unsuccessful captcha"
+    },
+    "deleteForEveryoneFailed": {
+        "message": "Failed to delete message for everyone. Please retry later.",
+        "description": "Displayed when delete-for-everyone has failed to send to all recepients"
+    },
+    "ChatColorPicker__delete--title": {
+        "message": "Delete color",
+        "description": "Confirm title for deleting custom color"
+    },
+    "ChatColorPicker__delete--message": {
+        "message": "This custom color is used in $num$ chats. Do you want to delete it for all chats?",
+        "description": "Confirm message for deleting custom color",
+        "placeholders": {
+            "num": {
+                "content": "$1",
+                "example": "5"
+            }
+        }
+    },
+    "ChatColorPicker__global-chat-color": {
+        "message": "Global Chat Color",
+        "description": "Modal title for the chat color picker and editor for all conversations"
+    },
+    "ChatColorPicker__menu-title": {
+        "message": "Chat Color",
+        "description": "View title for the chat color picker and editor"
+    },
+    "ChatColorPicker__reset": {
+        "message": "Reset chat color",
+        "description": "Button label for resetting chat colors"
+    },
+    "ChatColorPicker__resetDefault": {
+        "message": "Reset Chat Colors",
+        "description": "Confirmation dialog title for resetting all chat colors or only the global default one"
+    },
+    "ChatColorPicker__resetAll": {
+        "message": "Reset all chat colors",
+        "description": "Button label for resetting all chat colors"
+    },
+    "ChatColorPicker__confirm-reset-default": {
+        "message": "Reset default",
+        "description": "Button label for resetting only global chat color"
+    },
+    "ChatColorPicker__confirm-reset": {
+        "message": "Restarigi",
+        "description": "Confirm button label for resetting chat colors"
+    },
+    "ChatColorPicker__confirm-reset-message": {
+        "message": "Would you like to override all chat colors?",
+        "description": "Modal message text for confirming resetting of chat colors"
+    },
+    "ChatColorPicker__custom-color--label": {
+        "message": "Show custom color editor",
+        "description": "aria-label for custom color editor button"
+    },
+    "ChatColorPicker__sampleBubble1": {
+        "message": "Here's a preview of the chat color.",
+        "description": "An example message bubble for selecting the chat color"
+    },
+    "ChatColorPicker__sampleBubble2": {
+        "message": "Another bubble.",
+        "description": "An example message bubble for selecting the chat color"
+    },
+    "ChatColorPicker__sampleBubble3": {
+        "message": "The color is visible to only you.",
+        "description": "An example message bubble for selecting the chat color"
+    },
+    "ChatColorPicker__context--edit": {
+        "message": "Edit color",
+        "description": "Option in the custom color bubble context menu"
+    },
+    "ChatColorPicker__context--duplicate": {
+        "message": "Duplicate",
+        "description": "Option in the custom color bubble context menu"
+    },
+    "ChatColorPicker__context--delete": {
+        "message": "Forigi",
+        "description": "Option in the custom color bubble context menu"
+    },
+    "CustomColorEditor__solid": {
+        "message": "Solid",
+        "description": "Tab label for selecting solid colors"
+    },
+    "CustomColorEditor__gradient": {
+        "message": "Gradient",
+        "description": "Tab label for selecting a gradient"
+    },
+    "CustomColorEditor__hue": {
+        "message": "Hue",
+        "description": "Label for the hue slider"
+    },
+    "CustomColorEditor__saturation": {
+        "message": "Saturation",
+        "description": "Label for the saturation slider"
+    },
+    "CustomColorEditor__title": {
+        "message": "Custom Color",
+        "description": "Modal title for the custom color editor"
+    },
+    "customDisappearingTimeOption": {
+        "message": "Custom time...",
+        "description": "Text for an option in Disappearing Messages menu and Conversation Details Disappearing Messages setting when no user value is available"
+    },
+    "selectedCustomDisappearingTimeOption": {
+        "message": "Custom time",
+        "description": "Text for an option in Conversation Details Disappearing Messages setting when user previously selected custom time"
+    },
+    "DisappearingTimeDialog__title": {
+        "message": "Custom Time",
+        "description": "Title for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__body": {
+        "message": "Choose a custom time for disappearing messages.",
+        "description": "Body for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__set": {
+        "message": "Set",
+        "description": "Text for the dialog button confirming the custom disappearing message timeout"
+    },
+    "DisappearingTimeDialog__seconds": {
+        "message": "Seconds",
+        "description": "Name of the 'seconds' unit select for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__minutes": {
+        "message": "Minutes",
+        "description": "Name of the 'minutes' unit select for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__hours": {
+        "message": "Hours",
+        "description": "Name of the 'hours' unit select for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__days": {
+        "message": "Days",
+        "description": "Name of the 'days' unit select for the custom disappearing message timeout dialog"
+    },
+    "DisappearingTimeDialog__weeks": {
+        "message": "Weeks",
+        "description": "Name of the 'weeks' unit select for the custom disappearing message timeout dialog"
+    },
+    "settings__DisappearingMessages__footer": {
+        "message": "Set a default disappearing message timer for all new chats started by you.",
+        "description": "Footer for the Disappearing Messages settings section"
+    },
+    "settings__DisappearingMessages__timer__label": {
+        "message": "Default timer for new chats",
+        "description": "Label for the Disapearring Messages default timer setting"
+    },
+    "UniversalTimerNotification__text": {
+        "message": "The disappearing message time will be set to $timeValue$ when you message them.",
+        "description": "A message displayed when default disappearing message timeout is about to be applied",
+        "placeholders": {
+            "timeValue": {
+                "content": "$1",
+                "example": "1 week"
+            }
+        }
+    },
+    "GroupDescription__read-more": {
+        "message": "read more",
+        "description": "Button text when the group description is too long"
+    },
+    "EditConversationAttributesModal__description-warning": {
+        "message": "Group descriptions will be visible to members of this group and people who have been invited.",
+        "description": "Label text shown when editing group description"
+    },
+    "ConversationDetailsHeader--add-group-description": {
+        "message": "Add group description...",
+        "description": "Placeholder text in the details header for those that can edit the group description"
     }
 }

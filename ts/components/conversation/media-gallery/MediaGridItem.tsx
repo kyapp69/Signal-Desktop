@@ -1,3 +1,6 @@
+// Copyright 2018-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import React from 'react';
 import classNames from 'classnames';
 
@@ -8,15 +11,15 @@ import {
 import { LocalizerType } from '../../../types/Util';
 import { MediaItemType } from '../../LightboxGallery';
 
-interface Props {
+export type Props = {
   mediaItem: MediaItemType;
   onClick?: () => void;
   i18n: LocalizerType;
-}
+};
 
-interface State {
+type State = {
   imageBroken: boolean;
-}
+};
 
 export class MediaGridItem extends React.Component<Props, State> {
   private readonly onImageErrorBound: () => void;
@@ -31,9 +34,8 @@ export class MediaGridItem extends React.Component<Props, State> {
     this.onImageErrorBound = this.onImageError.bind(this);
   }
 
-  public onImageError() {
-    // tslint:disable-next-line no-console
-    console.log(
+  public onImageError(): void {
+    window.log.info(
       'MediaGridItem: Image failed to load; failing over to placeholder'
     );
     this.setState({
@@ -41,7 +43,7 @@ export class MediaGridItem extends React.Component<Props, State> {
     });
   }
 
-  public renderContent() {
+  public renderContent(): JSX.Element | null {
     const { mediaItem, i18n } = this.props;
     const { imageBroken } = this.state;
     const { attachment, contentType } = mediaItem;
@@ -70,7 +72,8 @@ export class MediaGridItem extends React.Component<Props, State> {
           onError={this.onImageErrorBound}
         />
       );
-    } else if (contentType && isVideoTypeSupported(contentType)) {
+    }
+    if (contentType && isVideoTypeSupported(contentType)) {
       if (imageBroken || !mediaItem.thumbnailObjectUrl) {
         return (
           <div
@@ -107,9 +110,15 @@ export class MediaGridItem extends React.Component<Props, State> {
     );
   }
 
-  public render() {
+  public render(): JSX.Element {
+    const { onClick } = this.props;
+
     return (
-      <button className="module-media-grid-item" onClick={this.props.onClick}>
+      <button
+        type="button"
+        className="module-media-grid-item"
+        onClick={onClick}
+      >
         {this.renderContent()}
       </button>
     );

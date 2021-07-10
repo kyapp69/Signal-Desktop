@@ -1,3 +1,6 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { createReadStream, statSync } from 'fs';
 import { createServer, IncomingMessage, Server, ServerResponse } from 'http';
 import { AddressInfo } from 'net';
@@ -15,8 +18,10 @@ import {
   deleteTempDir,
   downloadUpdate,
   getPrintableError,
+  setUpdateListener,
   showCannotUpdateDialog,
   showUpdateDialog,
+  UpdaterInterface,
 } from './common';
 import { LocaleType } from '../types/I18N';
 import { LoggerType } from '../types/Logging';
@@ -32,7 +37,7 @@ export async function start(
   getMainWindow: () => BrowserWindow,
   locale: LocaleType,
   logger: LoggerType
-) {
+): Promise<UpdaterInterface> {
   logger.info('macos/start: starting checks...');
 
   loggerForQuitHandler = logger;
@@ -46,7 +51,15 @@ export async function start(
     }
   }, INTERVAL);
 
+  setUpdateListener(createUpdater(logger));
+
   await checkDownloadAndInstall(getMainWindow, locale, logger);
+
+  return {
+    async force(): Promise<void> {
+      return checkDownloadAndInstall(getMainWindow, locale, logger, true);
+    },
+  };
 }
 
 let fileName: string;
@@ -57,11 +70,12 @@ let loggerForQuitHandler: LoggerType;
 async function checkDownloadAndInstall(
   getMainWindow: () => BrowserWindow,
   locale: LocaleType,
-  logger: LoggerType
+  logger: LoggerType,
+  force = false
 ) {
   logger.info('checkDownloadAndInstall: checking for update...');
   try {
-    const result = await checkForUpdates(logger);
+    const result = await checkForUpdates(logger, force);
     if (!result) {
       return;
     }
@@ -72,6 +86,11 @@ async function checkDownloadAndInstall(
       fileName = newFileName;
       version = newVersion;
       updateFilePath = await downloadUpdate(fileName, logger);
+    }
+
+    if (!updateFilePath) {
+      logger.info('checkDownloadAndInstall: no update file path. Skipping!');
+      return;
     }
 
     const publicKey = hexToBinary(getFromConfig('updatesPublicKey'));
@@ -107,11 +126,7 @@ async function checkDownloadAndInstall(
 
     logger.info('checkDownloadAndInstall: showing update dialog...');
 
-    showUpdateDialog(getMainWindow(), locale, () => {
-      logger.info('checkDownloadAndInstall: calling quitAndInstall...');
-      markShouldQuit();
-      autoUpdater.quitAndInstall();
-    });
+    showUpdateDialog(getMainWindow(), locale, createUpdater(logger));
   } catch (error) {
     logger.error('checkDownloadAndInstall: error', getPrintableError(error));
   }
@@ -186,8 +201,10 @@ async function handToAutoUpdate(
       try {
         serverUrl = getServerUrl(server);
 
-        autoUpdater.on('error', (error: Error) => {
-          logger.error('autoUpdater: error', getPrintableError(error));
+        autoUpdater.on('error', (...args) => {
+          logger.error('autoUpdater: error', ...args.map(getPrintableError));
+
+          const [error] = args;
           reject(error);
         });
         autoUpdater.on('update-downloaded', () => {
@@ -210,8 +227,6 @@ async function handToAutoUpdate(
         autoUpdater.checkForUpdates();
       } catch (error) {
         reject(error);
-
-        return;
       }
     });
   });
@@ -292,7 +307,6 @@ function write404(
 function getServerUrl(server: Server) {
   const address = server.address() as AddressInfo;
 
-  // tslint:disable-next-line:no-http-string
   return `http://127.0.0.1:${address.port}`;
 }
 function generateFileUrl(): string {
@@ -363,7 +377,10 @@ async function showFallbackReadOnlyDialog(
     type: 'warning',
     buttons: [locale.messages.ok.message],
     title: locale.messages.cannotUpdate.message,
-    message: locale.i18n('readOnlyVolume', ['Signal.app', '/Applications']),
+    message: locale.i18n('readOnlyVolume', {
+      app: 'Signal.app',
+      folder: '/Applications',
+    }),
   };
 
   showingReadOnlyDialog = true;
@@ -371,4 +388,12 @@ async function showFallbackReadOnlyDialog(
   await dialog.showMessageBox(mainWindow, options);
 
   showingReadOnlyDialog = false;
+}
+
+function createUpdater(logger: LoggerType) {
+  return () => {
+    logger.info('performUpdate: calling quitAndInstall...');
+    markShouldQuit();
+    autoUpdater.quitAndInstall();
+  };
 }

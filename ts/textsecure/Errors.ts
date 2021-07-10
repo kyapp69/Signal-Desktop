@@ -1,4 +1,10 @@
-// tslint:disable max-classes-per-file
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable max-classes-per-file */
+
+import { parseRetryAfter } from '../util/parseRetryAfter';
 
 function appendStack(newError: Error, originalError: Error) {
   // eslint-disable-next-line no-param-reassign
@@ -7,7 +13,9 @@ function appendStack(newError: Error, originalError: Error) {
 
 export class ReplayableError extends Error {
   name: string;
+
   message: string;
+
   functionCode?: number;
 
   constructor(options: {
@@ -30,26 +38,9 @@ export class ReplayableError extends Error {
   }
 }
 
-export class IncomingIdentityKeyError extends ReplayableError {
-  identifier: string;
-  identityKey: ArrayBuffer;
-
-  // Note: Data to resend message is no longer captured
-  constructor(incomingIdentifier: string, _m: ArrayBuffer, key: ArrayBuffer) {
-    const identifer = incomingIdentifier.split('.')[0];
-
-    super({
-      name: 'IncomingIdentityKeyError',
-      message: `The identity of ${identifer} has changed.`,
-    });
-
-    this.identifier = identifer;
-    this.identityKey = key;
-  }
-}
-
 export class OutgoingIdentityKeyError extends ReplayableError {
   identifier: string;
+
   identityKey: ArrayBuffer;
 
   // Note: Data to resend message is no longer captured
@@ -73,13 +64,14 @@ export class OutgoingIdentityKeyError extends ReplayableError {
 
 export class OutgoingMessageError extends ReplayableError {
   identifier: string;
+
   code?: any;
 
   // Note: Data to resend message is no longer captured
   constructor(
     incomingIdentifier: string,
-    _m: ArrayBuffer,
-    _t: number,
+    _m: unknown,
+    _t: unknown,
     httpError?: Error
   ) {
     const identifier = incomingIdentifier.split('.')[0];
@@ -101,14 +93,45 @@ export class OutgoingMessageError extends ReplayableError {
 export class SendMessageNetworkError extends ReplayableError {
   identifier: string;
 
-  constructor(identifier: string, _m: any, httpError: Error) {
+  constructor(identifier: string, _m: unknown, httpError: Error) {
     super({
       name: 'SendMessageNetworkError',
       message: httpError.message,
     });
 
-    this.identifier = identifier.split('.')[0];
+    [this.identifier] = identifier.split('.');
     this.code = httpError.code;
+
+    appendStack(this, httpError);
+  }
+}
+
+export type SendMessageChallengeData = {
+  readonly token?: string;
+  readonly options?: ReadonlyArray<string>;
+};
+
+export class SendMessageChallengeError extends ReplayableError {
+  public identifier: string;
+
+  public readonly data: SendMessageChallengeData | undefined;
+
+  public readonly retryAfter: number;
+
+  constructor(identifier: string, httpError: Error) {
+    super({
+      name: 'SendMessageChallengeError',
+      message: httpError.message,
+    });
+
+    [this.identifier] = identifier.split('.');
+    this.code = httpError.code;
+    this.data = httpError.response;
+
+    const headers = httpError.responseHeaders || {};
+
+    this.retryAfter =
+      Date.now() + parseRetryAfter(headers['retry-after'].toString());
 
     appendStack(this, httpError);
   }
@@ -126,7 +149,7 @@ export class SignedPreKeyRotationError extends ReplayableError {
 export class MessageError extends ReplayableError {
   code?: any;
 
-  constructor(_m: any, httpError: Error) {
+  constructor(_m: unknown, httpError: Error) {
     super({
       name: 'MessageError',
       message: httpError.message,
@@ -140,10 +163,11 @@ export class MessageError extends ReplayableError {
 
 export class UnregisteredUserError extends Error {
   identifier: string;
+
   code?: any;
 
   constructor(identifier: string, httpError: Error) {
-    const message = httpError.message;
+    const { message } = httpError;
 
     super(message);
 
@@ -162,3 +186,5 @@ export class UnregisteredUserError extends Error {
     appendStack(this, httpError);
   }
 }
+
+export class ConnectTimeoutError extends Error {}

@@ -1,33 +1,51 @@
+// Copyright 2018-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import React from 'react';
+import classNames from 'classnames';
 
 import { Emojify } from './Emojify';
+import { ContactNameColorType } from '../../types/Colors';
+import { LocalizerType } from '../../types/Util';
+import { getClassNamesFor } from '../../util/getClassNamesFor';
 
-interface Props {
-  phoneNumber?: string;
-  name?: string;
-  profileName?: string;
+export type PropsType = {
+  contactNameColor?: ContactNameColorType;
+  firstName?: string;
+  i18n: LocalizerType;
   module?: string;
-}
+  name?: string;
+  phoneNumber?: string;
+  preferFirstName?: boolean;
+  profileName?: string;
+  title: string;
+};
 
-export class ContactName extends React.Component<Props> {
-  public render() {
-    const { phoneNumber, name, profileName, module } = this.props;
-    const prefix = module ? module : 'module-contact-name';
+export const ContactName = ({
+  contactNameColor,
+  firstName,
+  module,
+  preferFirstName,
+  title,
+}: PropsType): JSX.Element => {
+  const getClassName = getClassNamesFor('module-contact-name', module);
 
-    const title = name ? name : phoneNumber;
-    const shouldShowProfile = Boolean(profileName && !name);
-    const profileElement = shouldShowProfile ? (
-      <span className={`${prefix}__profile-name`}>
-        ~<Emojify text={profileName || ''} />
-      </span>
-    ) : null;
-
-    return (
-      <span className={prefix} dir="auto">
-        <Emojify text={title || ''} />
-        {shouldShowProfile ? ' ' : null}
-        {profileElement}
-      </span>
-    );
+  let text: string;
+  if (preferFirstName) {
+    text = firstName || title || '';
+  } else {
+    text = title || '';
   }
-}
+
+  return (
+    <span
+      className={classNames(
+        getClassName(''),
+        contactNameColor ? getClassName(`--${contactNameColor}`) : null
+      )}
+      dir="auto"
+    >
+      <Emojify text={text} />
+    </span>
+  );
+};

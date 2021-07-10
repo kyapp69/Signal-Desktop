@@ -1,8 +1,14 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { omit, reject } from 'lodash';
 
 import { normalize } from '../../types/PhoneNumber';
-import { trigger } from '../../shims/events';
 import { cleanSearchTerm } from '../../util/cleanSearchTerm';
+import {
+  ClientSearchResultMessageType,
+  ClientInterface,
+} from '../../sql/Interface';
 import dataInterface from '../../sql/Client';
 import { makeLookup } from '../../util/makeLookup';
 
@@ -20,12 +26,12 @@ const {
   searchConversations: dataSearchConversations,
   searchMessages: dataSearchMessages,
   searchMessagesInConversation,
-} = dataInterface;
+}: ClientInterface = dataInterface;
 
 // State
 
 export type MessageSearchResultType = MessageType & {
-  snippet: string;
+  snippet?: string;
 };
 
 export type MessageSearchResultLookupType = {
@@ -36,9 +42,8 @@ export type SearchStateType = {
   startSearchCounter: number;
   searchConversationId?: string;
   searchConversationName?: string;
-  // We store just ids of conversations, since that data is always cached in memory
-  contacts: Array<string>;
-  conversations: Array<string>;
+  contactIds: Array<string>;
+  conversationIds: Array<string>;
   query: string;
   normalizedPhoneNumber?: string;
   messageIds: Array<string>;
@@ -60,8 +65,8 @@ type SearchMessagesResultsPayloadType = SearchResultsBaseType & {
   messages: Array<MessageSearchResultType>;
 };
 type SearchDiscussionsResultsPayloadType = SearchResultsBaseType & {
-  conversations: Array<string>;
-  contacts: Array<string>;
+  conversationIds: Array<string>;
+  contactIds: Array<string>;
 };
 type SearchMessagesResultsKickoffActionType = {
   type: 'SEARCH_MESSAGES_RESULTS';
@@ -106,7 +111,7 @@ type SearchInConversationActionType = {
   };
 };
 
-export type SEARCH_TYPES =
+export type SearchActionType =
   | SearchMessagesResultsKickoffActionType
   | SearchDiscussionsResultsKickoffActionType
   | SearchMessagesResultsFulfilledActionType
@@ -132,7 +137,6 @@ export const actions = {
   clearConversationSearch,
   searchInConversation,
   updateSearchTerm,
-  startNewConversation,
 };
 
 function searchMessages(
@@ -187,7 +191,7 @@ async function doSearchDiscussions(
   }
 ): Promise<SearchDiscussionsResultsPayloadType> {
   const { ourConversationId, noteToSelf } = options;
-  const { conversations, contacts } = await queryConversationsAndContacts(
+  const { conversationIds, contactIds } = await queryConversationsAndContacts(
     query,
     {
       ourConversationId,
@@ -196,8 +200,8 @@ async function doSearchDiscussions(
   );
 
   return {
-    conversations,
-    contacts,
+    conversationIds,
+    contactIds,
     query,
   };
 }
@@ -240,26 +244,16 @@ function updateSearchTerm(query: string): UpdateSearchTermActionType {
     },
   };
 }
-function startNewConversation(
+
+async function queryMessages(
   query: string,
-  options: { regionCode: string }
-): ClearSearchActionType {
-  const { regionCode } = options;
-  const normalized = normalize(query, { regionCode });
-  if (!normalized) {
-    throw new Error('Attempted to start new conversation with invalid number');
-  }
-  trigger('showConversation', normalized);
-
-  return {
-    type: 'SEARCH_CLEAR',
-    payload: null,
-  };
-}
-
-async function queryMessages(query: string, searchConversationId?: string) {
+  searchConversationId?: string
+): Promise<Array<ClientSearchResultMessageType>> {
   try {
     const normalized = cleanSearchTerm(query);
+    if (normalized.length === 0) {
+      return [];
+    }
 
     if (searchConversationId) {
       return searchMessagesInConversation(normalized, searchConversationId);
@@ -277,25 +271,28 @@ async function queryConversationsAndContacts(
     ourConversationId: string;
     noteToSelf: string;
   }
-) {
+): Promise<{
+  contactIds: Array<string>;
+  conversationIds: Array<string>;
+}> {
   const { ourConversationId, noteToSelf } = options;
-  const query = providedQuery.replace(/[+-.()]*/g, '');
+  const query = providedQuery.replace(/[+.()]*/g, '');
 
   const searchResults: Array<DBConversationType> = await dataSearchConversations(
     query
   );
 
   // Split into two groups - active conversations and items just from address book
-  let conversations: Array<string> = [];
-  let contacts: Array<string> = [];
+  let conversationIds: Array<string> = [];
+  let contactIds: Array<string> = [];
   const max = searchResults.length;
   for (let i = 0; i < max; i += 1) {
     const conversation = searchResults[i];
 
-    if (conversation.type === 'private' && !Boolean(conversation.lastMessage)) {
-      contacts.push(conversation.id);
+    if (conversation.type === 'private' && !conversation.lastMessage) {
+      contactIds.push(conversation.id);
     } else {
-      conversations.push(conversation.id);
+      conversationIds.push(conversation.id);
     }
   }
 
@@ -309,34 +306,33 @@ async function queryConversationsAndContacts(
   // Inject synthetic Note to Self entry if query matches localized 'Note to Self'
   if (noteToSelf.indexOf(providedQuery.toLowerCase()) !== -1) {
     // ensure that we don't have duplicates in our results
-    contacts = contacts.filter(id => id !== ourConversationId);
-    conversations = conversations.filter(id => id !== ourConversationId);
+    contactIds = contactIds.filter(id => id !== ourConversationId);
+    conversationIds = conversationIds.filter(id => id !== ourConversationId);
 
-    contacts.unshift(ourConversationId);
+    contactIds.unshift(ourConversationId);
   }
 
-  return { conversations, contacts };
+  return { conversationIds, contactIds };
 }
 
 // Reducer
 
-function getEmptyState(): SearchStateType {
+export function getEmptyState(): SearchStateType {
   return {
     startSearchCounter: 0,
     query: '',
     messageIds: [],
     messageLookup: {},
-    conversations: [],
-    contacts: [],
+    conversationIds: [],
+    contactIds: [],
     discussionsLoading: false,
     messagesLoading: false,
   };
 }
 
-// tslint:disable-next-line cyclomatic-complexity max-func-body-length
 export function reducer(
-  state: SearchStateType = getEmptyState(),
-  action: SEARCH_TYPES
+  state: Readonly<SearchStateType> = getEmptyState(),
+  action: Readonly<SearchActionType>
 ): SearchStateType {
   if (action.type === 'SHOW_ARCHIVED_CONVERSATIONS') {
     return getEmptyState();
@@ -359,7 +355,7 @@ export function reducer(
     const { payload } = action;
     const { query } = payload;
 
-    const hasQuery = Boolean(query && query.length >= 2);
+    const hasQuery = Boolean(query);
     const isWithinConversation = Boolean(state.searchConversationId);
 
     return {
@@ -371,8 +367,8 @@ export function reducer(
             messageIds: [],
             messageLookup: {},
             discussionsLoading: !isWithinConversation,
-            contacts: [],
-            conversations: [],
+            contactIds: [],
+            conversationIds: [],
           }
         : {}),
     };
@@ -429,12 +425,12 @@ export function reducer(
 
   if (action.type === 'SEARCH_DISCUSSIONS_RESULTS_FULFILLED') {
     const { payload } = action;
-    const { contacts, conversations } = payload;
+    const { contactIds, conversationIds } = payload;
 
     return {
       ...state,
-      contacts,
-      conversations,
+      contactIds,
+      conversationIds,
       discussionsLoading: false,
     };
   }
@@ -482,7 +478,7 @@ export function reducer(
     return {
       ...state,
       messageIds: reject(messageIds, messageId => id === messageId),
-      messageLookup: omit(messageLookup, ['id']),
+      messageLookup: omit(messageLookup, id),
     };
   }
 

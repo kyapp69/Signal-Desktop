@@ -1,13 +1,131 @@
-// tslint:disable no-bitwise no-default-export
+// Copyright 2020-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 
-import { ByteBufferClass } from '../window.d';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-bitwise */
+/* eslint-disable more/no-then */
+import {
+  decryptAes256CbcPkcsPadding,
+  encryptAes256CbcPkcsPadding,
+  getRandomBytes as outerGetRandomBytes,
+  hmacSha256,
+  sha256,
+  verifyHmacSha256,
+} from '../Crypto';
+
+declare global {
+  // this is fixed in already, and won't be necessary when the new definitions
+  // files are used: https://github.com/microsoft/TSJS-lib-generator/pull/843
+  // We want to extend `SubtleCrypto`, so we need an interface.
+  // eslint-disable-next-line no-restricted-syntax
+  export interface SubtleCrypto {
+    decrypt(
+      algorithm:
+        | string
+        | RsaOaepParams
+        | AesCtrParams
+        | AesCbcParams
+        | AesCmacParams
+        | AesGcmParams
+        | AesCfbParams,
+      key: CryptoKey,
+      data:
+        | Int8Array
+        | Int16Array
+        | Int32Array
+        | Uint8Array
+        | Uint16Array
+        | Uint32Array
+        | Uint8ClampedArray
+        | Float32Array
+        | Float64Array
+        | DataView
+        | ArrayBuffer
+    ): Promise<ArrayBuffer>;
+
+    digest(
+      algorithm: string | Algorithm,
+      data:
+        | Int8Array
+        | Int16Array
+        | Int32Array
+        | Uint8Array
+        | Uint16Array
+        | Uint32Array
+        | Uint8ClampedArray
+        | Float32Array
+        | Float64Array
+        | DataView
+        | ArrayBuffer
+    ): Promise<ArrayBuffer>;
+
+    importKey(
+      format: 'raw' | 'pkcs8' | 'spki',
+      keyData:
+        | Int8Array
+        | Int16Array
+        | Int32Array
+        | Uint8Array
+        | Uint16Array
+        | Uint32Array
+        | Uint8ClampedArray
+        | Float32Array
+        | Float64Array
+        | DataView
+        | ArrayBuffer,
+      algorithm:
+        | string
+        | RsaHashedImportParams
+        | EcKeyImportParams
+        | HmacImportParams
+        | DhImportKeyParams
+        | AesKeyAlgorithm,
+      extractable: boolean,
+      keyUsages: string[]
+    ): Promise<CryptoKey>;
+
+    importKey(
+      format: string,
+      keyData:
+        | JsonWebKey
+        | Int8Array
+        | Int16Array
+        | Int32Array
+        | Uint8Array
+        | Uint16Array
+        | Uint32Array
+        | Uint8ClampedArray
+        | Float32Array
+        | Float64Array
+        | DataView
+        | ArrayBuffer,
+      algorithm:
+        | string
+        | RsaHashedImportParams
+        | EcKeyImportParams
+        | HmacImportParams
+        | DhImportKeyParams
+        | AesKeyAlgorithm,
+      extractable: boolean,
+      keyUsages: string[]
+    ): Promise<CryptoKey>;
+  }
+}
 
 const PROFILE_IV_LENGTH = 12; // bytes
 const PROFILE_KEY_LENGTH = 32; // bytes
 const PROFILE_TAG_LENGTH = 128; // bits
 const PROFILE_NAME_PADDED_LENGTH = 53; // bytes
 
-function verifyDigest(data: ArrayBuffer, theirDigest: ArrayBuffer) {
+type EncryptedAttachment = {
+  ciphertext: ArrayBuffer;
+  digest: ArrayBuffer;
+};
+
+async function verifyDigest(
+  data: ArrayBuffer,
+  theirDigest: ArrayBuffer
+): Promise<void> {
   return window.crypto.subtle
     .digest({ name: 'SHA-256' }, data)
     .then(ourDigest => {
@@ -23,18 +141,12 @@ function verifyDigest(data: ArrayBuffer, theirDigest: ArrayBuffer) {
     });
 }
 
-function calculateDigest(data: ArrayBuffer) {
-  return window.crypto.subtle.digest({ name: 'SHA-256' }, data);
-}
-
 const Crypto = {
   // Decrypts message into a raw string
   async decryptWebsocketMessage(
-    message: ByteBufferClass,
+    decodedMessage: ArrayBuffer,
     signalingKey: ArrayBuffer
-  ) {
-    const decodedMessage = message.toArrayBuffer();
-
+  ): Promise<ArrayBuffer> {
     if (signalingKey.byteLength !== 52) {
       throw new Error('Got invalid length signalingKey');
     }
@@ -64,18 +176,16 @@ const Crypto = {
       decodedMessage.byteLength
     );
 
-    return window.libsignal.crypto
-      .verifyMAC(ivAndCiphertext, macKey, mac, 10)
-      .then(async () =>
-        window.libsignal.crypto.decrypt(aesKey, ciphertext, iv)
-      );
+    await verifyHmacSha256(ivAndCiphertext, macKey, mac, 10);
+
+    return decryptAes256CbcPkcsPadding(aesKey, ciphertext, iv);
   },
 
   async decryptAttachment(
     encryptedBin: ArrayBuffer,
     keys: ArrayBuffer,
     theirDigest: ArrayBuffer
-  ) {
+  ): Promise<ArrayBuffer> {
     if (keys.byteLength !== 64) {
       throw new Error('Got invalid length attachment keys');
     }
@@ -94,25 +204,20 @@ const Crypto = {
       encryptedBin.byteLength
     );
 
-    return window.libsignal.crypto
-      .verifyMAC(ivAndCiphertext, macKey, mac, 32)
-      .then(async () => {
-        if (theirDigest) {
-          return verifyDigest(encryptedBin, theirDigest);
-        }
+    await verifyHmacSha256(ivAndCiphertext, macKey, mac, 32);
 
-        return null;
-      })
-      .then(async () =>
-        window.libsignal.crypto.decrypt(aesKey, ciphertext, iv)
-      );
+    if (theirDigest) {
+      await verifyDigest(encryptedBin, theirDigest);
+    }
+
+    return decryptAes256CbcPkcsPadding(aesKey, ciphertext, iv);
   },
 
   async encryptAttachment(
     plaintext: ArrayBuffer,
     keys: ArrayBuffer,
     iv: ArrayBuffer
-  ) {
+  ): Promise<EncryptedAttachment> {
     if (!(plaintext instanceof ArrayBuffer) && !ArrayBuffer.isView(plaintext)) {
       throw new TypeError(
         `\`plaintext\` must be an \`ArrayBuffer\` or \`ArrayBufferView\`; got: ${typeof plaintext}`
@@ -128,32 +233,30 @@ const Crypto = {
     const aesKey = keys.slice(0, 32);
     const macKey = keys.slice(32, 64);
 
-    return window.libsignal.crypto
-      .encrypt(aesKey, plaintext, iv)
-      .then(async ciphertext => {
-        const ivAndCiphertext = new Uint8Array(16 + ciphertext.byteLength);
-        ivAndCiphertext.set(new Uint8Array(iv));
-        ivAndCiphertext.set(new Uint8Array(ciphertext), 16);
+    const ciphertext = await encryptAes256CbcPkcsPadding(aesKey, plaintext, iv);
 
-        return window.libsignal.crypto
-          .calculateMAC(macKey, ivAndCiphertext.buffer as ArrayBuffer)
-          .then(async mac => {
-            const encryptedBin = new Uint8Array(
-              16 + ciphertext.byteLength + 32
-            );
-            encryptedBin.set(ivAndCiphertext);
-            encryptedBin.set(new Uint8Array(mac), 16 + ciphertext.byteLength);
-            return calculateDigest(encryptedBin.buffer as ArrayBuffer).then(
-              digest => ({
-                ciphertext: encryptedBin.buffer,
-                digest,
-              })
-            );
-          });
-      });
+    const ivAndCiphertext = new Uint8Array(16 + ciphertext.byteLength);
+    ivAndCiphertext.set(new Uint8Array(iv));
+    ivAndCiphertext.set(new Uint8Array(ciphertext), 16);
+
+    const mac = await hmacSha256(macKey, ivAndCiphertext.buffer as ArrayBuffer);
+
+    const encryptedBin = new Uint8Array(16 + ciphertext.byteLength + 32);
+    encryptedBin.set(ivAndCiphertext);
+    encryptedBin.set(new Uint8Array(mac), 16 + ciphertext.byteLength);
+    const digest = await sha256(encryptedBin.buffer as ArrayBuffer);
+
+    return {
+      ciphertext: encryptedBin.buffer,
+      digest,
+    };
   },
-  async encryptProfile(data: ArrayBuffer, key: ArrayBuffer) {
-    const iv = window.libsignal.crypto.getRandomBytes(PROFILE_IV_LENGTH);
+
+  async encryptProfile(
+    data: ArrayBuffer,
+    key: ArrayBuffer
+  ): Promise<ArrayBuffer> {
+    const iv = outerGetRandomBytes(PROFILE_IV_LENGTH);
     if (key.byteLength !== PROFILE_KEY_LENGTH) {
       throw new Error('Got invalid length profile key');
     }
@@ -179,7 +282,11 @@ const Crypto = {
           })
       );
   },
-  async decryptProfile(data: ArrayBuffer, key: ArrayBuffer) {
+
+  async decryptProfile(
+    data: ArrayBuffer,
+    key: ArrayBuffer
+  ): Promise<ArrayBuffer> {
     if (data.byteLength < 12 + 16 + 1) {
       throw new Error(`Got too short input: ${data.byteLength}`);
     }
@@ -201,8 +308,6 @@ const Crypto = {
             keyForEncryption,
             ciphertext
           )
-          // Typescript says that there's no .catch() available here
-          // @ts-ignore
           .catch((e: Error) => {
             if (e.name === 'OperationError') {
               // bad mac, basically.
@@ -211,15 +316,25 @@ const Crypto = {
               error.name = 'ProfileDecryptError';
               throw error;
             }
+
+            return (undefined as unknown) as ArrayBuffer; // uses of this function are not guarded
           })
       );
   },
-  async encryptProfileName(name: ArrayBuffer, key: ArrayBuffer) {
+
+  async encryptProfileName(
+    name: ArrayBuffer,
+    key: ArrayBuffer
+  ): Promise<ArrayBuffer> {
     const padded = new Uint8Array(PROFILE_NAME_PADDED_LENGTH);
     padded.set(new Uint8Array(name));
     return Crypto.encryptProfile(padded.buffer as ArrayBuffer, key);
   },
-  async decryptProfileName(encryptedProfileName: string, key: ArrayBuffer) {
+
+  async decryptProfileName(
+    encryptedProfileName: string,
+    key: ArrayBuffer
+  ): Promise<{ given: ArrayBuffer; family: ArrayBuffer | null }> {
     const data = window.dcodeIO.ByteBuffer.wrap(
       encryptedProfileName,
       'base64'
@@ -261,8 +376,8 @@ const Crypto = {
     });
   },
 
-  getRandomBytes(size: number) {
-    return window.libsignal.crypto.getRandomBytes(size);
+  getRandomBytes(size: number): ArrayBuffer {
+    return outerGetRandomBytes(size);
   },
 };
 

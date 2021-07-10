@@ -1,3 +1,6 @@
+// Copyright 2018-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import * as Attachment from '../Attachment';
 import * as IndexedDB from '../IndexedDB';
 import { Message, UserMessage } from '../Message';
@@ -17,6 +20,9 @@ export const initializeAttachmentMetadata = async (
     return message;
   }
   if (message.type === 'message-history-unsynced') {
+    return message;
+  }
+  if (message.type === 'profile-change') {
     return message;
   }
   if (message.messageTimer || message.isViewOnce) {

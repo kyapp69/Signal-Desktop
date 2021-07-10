@@ -1,3 +1,6 @@
+// Copyright 2018-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import React from 'react';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -6,7 +9,7 @@ import { formatRelativeTime } from '../../util/formatRelativeTime';
 
 import { LocalizerType } from '../../types/Util';
 
-interface Props {
+export type Props = {
   timestamp?: number;
   extended?: boolean;
   module?: string;
@@ -16,12 +19,12 @@ interface Props {
   withUnread?: boolean;
   direction?: 'incoming' | 'outgoing';
   i18n: LocalizerType;
-}
+};
 
 const UPDATE_FREQUENCY = 60 * 1000;
 
 export class Timestamp extends React.Component<Props> {
-  private interval: any;
+  private interval: NodeJS.Timeout | null;
 
   constructor(props: Props) {
     super(props);
@@ -29,22 +32,24 @@ export class Timestamp extends React.Component<Props> {
     this.interval = null;
   }
 
-  public componentDidMount() {
+  public componentDidMount(): void {
     const update = () => {
       this.setState({
+        // Used to trigger renders
+        // eslint-disable-next-line react/no-unused-state
         lastUpdated: Date.now(),
       });
     };
     this.interval = setInterval(update, UPDATE_FREQUENCY);
   }
 
-  public componentWillUnmount() {
+  public componentWillUnmount(): void {
     if (this.interval) {
       clearInterval(this.interval);
     }
   }
 
-  public render() {
+  public render(): JSX.Element | null {
     const {
       direction,
       i18n,

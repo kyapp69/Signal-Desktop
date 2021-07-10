@@ -1,7 +1,10 @@
-import { Configuration, EnvironmentPlugin } from 'webpack';
-// tslint:disable-next-line no-require-imports
-import HtmlWebpackPlugin = require('html-webpack-plugin');
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { resolve } from 'path';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Configuration, EnvironmentPlugin, ProvidePlugin } from 'webpack';
+import HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const context = __dirname;
 const { NODE_ENV: mode = 'development' } = process.env;
@@ -40,23 +43,23 @@ const stickerCreatorConfig: Configuration = {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: 'babel-loader',
+        use: [{ loader: 'babel-loader' }],
       },
       {
         test: /\.css$/,
-        loaders: ['style-loader', 'css-loader'],
+        use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
       },
       {
         test: /\.scss$/,
-        loaders: [
-          'style-loader',
-          'css-loader?modules=true&localsConvention=camelCaseOnly',
-          'sass-loader',
+        use: [
+          { loader: 'style-loader' },
+          { loader: 'css-loader?modules=true&localsConvention=camelCaseOnly' },
+          { loader: 'sass-loader' },
         ],
       },
       {
         test: /\.woff2?$/,
-        loader: 'file-loader',
+        use: [{ loader: 'file-loader' }],
       },
     ],
   },
@@ -65,6 +68,7 @@ const stickerCreatorConfig: Configuration = {
     alias: {},
   },
   plugins: [
+    new ProvidePlugin({ Buffer: ['buffer', 'Buffer'] }),
     new EnvironmentPlugin(['NODE_ENV']),
     new HtmlWebpackPlugin({
       title: 'Signal Sticker Creator',
@@ -77,7 +81,6 @@ const stickerCreatorConfig: Configuration = {
       },
     }),
   ],
-  // @ts-ignore: this typing broke at some point
   devServer: {
     port: 6380,
     historyApiFallback: {
@@ -86,5 +89,4 @@ const stickerCreatorConfig: Configuration = {
   },
 };
 
-// tslint:disable-next-line no-default-export
 export default [stickerCreatorConfig];

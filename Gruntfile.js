@@ -1,5 +1,7 @@
+// Copyright 2014-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 const { join } = require('path');
-const packageJson = require('./package.json');
 const importOnce = require('node-sass-import-once');
 const rimraf = require('rimraf');
 const mkdirp = require('mkdirp');
@@ -8,6 +10,7 @@ const asar = require('asar');
 const fs = require('fs');
 const assert = require('assert');
 const sass = require('node-sass');
+const packageJson = require('./package.json');
 
 /* eslint-disable more/no-then, no-console  */
 
@@ -45,22 +48,6 @@ module.exports = grunt => {
           'test/_test.js',
         ],
         dest: 'test/test.js',
-      },
-      // TODO: Move errors back down?
-      libtextsecure: {
-        options: {
-          banner: ';(function() {\n',
-          footer: '})();\n',
-        },
-        src: [
-          'libtextsecure/libsignal-protocol.js',
-          'libtextsecure/protocol_wrapper.js',
-
-          'libtextsecure/storage/user.js',
-          'libtextsecure/storage/unprocessed.js',
-          'libtextsecure/protobufs.js',
-        ],
-        dest: 'js/libtextsecure.js',
       },
       libtextsecuretest: {
         src: [
@@ -110,12 +97,8 @@ module.exports = grunt => {
         tasks: ['exec:build-protobuf'],
       },
       sass: {
-        files: ['./stylesheets/*.scss'],
+        files: ['./stylesheets/*.scss', './stylesheets/**/*.scss'],
         tasks: ['sass'],
-      },
-      transpile: {
-        files: ['./ts/**/*.ts', './ts/**/*.tsx'],
-        tasks: ['exec:transpile'],
       },
     },
     exec: {
@@ -383,12 +366,18 @@ module.exports = grunt => {
           console.log('window opened');
         })
         .then(() =>
-          // Get the window's title
-          app.client.getTitle()
-        )
-        .then(title => {
           // Verify the window's title
-          assert.equal(title, packageJson.productName);
+          app.client.waitUntil(
+            async () =>
+              (await app.client.getTitle()) === packageJson.productName,
+            {
+              timeoutMsg: `Expected window title to be ${JSON.stringify(
+                packageJson.productName
+              )}`,
+            }
+          )
+        )
+        .then(() => {
           console.log('title ok');
         })
         .then(() => {

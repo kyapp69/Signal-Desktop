@@ -1,5 +1,9 @@
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { SocketStatus } from '../../types/SocketStatus';
 import { trigger } from '../../shims/events';
+import { assignWithNoUnnecessaryAllocation } from '../../util/assignWithNoUnnecessaryAllocation';
 
 // State
 
@@ -7,6 +11,7 @@ export type NetworkStateType = {
   isOnline: boolean;
   socketStatus: SocketStatus;
   withinConnectingGracePeriod: boolean;
+  challengeStatus: 'required' | 'pending' | 'idle';
 };
 
 // Actions
@@ -14,6 +19,7 @@ export type NetworkStateType = {
 const CHECK_NETWORK_STATUS = 'network/CHECK_NETWORK_STATUS';
 const CLOSE_CONNECTING_GRACE_PERIOD = 'network/CLOSE_CONNECTING_GRACE_PERIOD';
 const RELINK_DEVICE = 'network/RELINK_DEVICE';
+const SET_CHALLENGE_STATUS = 'network/SET_CHALLENGE_STATUS';
 
 export type CheckNetworkStatusPayloadType = {
   isOnline: boolean;
@@ -33,10 +39,18 @@ type RelinkDeviceActionType = {
   type: 'network/RELINK_DEVICE';
 };
 
+type SetChallengeStatusActionType = {
+  type: 'network/SET_CHALLENGE_STATUS';
+  payload: {
+    challengeStatus: NetworkStateType['challengeStatus'];
+  };
+};
+
 export type NetworkActionType =
   | CheckNetworkStatusAction
   | CloseConnectingGracePeriodActionType
-  | RelinkDeviceActionType;
+  | RelinkDeviceActionType
+  | SetChallengeStatusActionType;
 
 // Action Creators
 
@@ -63,40 +77,59 @@ function relinkDevice(): RelinkDeviceActionType {
   };
 }
 
+function setChallengeStatus(
+  challengeStatus: NetworkStateType['challengeStatus']
+): SetChallengeStatusActionType {
+  return {
+    type: SET_CHALLENGE_STATUS,
+    payload: { challengeStatus },
+  };
+}
+
 export const actions = {
   checkNetworkStatus,
   closeConnectingGracePeriod,
   relinkDevice,
+  setChallengeStatus,
 };
 
 // Reducer
 
-function getEmptyState(): NetworkStateType {
+export function getEmptyState(): NetworkStateType {
   return {
     isOnline: navigator.onLine,
-    socketStatus: WebSocket.OPEN,
+    socketStatus: SocketStatus.OPEN,
     withinConnectingGracePeriod: true,
+    challengeStatus: 'idle',
   };
 }
 
 export function reducer(
-  state: NetworkStateType = getEmptyState(),
-  action: NetworkActionType
+  state: Readonly<NetworkStateType> = getEmptyState(),
+  action: Readonly<NetworkActionType>
 ): NetworkStateType {
   if (action.type === CHECK_NETWORK_STATUS) {
     const { isOnline, socketStatus } = action.payload;
 
-    return {
-      ...state,
+    // This action is dispatched frequently. We avoid allocating a new object if nothing
+    //   has changed to avoid an unnecessary re-render.
+    return assignWithNoUnnecessaryAllocation(state, {
       isOnline,
       socketStatus,
-    };
+    });
   }
 
   if (action.type === CLOSE_CONNECTING_GRACE_PERIOD) {
     return {
       ...state,
       withinConnectingGracePeriod: false,
+    };
+  }
+
+  if (action.type === SET_CHALLENGE_STATUS) {
+    return {
+      ...state,
+      challengeStatus: action.payload.challengeStatus,
     };
   }
 

@@ -1,7 +1,16 @@
-export function put(key: string, value: any) {
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+import { StorageAccessType } from '../types/Storage.d';
+
+// Matching window.storage.put API
+export function put<K extends keyof StorageAccessType>(
+  key: K,
+  value: StorageAccessType[K]
+): void {
   window.storage.put(key, value);
 }
 
-export function remove(key: string) {
-  window.storage.remove(key);
+export async function remove(key: keyof StorageAccessType): Promise<void> {
+  await window.storage.remove(key);
 }

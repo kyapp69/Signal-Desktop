@@ -1,3 +1,6 @@
+// Copyright 2019-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 @import '../../stylesheets/variables';
 @import '../mixins';
 
@@ -52,10 +55,10 @@
   composes: standalone;
 
   @include light-theme() {
-    border-color: $ultramarine-ui-light;
+    border-color: $color-ultramarine;
   }
 
   @include dark-theme() {
-    border-color: $ultramarine-ui-dark;
+    border-color: $color-ultramarine-light;
   }
 }

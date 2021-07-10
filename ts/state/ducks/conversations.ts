@@ -1,3 +1,8 @@
+// Copyright 2019-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* eslint-disable camelcase */
+import { ThunkAction } from 'redux-thunk';
 import {
   difference,
   fromPairs,
@@ -9,97 +14,162 @@ import {
   values,
   without,
 } from 'lodash';
+
+import { StateType as RootStateType } from '../reducer';
+import * as groups from '../../groups';
+import { calling } from '../../services/calling';
+import { getOwn } from '../../util/getOwn';
+import { assert } from '../../util/assert';
+import * as universalExpireTimer from '../../util/universalExpireTimer';
 import { trigger } from '../../shims/events';
+
+import {
+  AvatarColorType,
+  ConversationColorType,
+  CustomColorType,
+  DefaultConversationColorType,
+  DEFAULT_CONVERSATION_COLOR,
+} from '../../types/Colors';
+import {
+  LastMessageStatus,
+  ConversationAttributesType,
+  MessageAttributesType,
+} from '../../model-types.d';
+import { BodyRangeType } from '../../types/Util';
+import { CallMode } from '../../types/Calling';
+import { MediaItemType } from '../../components/LightboxGallery';
+import {
+  getGroupSizeRecommendedLimit,
+  getGroupSizeHardLimit,
+} from '../../groups/limits';
+import { toggleSelectedContactForGroupAddition } from '../../groups/toggleSelectedContactForGroupAddition';
+import { GroupNameCollisionsWithIdsByTitle } from '../../util/groupMemberNameCollisions';
+import { ContactSpoofingType } from '../../util/contactSpoofing';
+
 import { NoopActionType } from './noop';
-import { AttachmentType } from '../../types/Attachment';
 
 // State
 
 export type DBConversationType = {
   id: string;
   activeAt?: number;
-  lastMessage: string;
+  lastMessage?: string | null;
   type: string;
 };
+
+export const InteractionModes = ['mouse', 'keyboard'] as const;
+export type InteractionModeType = typeof InteractionModes[number];
+
+export type MessageType = MessageAttributesType & {
+  interactionType?: InteractionModeType;
+};
+
+export const ConversationTypes = ['direct', 'group'] as const;
+export type ConversationTypeType = typeof ConversationTypes[number];
+
 export type ConversationType = {
   id: string;
+  uuid?: string;
+  e164?: string;
   name?: string;
-  isArchived: boolean;
+  firstName?: string;
+  profileName?: string;
+  about?: string;
+  avatarPath?: string;
+  unblurredAvatarPath?: string;
+  areWeAdmin?: boolean;
+  areWePending?: boolean;
+  areWePendingApproval?: boolean;
+  canChangeTimer?: boolean;
+  canEditGroupInfo?: boolean;
+  color?: AvatarColorType;
+  conversationColor?: ConversationColorType;
+  customColor?: CustomColorType;
+  customColorId?: string;
+  discoveredUnregisteredAt?: number;
+  isArchived?: boolean;
+  isBlocked?: boolean;
+  isGroupV1AndDisabled?: boolean;
+  isGroupV2Capable?: boolean;
+  isPinned?: boolean;
+  isUntrusted?: boolean;
+  isVerified?: boolean;
   activeAt?: number;
-  timestamp: number;
-  inboxPosition: number;
+  timestamp?: number;
+  inboxPosition?: number;
+  left?: boolean;
   lastMessage?: {
-    status: 'error' | 'sending' | 'sent' | 'delivered' | 'read';
+    status: LastMessageStatus;
     text: string;
+    deletedForEveryone?: boolean;
   };
-  phoneNumber: string;
-  type: 'direct' | 'group';
+  markedUnread?: boolean;
+  phoneNumber?: string;
+  membersCount?: number;
+  messageCount?: number;
+  accessControlAddFromInviteLink?: number;
+  accessControlAttributes?: number;
+  accessControlMembers?: number;
+  expireTimer?: number;
+  memberships?: Array<{
+    conversationId: string;
+    isAdmin: boolean;
+  }>;
+  pendingMemberships?: Array<{
+    conversationId: string;
+    addedByUserId?: string;
+  }>;
+  pendingApprovalMemberships?: Array<{
+    conversationId: string;
+  }>;
+  muteExpiresAt?: number;
+  type: ConversationTypeType;
   isMe: boolean;
-  lastUpdated: number;
-  unreadCount: number;
-  isSelected: boolean;
+  lastUpdated?: number;
+  // This is used by the CompositionInput for @mentions
+  sortedGroupMembers?: Array<ConversationType>;
+  title: string;
+  searchableTitle?: string;
+  unreadCount?: number;
+  isSelected?: boolean;
+  isFetchingUUID?: boolean;
   typingContact?: {
     avatarPath?: string;
-    color: string;
     name?: string;
-    phoneNumber: string;
+    phoneNumber?: string;
     profileName?: string;
-  };
+  } | null;
+  recentMediaItems?: Array<MediaItemType>;
+  profileSharing?: boolean;
 
   shouldShowDraft?: boolean;
-  draftText?: string;
+  draftText?: string | null;
+  draftBodyRanges?: Array<BodyRangeType>;
   draftPreview?: string;
+
+  sharedGroupNames: Array<string>;
+  groupDescription?: string;
+  groupVersion?: 1 | 2;
+  groupId?: string;
+  groupLink?: string;
+  messageRequestsEnabled?: boolean;
+  acceptedMessageRequest: boolean;
+  secretParams?: string;
+  publicParams?: string;
+  acknowledgedGroupNameCollisions?: GroupNameCollisionsWithIdsByTitle;
 };
 export type ConversationLookupType = {
   [key: string]: ConversationType;
 };
-export type MessageType = {
-  id: string;
-  conversationId: string;
-  source: string;
-  type:
-    | 'incoming'
-    | 'outgoing'
-    | 'group'
-    | 'keychange'
-    | 'verified-change'
-    | 'message-history-unsynced';
-  quote?: { author: string };
-  received_at: number;
-  hasSignalAccount?: boolean;
-  bodyPending?: boolean;
-  attachments: Array<AttachmentType>;
-  sticker: {
-    data?: {
-      pending: boolean;
-    };
-  };
-  unread: boolean;
-  reactions?: Array<{
-    emoji: string;
-    timestamp: number;
-    from: {
-      id: string;
-      color?: string;
-      avatarPath?: string;
-      name?: string;
-      profileName?: string;
-      isMe?: boolean;
-      phoneNumber?: string;
-    };
-  }>;
-  deletedForEveryone?: boolean;
-
-  errors?: Array<Error>;
-  group_update?: any;
-
-  // No need to go beyond this; unused at this stage, since this goes into
-  //   a reducer still in plain JavaScript and comes out well-formed
+export type CustomError = Error & {
+  identifier?: string;
+  number?: string;
 };
 
 type MessagePointerType = {
   id: string;
   received_at: number;
+  sent_at?: number;
 };
 type MessageMetricsType = {
   newest?: MessagePointerType;
@@ -109,7 +179,7 @@ type MessageMetricsType = {
 };
 
 export type MessageLookupType = {
-  [key: string]: MessageType;
+  [key: string]: MessageAttributesType;
 };
 export type ConversationMessageType = {
   heightChangeMessageIds: Array<string>;
@@ -124,22 +194,178 @@ export type ConversationMessageType = {
 };
 
 export type MessagesByConversationType = {
-  [key: string]: ConversationMessageType | null;
+  [key: string]: ConversationMessageType | undefined;
 };
 
+export type PreJoinConversationType = {
+  avatar?: {
+    loading?: boolean;
+    url?: string;
+  };
+  groupDescription?: string;
+  memberCount: number;
+  title: string;
+  approvalRequired: boolean;
+};
+
+export enum ComposerStep {
+  StartDirectConversation = 'StartDirectConversation',
+  ChooseGroupMembers = 'ChooseGroupMembers',
+  SetGroupMetadata = 'SetGroupMetadata',
+}
+
+export enum OneTimeModalState {
+  NeverShown,
+  Showing,
+  Shown,
+}
+
+type ComposerGroupCreationState = {
+  groupAvatar: undefined | ArrayBuffer;
+  groupName: string;
+  groupExpireTimer: number;
+  maximumGroupSizeModalState: OneTimeModalState;
+  recommendedGroupSizeModalState: OneTimeModalState;
+  selectedConversationIds: Array<string>;
+};
+
+type ComposerStateType =
+  | {
+      step: ComposerStep.StartDirectConversation;
+      searchTerm: string;
+    }
+  | ({
+      step: ComposerStep.ChooseGroupMembers;
+      searchTerm: string;
+      cantAddContactIdForModal: undefined | string;
+    } & ComposerGroupCreationState)
+  | ({
+      step: ComposerStep.SetGroupMetadata;
+    } & ComposerGroupCreationState &
+      (
+        | { isCreating: false; hasError: boolean }
+        | { isCreating: true; hasError: false }
+      ));
+
+type ContactSpoofingReviewStateType =
+  | {
+      type: ContactSpoofingType.DirectConversationWithSameTitle;
+      safeConversationId: string;
+    }
+  | {
+      type: ContactSpoofingType.MultipleGroupMembersWithSameTitle;
+      groupConversationId: string;
+    };
+
 export type ConversationsStateType = {
+  preJoinConversation?: PreJoinConversationType;
+  invitedConversationIdsForNewlyCreatedGroup?: Array<string>;
   conversationLookup: ConversationLookupType;
-  selectedConversation?: string;
+  conversationsByE164: ConversationLookupType;
+  conversationsByUuid: ConversationLookupType;
+  conversationsByGroupId: ConversationLookupType;
+  selectedConversationId?: string;
   selectedMessage?: string;
   selectedMessageCounter: number;
+  selectedConversationTitle?: string;
+  selectedConversationPanelDepth: number;
   showArchived: boolean;
+  composer?: ComposerStateType;
+  contactSpoofingReview?: ContactSpoofingReviewStateType;
 
   // Note: it's very important that both of these locations are always kept up to date
   messagesLookup: MessageLookupType;
   messagesByConversation: MessagesByConversationType;
 };
 
+// Helpers
+
+export const getConversationCallMode = (
+  conversation: ConversationType
+): CallMode => {
+  if (
+    conversation.left ||
+    conversation.isBlocked ||
+    conversation.isMe ||
+    !conversation.acceptedMessageRequest
+  ) {
+    return CallMode.None;
+  }
+
+  if (conversation.type === 'direct') {
+    return CallMode.Direct;
+  }
+
+  if (conversation.type === 'group' && conversation.groupVersion === 2) {
+    return CallMode.Group;
+  }
+
+  return CallMode.None;
+};
+
 // Actions
+
+const COLOR_SELECTED = 'conversations/COLOR_SELECTED';
+const COLORS_CHANGED = 'conversations/COLORS_CHANGED';
+const CUSTOM_COLOR_REMOVED = 'conversations/CUSTOM_COLOR_REMOVED';
+
+type CantAddContactToGroupActionType = {
+  type: 'CANT_ADD_CONTACT_TO_GROUP';
+  payload: {
+    conversationId: string;
+  };
+};
+type ClearGroupCreationErrorActionType = { type: 'CLEAR_GROUP_CREATION_ERROR' };
+type ClearInvitedConversationsForNewlyCreatedGroupActionType = {
+  type: 'CLEAR_INVITED_CONVERSATIONS_FOR_NEWLY_CREATED_GROUP';
+};
+type CloseCantAddContactToGroupModalActionType = {
+  type: 'CLOSE_CANT_ADD_CONTACT_TO_GROUP_MODAL';
+};
+type CloseContactSpoofingReviewActionType = {
+  type: 'CLOSE_CONTACT_SPOOFING_REVIEW';
+};
+type CloseMaximumGroupSizeModalActionType = {
+  type: 'CLOSE_MAXIMUM_GROUP_SIZE_MODAL';
+};
+type CloseRecommendedGroupSizeModalActionType = {
+  type: 'CLOSE_RECOMMENDED_GROUP_SIZE_MODAL';
+};
+type ColorsChangedActionType = {
+  type: typeof COLORS_CHANGED;
+  payload: {
+    conversationColor?: ConversationColorType;
+    customColorData?: {
+      id: string;
+      value: CustomColorType;
+    };
+  };
+};
+type ColorSelectedPayloadType = {
+  conversationId: string;
+  conversationColor?: ConversationColorType;
+  customColorData?: {
+    id: string;
+    value: CustomColorType;
+  };
+};
+export type ColorSelectedActionType = {
+  type: typeof COLOR_SELECTED;
+  payload: ColorSelectedPayloadType;
+};
+type CustomColorRemovedActionType = {
+  type: typeof CUSTOM_COLOR_REMOVED;
+  payload: {
+    colorId: string;
+    defaultConversationColor: DefaultConversationColorType;
+  };
+};
+type SetPreJoinConversationActionType = {
+  type: 'SET_PRE_JOIN_CONVERSATION';
+  payload: {
+    data: PreJoinConversationType | undefined;
+  };
+};
 
 type ConversationAddedActionType = {
   type: 'CONVERSATION_ADDED';
@@ -167,6 +393,18 @@ export type ConversationUnloadedActionType = {
     id: string;
   };
 };
+type CreateGroupPendingActionType = {
+  type: 'CREATE_GROUP_PENDING';
+};
+type CreateGroupFulfilledActionType = {
+  type: 'CREATE_GROUP_FULFILLED';
+  payload: {
+    invitedConversationIds: Array<string>;
+  };
+};
+type CreateGroupRejectedActionType = {
+  type: 'CREATE_GROUP_REJECTED';
+};
 export type RemoveAllConversationsActionType = {
   type: 'CONVERSATIONS_REMOVE_ALL';
   payload: null;
@@ -183,7 +421,7 @@ export type MessageChangedActionType = {
   payload: {
     id: string;
     conversationId: string;
-    data: MessageType;
+    data: MessageAttributesType;
   };
 };
 export type MessageDeletedActionType = {
@@ -193,22 +431,45 @@ export type MessageDeletedActionType = {
     conversationId: string;
   };
 };
+type MessageSizeChangedActionType = {
+  type: 'MESSAGE_SIZE_CHANGED';
+  payload: {
+    id: string;
+    conversationId: string;
+  };
+};
 export type MessagesAddedActionType = {
   type: 'MESSAGES_ADDED';
   payload: {
     conversationId: string;
-    messages: Array<MessageType>;
+    messages: Array<MessageAttributesType>;
     isNewMessage: boolean;
     isActive: boolean;
+  };
+};
+
+export type RepairNewestMessageActionType = {
+  type: 'REPAIR_NEWEST_MESSAGE';
+  payload: {
+    conversationId: string;
+  };
+};
+export type RepairOldestMessageActionType = {
+  type: 'REPAIR_OLDEST_MESSAGE';
+  payload: {
+    conversationId: string;
   };
 };
 export type MessagesResetActionType = {
   type: 'MESSAGES_RESET';
   payload: {
     conversationId: string;
-    messages: Array<MessageType>;
+    messages: Array<MessageAttributesType>;
     metrics: MessageMetricsType;
     scrollToMessageId?: string;
+    // The set of provided messages should be trusted, even if it conflicts with metrics,
+    //   because we weren't looking for a specific time window of messages with our query.
+    unboundedFetch: boolean;
   };
 };
 export type SetMessagesLoadingActionType = {
@@ -231,6 +492,14 @@ export type SetIsNearBottomActionType = {
     conversationId: string;
     isNearBottom: boolean;
   };
+};
+export type SetConversationHeaderTitleActionType = {
+  type: 'SET_CONVERSATION_HEADER_TITLE';
+  payload: { title?: string };
+};
+export type SetSelectedConversationPanelDepthActionType = {
+  type: 'SET_SELECTED_CONVERSATION_PANEL_DEPTH';
+  payload: { panelDepth: number };
 };
 export type ScrollToMessageActionType = {
   type: 'SCROLL_TO_MESSAGE';
@@ -262,6 +531,18 @@ export type SelectedConversationChangedActionType = {
     messageId?: string;
   };
 };
+type ReviewGroupMemberNameCollisionActionType = {
+  type: 'REVIEW_GROUP_MEMBER_NAME_COLLISION';
+  payload: {
+    groupConversationId: string;
+  };
+};
+type ReviewMessageRequestNameCollisionActionType = {
+  type: 'REVIEW_MESSAGE_REQUEST_NAME_COLLISION';
+  payload: {
+    safeConversationId: string;
+  };
+};
 type ShowInboxActionType = {
   type: 'SHOW_INBOX';
   payload: null;
@@ -270,57 +551,296 @@ export type ShowArchivedConversationsActionType = {
   type: 'SHOW_ARCHIVED_CONVERSATIONS';
   payload: null;
 };
-
+type SetComposeGroupAvatarActionType = {
+  type: 'SET_COMPOSE_GROUP_AVATAR';
+  payload: { groupAvatar: undefined | ArrayBuffer };
+};
+type SetComposeGroupNameActionType = {
+  type: 'SET_COMPOSE_GROUP_NAME';
+  payload: { groupName: string };
+};
+type SetComposeGroupExpireTimerActionType = {
+  type: 'SET_COMPOSE_GROUP_EXPIRE_TIMER';
+  payload: { groupExpireTimer: number };
+};
+type SetComposeSearchTermActionType = {
+  type: 'SET_COMPOSE_SEARCH_TERM';
+  payload: { searchTerm: string };
+};
+type SetRecentMediaItemsActionType = {
+  type: 'SET_RECENT_MEDIA_ITEMS';
+  payload: {
+    id: string;
+    recentMediaItems: Array<MediaItemType>;
+  };
+};
+type StartComposingActionType = {
+  type: 'START_COMPOSING';
+};
+type ShowChooseGroupMembersActionType = {
+  type: 'SHOW_CHOOSE_GROUP_MEMBERS';
+};
+type StartSettingGroupMetadataActionType = {
+  type: 'START_SETTING_GROUP_METADATA';
+};
+export type SwitchToAssociatedViewActionType = {
+  type: 'SWITCH_TO_ASSOCIATED_VIEW';
+  payload: { conversationId: string };
+};
+export type ToggleConversationInChooseMembersActionType = {
+  type: 'TOGGLE_CONVERSATION_IN_CHOOSE_MEMBERS';
+  payload: {
+    conversationId: string;
+    maxRecommendedGroupSize: number;
+    maxGroupSize: number;
+  };
+};
 export type ConversationActionType =
+  | CantAddContactToGroupActionType
+  | ClearChangedMessagesActionType
+  | ClearGroupCreationErrorActionType
+  | ClearInvitedConversationsForNewlyCreatedGroupActionType
+  | ClearSelectedMessageActionType
+  | ClearUnreadMetricsActionType
+  | CloseCantAddContactToGroupModalActionType
+  | CloseContactSpoofingReviewActionType
+  | CloseMaximumGroupSizeModalActionType
+  | CloseRecommendedGroupSizeModalActionType
   | ConversationAddedActionType
   | ConversationChangedActionType
   | ConversationRemovedActionType
   | ConversationUnloadedActionType
-  | RemoveAllConversationsActionType
-  | MessageSelectedActionType
+  | ColorsChangedActionType
+  | ColorSelectedActionType
+  | CustomColorRemovedActionType
+  | CreateGroupFulfilledActionType
+  | CreateGroupPendingActionType
+  | CreateGroupRejectedActionType
   | MessageChangedActionType
   | MessageDeletedActionType
   | MessagesAddedActionType
+  | MessageSelectedActionType
+  | MessageSizeChangedActionType
   | MessagesResetActionType
-  | SetMessagesLoadingActionType
-  | SetIsNearBottomActionType
-  | SetLoadCountdownStartActionType
-  | ClearChangedMessagesActionType
-  | ClearSelectedMessageActionType
-  | ClearUnreadMetricsActionType
+  | RemoveAllConversationsActionType
+  | RepairNewestMessageActionType
+  | RepairOldestMessageActionType
+  | ReviewGroupMemberNameCollisionActionType
+  | ReviewMessageRequestNameCollisionActionType
   | ScrollToMessageActionType
   | SelectedConversationChangedActionType
-  | MessageDeletedActionType
-  | SelectedConversationChangedActionType
+  | SetComposeGroupAvatarActionType
+  | SetComposeGroupNameActionType
+  | SetComposeGroupExpireTimerActionType
+  | SetComposeSearchTermActionType
+  | SetConversationHeaderTitleActionType
+  | SetIsNearBottomActionType
+  | SetLoadCountdownStartActionType
+  | SetMessagesLoadingActionType
+  | SetPreJoinConversationActionType
+  | SetRecentMediaItemsActionType
+  | SetSelectedConversationPanelDepthActionType
+  | ShowArchivedConversationsActionType
   | ShowInboxActionType
-  | ShowArchivedConversationsActionType;
+  | StartComposingActionType
+  | ShowChooseGroupMembersActionType
+  | StartSettingGroupMetadataActionType
+  | SwitchToAssociatedViewActionType
+  | ToggleConversationInChooseMembersActionType;
 
 // Action Creators
 
 export const actions = {
+  cantAddContactToGroup,
+  clearChangedMessages,
+  clearInvitedConversationsForNewlyCreatedGroup,
+  clearGroupCreationError,
+  clearSelectedMessage,
+  clearUnreadMetrics,
+  closeCantAddContactToGroupModal,
+  closeContactSpoofingReview,
+  closeRecommendedGroupSizeModal,
+  closeMaximumGroupSizeModal,
   conversationAdded,
   conversationChanged,
   conversationRemoved,
   conversationUnloaded,
-  removeAllConversations,
-  selectMessage,
-  messageDeleted,
+  colorSelected,
+  createGroup,
+  doubleCheckMissingQuoteReference,
   messageChanged,
+  messageDeleted,
   messagesAdded,
+  messageSizeChanged,
   messagesReset,
-  setMessagesLoading,
-  setLoadCountdownStart,
-  setIsNearBottom,
-  clearChangedMessages,
-  clearSelectedMessage,
-  clearUnreadMetrics,
-  scrollToMessage,
-  openConversationInternal,
   openConversationExternal,
-  showInbox,
+  openConversationInternal,
+  removeAllConversations,
+  removeCustomColorOnConversations,
+  repairNewestMessage,
+  repairOldestMessage,
+  resetAllChatColors,
+  reviewGroupMemberNameCollision,
+  reviewMessageRequestNameCollision,
+  scrollToMessage,
+  selectMessage,
+  setComposeGroupAvatar,
+  setComposeGroupName,
+  setComposeGroupExpireTimer,
+  setComposeSearchTerm,
+  setIsNearBottom,
+  setLoadCountdownStart,
+  setMessagesLoading,
+  setPreJoinConversation,
+  setRecentMediaItems,
+  setSelectedConversationHeaderTitle,
+  setSelectedConversationPanelDepth,
   showArchivedConversations,
+  showInbox,
+  startComposing,
+  showChooseGroupMembers,
+  startNewConversationFromPhoneNumber,
+  startSettingGroupMetadata,
+  toggleConversationInChooseMembers,
 };
 
+function removeCustomColorOnConversations(
+  colorId: string
+): ThunkAction<void, RootStateType, unknown, CustomColorRemovedActionType> {
+  return async dispatch => {
+    const conversationsToUpdate: Array<ConversationAttributesType> = [];
+    // We don't want to trigger a model change because we're updating redux
+    // here manually ourselves. Au revoir Backbone!
+    window.getConversations().forEach(conversation => {
+      if (conversation.get('customColorId') === colorId) {
+        // eslint-disable-next-line no-param-reassign
+        delete conversation.attributes.conversationColor;
+        // eslint-disable-next-line no-param-reassign
+        delete conversation.attributes.customColor;
+        // eslint-disable-next-line no-param-reassign
+        delete conversation.attributes.customColorId;
+
+        conversationsToUpdate.push(conversation.attributes);
+      }
+    });
+
+    if (conversationsToUpdate.length) {
+      await window.Signal.Data.updateConversations(conversationsToUpdate);
+    }
+
+    const defaultConversationColor = window.storage.get(
+      'defaultConversationColor',
+      DEFAULT_CONVERSATION_COLOR
+    );
+
+    dispatch({
+      type: CUSTOM_COLOR_REMOVED,
+      payload: {
+        colorId,
+        defaultConversationColor,
+      },
+    });
+  };
+}
+
+function resetAllChatColors(): ThunkAction<
+  void,
+  RootStateType,
+  unknown,
+  ColorsChangedActionType
+> {
+  return async dispatch => {
+    // Calling this with no args unsets all the colors in the db
+    await window.Signal.Data.updateAllConversationColors();
+
+    // We don't want to trigger a model change because we're updating redux
+    // here manually ourselves. Au revoir Backbone!
+    window.getConversations().forEach(conversation => {
+      // eslint-disable-next-line no-param-reassign
+      delete conversation.attributes.conversationColor;
+      // eslint-disable-next-line no-param-reassign
+      delete conversation.attributes.customColor;
+      // eslint-disable-next-line no-param-reassign
+      delete conversation.attributes.customColorId;
+    });
+
+    const defaultConversationColor = window.storage.get(
+      'defaultConversationColor',
+      DEFAULT_CONVERSATION_COLOR
+    );
+
+    dispatch({
+      type: COLORS_CHANGED,
+      payload: {
+        conversationColor: defaultConversationColor.color,
+        customColorData: defaultConversationColor.customColorData,
+      },
+    });
+  };
+}
+
+function colorSelected({
+  conversationId,
+  conversationColor,
+  customColorData,
+}: ColorSelectedPayloadType): ThunkAction<
+  void,
+  RootStateType,
+  unknown,
+  ColorSelectedActionType
+> {
+  return async dispatch => {
+    // We don't want to trigger a model change because we're updating redux
+    // here manually ourselves. Au revoir Backbone!
+    const conversation = window.ConversationController.get(conversationId);
+    if (conversation) {
+      if (conversationColor) {
+        conversation.attributes.conversationColor = conversationColor;
+        if (customColorData) {
+          conversation.attributes.customColor = customColorData.value;
+          conversation.attributes.customColorId = customColorData.id;
+        } else {
+          delete conversation.attributes.customColor;
+          delete conversation.attributes.customColorId;
+        }
+      } else {
+        delete conversation.attributes.conversationColor;
+        delete conversation.attributes.customColor;
+        delete conversation.attributes.customColorId;
+      }
+
+      await window.Signal.Data.updateConversation(conversation.attributes);
+    }
+
+    dispatch({
+      type: COLOR_SELECTED,
+      payload: {
+        conversationId,
+        conversationColor,
+        customColorData,
+      },
+    });
+  };
+}
+
+function cantAddContactToGroup(
+  conversationId: string
+): CantAddContactToGroupActionType {
+  return {
+    type: 'CANT_ADD_CONTACT_TO_GROUP',
+    payload: { conversationId },
+  };
+}
+function setPreJoinConversation(
+  data: PreJoinConversationType | undefined
+): SetPreJoinConversationActionType {
+  return {
+    type: 'SET_PRE_JOIN_CONVERSATION',
+    payload: {
+      data,
+    },
+  };
+}
 function conversationAdded(
   id: string,
   data: ConversationType
@@ -336,13 +856,17 @@ function conversationAdded(
 function conversationChanged(
   id: string,
   data: ConversationType
-): ConversationChangedActionType {
-  return {
-    type: 'CONVERSATION_CHANGED',
-    payload: {
-      id,
-      data,
-    },
+): ThunkAction<void, RootStateType, unknown, ConversationChangedActionType> {
+  return dispatch => {
+    calling.groupMembersChanged(id);
+
+    dispatch({
+      type: 'CONVERSATION_CHANGED',
+      payload: {
+        id,
+        data,
+      },
+    });
   };
 }
 function conversationRemoved(id: string): ConversationRemovedActionType {
@@ -361,6 +885,57 @@ function conversationUnloaded(id: string): ConversationUnloadedActionType {
     },
   };
 }
+
+function createGroup(): ThunkAction<
+  void,
+  RootStateType,
+  unknown,
+  | CreateGroupPendingActionType
+  | CreateGroupFulfilledActionType
+  | CreateGroupRejectedActionType
+  | SwitchToAssociatedViewActionType
+> {
+  return async (dispatch, getState, ...args) => {
+    const { composer } = getState().conversations;
+    if (
+      composer?.step !== ComposerStep.SetGroupMetadata ||
+      composer.isCreating
+    ) {
+      assert(false, 'Cannot create group in this stage; doing nothing');
+      return;
+    }
+
+    dispatch({ type: 'CREATE_GROUP_PENDING' });
+
+    try {
+      const conversation = await groups.createGroupV2({
+        name: composer.groupName.trim(),
+        avatar: composer.groupAvatar,
+        expireTimer: composer.groupExpireTimer,
+        conversationIds: composer.selectedConversationIds,
+      });
+      dispatch({
+        type: 'CREATE_GROUP_FULFILLED',
+        payload: {
+          invitedConversationIds: (
+            conversation.get('pendingMembersV2') || []
+          ).map(member => member.conversationId),
+        },
+      });
+      openConversationInternal({
+        conversationId: conversation.id,
+        switchToAssociatedView: true,
+      })(dispatch, getState, ...args);
+    } catch (err) {
+      window.log.error(
+        'Failed to create group',
+        err && err.stack ? err.stack : err
+      );
+      dispatch({ type: 'CREATE_GROUP_REJECTED' });
+    }
+  };
+}
+
 function removeAllConversations(): RemoveAllConversationsActionType {
   return {
     type: 'CONVERSATIONS_REMOVE_ALL',
@@ -368,7 +943,10 @@ function removeAllConversations(): RemoveAllConversationsActionType {
   };
 }
 
-function selectMessage(messageId: string, conversationId: string) {
+function selectMessage(
+  messageId: string,
+  conversationId: string
+): MessageSelectedActionType {
   return {
     type: 'MESSAGE_SELECTED',
     payload: {
@@ -381,7 +959,7 @@ function selectMessage(messageId: string, conversationId: string) {
 function messageChanged(
   id: string,
   conversationId: string,
-  data: MessageType
+  data: MessageAttributesType
 ): MessageChangedActionType {
   return {
     type: 'MESSAGE_CHANGED',
@@ -404,9 +982,21 @@ function messageDeleted(
     },
   };
 }
+function messageSizeChanged(
+  id: string,
+  conversationId: string
+): MessageSizeChangedActionType {
+  return {
+    type: 'MESSAGE_SIZE_CHANGED',
+    payload: {
+      id,
+      conversationId,
+    },
+  };
+}
 function messagesAdded(
   conversationId: string,
-  messages: Array<MessageType>,
+  messages: Array<MessageAttributesType>,
   isNewMessage: boolean,
   isActive: boolean
 ): MessagesAddedActionType {
@@ -420,15 +1010,56 @@ function messagesAdded(
     },
   };
 }
+
+function repairNewestMessage(
+  conversationId: string
+): RepairNewestMessageActionType {
+  return {
+    type: 'REPAIR_NEWEST_MESSAGE',
+    payload: {
+      conversationId,
+    },
+  };
+}
+function repairOldestMessage(
+  conversationId: string
+): RepairOldestMessageActionType {
+  return {
+    type: 'REPAIR_OLDEST_MESSAGE',
+    payload: {
+      conversationId,
+    },
+  };
+}
+
+function reviewGroupMemberNameCollision(
+  groupConversationId: string
+): ReviewGroupMemberNameCollisionActionType {
+  return {
+    type: 'REVIEW_GROUP_MEMBER_NAME_COLLISION',
+    payload: { groupConversationId },
+  };
+}
+
+function reviewMessageRequestNameCollision(
+  payload: Readonly<{
+    safeConversationId: string;
+  }>
+): ReviewMessageRequestNameCollisionActionType {
+  return { type: 'REVIEW_MESSAGE_REQUEST_NAME_COLLISION', payload };
+}
+
 function messagesReset(
   conversationId: string,
-  messages: Array<MessageType>,
+  messages: Array<MessageAttributesType>,
   metrics: MessageMetricsType,
-  scrollToMessageId?: string
+  scrollToMessageId?: string,
+  unboundedFetch?: boolean
 ): MessagesResetActionType {
   return {
     type: 'MESSAGES_RESET',
     payload: {
+      unboundedFetch: Boolean(unboundedFetch),
       conversationId,
       messages,
       metrics,
@@ -472,6 +1103,31 @@ function setIsNearBottom(
     },
   };
 }
+function setSelectedConversationHeaderTitle(
+  title?: string
+): SetConversationHeaderTitleActionType {
+  return {
+    type: 'SET_CONVERSATION_HEADER_TITLE',
+    payload: { title },
+  };
+}
+function setSelectedConversationPanelDepth(
+  panelDepth: number
+): SetSelectedConversationPanelDepthActionType {
+  return {
+    type: 'SET_SELECTED_CONVERSATION_PANEL_DEPTH',
+    payload: { panelDepth },
+  };
+}
+function setRecentMediaItems(
+  id: string,
+  recentMediaItems: Array<MediaItemType>
+): SetRecentMediaItemsActionType {
+  return {
+    type: 'SET_RECENT_MEDIA_ITEMS',
+    payload: { id, recentMediaItems },
+  };
+}
 function clearChangedMessages(
   conversationId: string
 ): ClearChangedMessagesActionType {
@@ -481,6 +1137,12 @@ function clearChangedMessages(
       conversationId,
     },
   };
+}
+function clearInvitedConversationsForNewlyCreatedGroup(): ClearInvitedConversationsForNewlyCreatedGroupActionType {
+  return { type: 'CLEAR_INVITED_CONVERSATIONS_FOR_NEWLY_CREATED_GROUP' };
+}
+function clearGroupCreationError(): ClearGroupCreationErrorActionType {
+  return { type: 'CLEAR_GROUP_CREATION_ERROR' };
 }
 function clearSelectedMessage(): ClearSelectedMessageActionType {
   return {
@@ -498,7 +1160,18 @@ function clearUnreadMetrics(
     },
   };
 }
-
+function closeCantAddContactToGroupModal(): CloseCantAddContactToGroupModalActionType {
+  return { type: 'CLOSE_CANT_ADD_CONTACT_TO_GROUP_MODAL' };
+}
+function closeContactSpoofingReview(): CloseContactSpoofingReviewActionType {
+  return { type: 'CLOSE_CONTACT_SPOOFING_REVIEW' };
+}
+function closeMaximumGroupSizeModal(): CloseMaximumGroupSizeModalActionType {
+  return { type: 'CLOSE_MAXIMUM_GROUP_SIZE_MODAL' };
+}
+function closeRecommendedGroupSizeModal(): CloseRecommendedGroupSizeModalActionType {
+  return { type: 'CLOSE_RECOMMENDED_GROUP_SIZE_MODAL' };
+}
 function scrollToMessage(
   conversationId: string,
   messageId: string
@@ -512,19 +1185,116 @@ function scrollToMessage(
   };
 }
 
+function setComposeGroupAvatar(
+  groupAvatar: undefined | ArrayBuffer
+): SetComposeGroupAvatarActionType {
+  return {
+    type: 'SET_COMPOSE_GROUP_AVATAR',
+    payload: { groupAvatar },
+  };
+}
+
+function setComposeGroupName(groupName: string): SetComposeGroupNameActionType {
+  return {
+    type: 'SET_COMPOSE_GROUP_NAME',
+    payload: { groupName },
+  };
+}
+
+function setComposeGroupExpireTimer(
+  groupExpireTimer: number
+): SetComposeGroupExpireTimerActionType {
+  return {
+    type: 'SET_COMPOSE_GROUP_EXPIRE_TIMER',
+    payload: { groupExpireTimer },
+  };
+}
+
+function setComposeSearchTerm(
+  searchTerm: string
+): SetComposeSearchTermActionType {
+  return {
+    type: 'SET_COMPOSE_SEARCH_TERM',
+    payload: { searchTerm },
+  };
+}
+
+function startComposing(): StartComposingActionType {
+  return { type: 'START_COMPOSING' };
+}
+
+function showChooseGroupMembers(): ShowChooseGroupMembersActionType {
+  return { type: 'SHOW_CHOOSE_GROUP_MEMBERS' };
+}
+
+function startNewConversationFromPhoneNumber(
+  e164: string
+): ThunkAction<void, RootStateType, unknown, ShowInboxActionType> {
+  return dispatch => {
+    trigger('showConversation', e164);
+
+    dispatch(showInbox());
+  };
+}
+
+function startSettingGroupMetadata(): StartSettingGroupMetadataActionType {
+  return { type: 'START_SETTING_GROUP_METADATA' };
+}
+
+function toggleConversationInChooseMembers(
+  conversationId: string
+): ThunkAction<
+  void,
+  RootStateType,
+  unknown,
+  ToggleConversationInChooseMembersActionType
+> {
+  return dispatch => {
+    const maxRecommendedGroupSize = getGroupSizeRecommendedLimit(151);
+    const maxGroupSize = Math.max(
+      getGroupSizeHardLimit(1001),
+      maxRecommendedGroupSize + 1
+    );
+
+    assert(
+      maxGroupSize > maxRecommendedGroupSize,
+      'Expected the hard max group size to be larger than the recommended maximum'
+    );
+
+    dispatch({
+      type: 'TOGGLE_CONVERSATION_IN_CHOOSE_MEMBERS',
+      payload: { conversationId, maxGroupSize, maxRecommendedGroupSize },
+    });
+  };
+}
+
 // Note: we need two actions here to simplify. Operations outside of the left pane can
 //   trigger an 'openConversation' so we go through Whisper.events for all
 //   conversation selection. Internal just triggers the Whisper.event, and External
 //   makes the changes to the store.
-function openConversationInternal(
-  id: string,
-  messageId?: string
-): NoopActionType {
-  trigger('showConversation', id, messageId);
+function openConversationInternal({
+  conversationId,
+  messageId,
+  switchToAssociatedView,
+}: Readonly<{
+  conversationId: string;
+  messageId?: string;
+  switchToAssociatedView?: boolean;
+}>): ThunkAction<
+  void,
+  RootStateType,
+  unknown,
+  SwitchToAssociatedViewActionType
+> {
+  return dispatch => {
+    trigger('showConversation', conversationId, messageId);
 
-  return {
-    type: 'NOOP',
-    payload: null,
+    if (switchToAssociatedView) {
+      dispatch({
+        type: 'SWITCH_TO_ASSOCIATED_VIEW',
+        payload: { conversationId },
+      });
+    }
   };
 }
 function openConversationExternal(
@@ -540,36 +1310,52 @@ function openConversationExternal(
   };
 }
 
-function showInbox() {
+function showInbox(): ShowInboxActionType {
   return {
     type: 'SHOW_INBOX',
     payload: null,
   };
 }
-function showArchivedConversations() {
+function showArchivedConversations(): ShowArchivedConversationsActionType {
   return {
     type: 'SHOW_ARCHIVED_CONVERSATIONS',
     payload: null,
   };
 }
 
+function doubleCheckMissingQuoteReference(messageId: string): NoopActionType {
+  const message = window.MessageController.getById(messageId);
+  if (message) {
+    message.doubleCheckMissingQuoteReference();
+  }
+
+  return {
+    type: 'NOOP',
+    payload: null,
+  };
+}
+
 // Reducer
 
-function getEmptyState(): ConversationsStateType {
+export function getEmptyState(): ConversationsStateType {
   return {
     conversationLookup: {},
+    conversationsByE164: {},
+    conversationsByUuid: {},
+    conversationsByGroupId: {},
     messagesByConversation: {},
     messagesLookup: {},
     selectedMessageCounter: 0,
     showArchived: false,
+    selectedConversationTitle: '',
+    selectedConversationPanelDepth: 0,
   };
 }
 
-// tslint:disable-next-line cyclomatic-complexity
 function hasMessageHeightChanged(
-  message: MessageType,
-  previous: MessageType
-): Boolean {
+  message: MessageAttributesType,
+  previous: MessageAttributesType
+): boolean {
   const messageAttachments = message.attachments || [];
   const previousAttachments = previous.attachments || [];
 
@@ -593,6 +1379,7 @@ function hasMessageHeightChanged(
     message.sticker.data &&
     previous.sticker &&
     previous.sticker.data &&
+    !previous.sticker.data.blurHash &&
     previous.sticker.data.pending !== message.sticker.data.pending;
   if (stickerPendingChanged) {
     return true;
@@ -613,13 +1400,6 @@ function hasMessageHeightChanged(
     return true;
   }
 
-  const signalAccountChanged =
-    Boolean(message.hasSignalAccount || previous.hasSignalAccount) &&
-    message.hasSignalAccount !== previous.hasSignalAccount;
-  if (signalAccountChanged) {
-    return true;
-  }
-
   const currentReactions = message.reactions || [];
   const lastReactions = previous.reactions || [];
   const reactionsChanged =
@@ -637,11 +1417,156 @@ function hasMessageHeightChanged(
   return false;
 }
 
-// tslint:disable-next-line cyclomatic-complexity max-func-body-length
-export function reducer(
-  state: ConversationsStateType = getEmptyState(),
-  action: ConversationActionType
+export function updateConversationLookups(
+  added: ConversationType | undefined,
+  removed: ConversationType | undefined,
+  state: ConversationsStateType
+): Pick<
+  ConversationsStateType,
+  'conversationsByE164' | 'conversationsByUuid' | 'conversationsByGroupId'
+> {
+  const result = {
+    conversationsByE164: state.conversationsByE164,
+    conversationsByUuid: state.conversationsByUuid,
+    conversationsByGroupId: state.conversationsByGroupId,
+  };
+
+  if (removed && removed.e164) {
+    result.conversationsByE164 = omit(result.conversationsByE164, removed.e164);
+  }
+  if (removed && removed.uuid) {
+    result.conversationsByUuid = omit(result.conversationsByUuid, removed.uuid);
+  }
+  if (removed && removed.groupId) {
+    result.conversationsByGroupId = omit(
+      result.conversationsByGroupId,
+      removed.groupId
+    );
+  }
+
+  if (added && added.e164) {
+    result.conversationsByE164 = {
+      ...result.conversationsByE164,
+      [added.e164]: added,
+    };
+  }
+  if (added && added.uuid) {
+    result.conversationsByUuid = {
+      ...result.conversationsByUuid,
+      [added.uuid]: added,
+    };
+  }
+  if (added && added.groupId) {
+    result.conversationsByGroupId = {
+      ...result.conversationsByGroupId,
+      [added.groupId]: added,
+    };
+  }
+
+  return result;
+}
+
+function closeComposerModal(
+  state: Readonly<ConversationsStateType>,
+  modalToClose: 'maximumGroupSizeModalState' | 'recommendedGroupSizeModalState'
 ): ConversationsStateType {
+  const { composer } = state;
+  if (composer?.step !== ComposerStep.ChooseGroupMembers) {
+    assert(false, "Can't close the modal in this composer step. Doing nothing");
+    return state;
+  }
+  if (composer[modalToClose] !== OneTimeModalState.Showing) {
+    return state;
+  }
+  return {
+    ...state,
+    composer: {
+      ...composer,
+      [modalToClose]: OneTimeModalState.Shown,
+    },
+  };
+}
+
+export function reducer(
+  state: Readonly<ConversationsStateType> = getEmptyState(),
+  action: Readonly<ConversationActionType>
+): ConversationsStateType {
+  if (action.type === 'CANT_ADD_CONTACT_TO_GROUP') {
+    const { composer } = state;
+    if (composer?.step !== ComposerStep.ChooseGroupMembers) {
+      assert(false, "Can't update modal in this composer step. Doing nothing");
+      return state;
+    }
+    return {
+      ...state,
+      composer: {
+        ...composer,
+        cantAddContactIdForModal: action.payload.conversationId,
+      },
+    };
+  }
+
+  if (action.type === 'CLEAR_INVITED_CONVERSATIONS_FOR_NEWLY_CREATED_GROUP') {
+    return omit(state, 'invitedConversationIdsForNewlyCreatedGroup');
+  }
+
+  if (action.type === 'CLEAR_GROUP_CREATION_ERROR') {
+    const { composer } = state;
+    if (composer?.step !== ComposerStep.SetGroupMetadata) {
+      assert(
+        false,
+        "Can't clear group creation error in this composer state. Doing nothing"
+      );
+      return state;
+    }
+    return {
+      ...state,
+      composer: {
+        ...composer,
+        hasError: false,
+      },
+    };
+  }
+
+  if (action.type === 'CLOSE_CANT_ADD_CONTACT_TO_GROUP_MODAL') {
+    const { composer } = state;
+    if (composer?.step !== ComposerStep.ChooseGroupMembers) {
+      assert(
+        false,
+        "Can't close the modal in this composer step. Doing nothing"
+      );
+      return state;
+    }
+    return {
+      ...state,
+      composer: {
+        ...composer,
+        cantAddContactIdForModal: undefined,
+      },
+    };
+  }
+
+  if (action.type === 'CLOSE_CONTACT_SPOOFING_REVIEW') {
+    return omit(state, 'contactSpoofingReview');
+  }
+
+  if (action.type === 'CLOSE_MAXIMUM_GROUP_SIZE_MODAL') {
+    return closeComposerModal(state, 'maximumGroupSizeModalState' as const);
+  }
+
+  if (action.type === 'CLOSE_RECOMMENDED_GROUP_SIZE_MODAL') {
+    return closeComposerModal(state, 'recommendedGroupSizeModalState' as const);
+  }
+
+  if (action.type === 'SET_PRE_JOIN_CONVERSATION') {
+    const { payload } = action;
+    const { data } = payload;
+
+    return {
+      ...state,
+      preJoinConversation: data,
+    };
+  }
   if (action.type === 'CONVERSATION_ADDED') {
     const { payload } = action;
     const { id, data } = payload;
@@ -653,6 +1578,7 @@ export function reducer(
         ...conversationLookup,
         [id]: data,
       },
+      ...updateConversationLookups(data, undefined, state),
     };
   }
   if (action.type === 'CONVERSATION_CHANGED') {
@@ -660,16 +1586,19 @@ export function reducer(
     const { id, data } = payload;
     const { conversationLookup } = state;
 
-    let showArchived = state.showArchived;
-    let selectedConversation = state.selectedConversation;
+    const { selectedConversationId } = state;
+    let { showArchived } = state;
 
     const existing = conversationLookup[id];
-    // In the change case we only modify the lookup if we already had that conversation
-    if (!existing) {
+    // We only modify the lookup if we already had that conversation and the conversation
+    //   changed.
+    if (!existing || data === existing) {
       return state;
     }
 
-    if (selectedConversation === id) {
+    const keysToOmit: Array<keyof ConversationsStateType> = [];
+
+    if (selectedConversationId === id) {
       // Archived -> Inbox: we go back to the normal inbox view
       if (existing.isArchived && !data.isArchived) {
         showArchived = false;
@@ -679,28 +1608,40 @@ export function reducer(
       //   behavior - no selected conversation in the left pane, but a conversation show
       //   in the right pane.
       if (!existing.isArchived && data.isArchived) {
-        selectedConversation = undefined;
+        keysToOmit.push('selectedConversationId');
+      }
+
+      if (!existing.isBlocked && data.isBlocked) {
+        keysToOmit.push('contactSpoofingReview');
       }
     }
 
     return {
-      ...state,
-      selectedConversation,
+      ...omit(state, keysToOmit),
+      selectedConversationId,
       showArchived,
       conversationLookup: {
         ...conversationLookup,
         [id]: data,
       },
+      ...updateConversationLookups(data, existing, state),
     };
   }
   if (action.type === 'CONVERSATION_REMOVED') {
     const { payload } = action;
     const { id } = payload;
     const { conversationLookup } = state;
+    const existing = getOwn(conversationLookup, id);
+
+    // No need to make a change if we didn't have a record of this conversation!
+    if (!existing) {
+      return state;
+    }
 
     return {
       ...state,
       conversationLookup: omit(conversationLookup, [id]),
+      ...updateConversationLookups(undefined, existing, state),
     };
   }
   if (action.type === 'CONVERSATION_UNLOADED') {
@@ -712,14 +1653,15 @@ export function reducer(
     }
 
     const { messageIds } = existingConversation;
-    const selectedConversation =
-      state.selectedConversation !== id
-        ? state.selectedConversation
+    const selectedConversationId =
+      state.selectedConversationId !== id
+        ? state.selectedConversationId
         : undefined;
 
     return {
-      ...state,
-      selectedConversation,
+      ...omit(state, 'contactSpoofingReview'),
+      selectedConversationId,
+      selectedConversationPanelDepth: 0,
       messagesLookup: omit(state.messagesLookup, messageIds),
       messagesByConversation: omit(state.messagesByConversation, [id]),
     };
@@ -727,10 +1669,57 @@ export function reducer(
   if (action.type === 'CONVERSATIONS_REMOVE_ALL') {
     return getEmptyState();
   }
+  if (action.type === 'CREATE_GROUP_PENDING') {
+    const { composer } = state;
+    if (composer?.step !== ComposerStep.SetGroupMetadata) {
+      // This should be unlikely, but it can happen if someone closes the composer while
+      //   a group is being created.
+      return state;
+    }
+    return {
+      ...state,
+      composer: {
+        ...composer,
+        hasError: false,
+        isCreating: true,
+      },
+    };
+  }
+  if (action.type === 'CREATE_GROUP_FULFILLED') {
+    // We don't do much here and instead rely on `openConversationInternal` to do most of
+    //   the work.
+    return {
+      ...state,
+      invitedConversationIdsForNewlyCreatedGroup:
+        action.payload.invitedConversationIds,
+    };
+  }
+  if (action.type === 'CREATE_GROUP_REJECTED') {
+    const { composer } = state;
+    if (composer?.step !== ComposerStep.SetGroupMetadata) {
+      // This should be unlikely, but it can happen if someone closes the composer while
+      //   a group is being created.
+      return state;
+    }
+    return {
+      ...state,
+      composer: {
+        ...composer,
+        hasError: true,
+        isCreating: false,
+      },
+    };
+  }
+  if (action.type === 'SET_SELECTED_CONVERSATION_PANEL_DEPTH') {
+    return {
+      ...state,
+      selectedConversationPanelDepth: action.payload.panelDepth,
+    };
+  }
   if (action.type === 'MESSAGE_SELECTED') {
     const { messageId, conversationId } = action.payload;
 
-    if (state.selectedConversation !== conversationId) {
+    if (state.selectedConversationId !== conversationId) {
       return state;
     }
 
@@ -778,12 +1767,38 @@ export function reducer(
       },
     };
   }
+  if (action.type === 'MESSAGE_SIZE_CHANGED') {
+    const { id, conversationId } = action.payload;
+
+    const existingConversation = getOwn(
+      state.messagesByConversation,
+      conversationId
+    );
+    if (!existingConversation) {
+      return state;
+    }
+
+    return {
+      ...state,
+      messagesByConversation: {
+        ...state.messagesByConversation,
+        [conversationId]: {
+          ...existingConversation,
+          heightChangeMessageIds: uniq([
+            ...existingConversation.heightChangeMessageIds,
+            id,
+          ]),
+        },
+      },
+    };
+  }
   if (action.type === 'MESSAGES_RESET') {
     const {
       conversationId,
       messages,
       metrics,
       scrollToMessageId,
+      unboundedFetch,
     } = action.payload;
     const { messagesByConversation, messagesLookup } = state;
 
@@ -792,7 +1807,11 @@ export function reducer(
       ? existingConversation.resetCounter + 1
       : 0;
 
-    const sorted = orderBy(messages, ['received_at'], ['ASC']);
+    const sorted = orderBy(
+      messages,
+      ['received_at', 'sent_at'],
+      ['ASC', 'ASC']
+    );
     const messageIds = sorted.map(message => message.id);
 
     const lookup = fromPairs(messages.map(message => [message.id, message]));
@@ -803,12 +1822,15 @@ export function reducer(
     if (messages.length > 0) {
       const first = messages[0];
       if (first && (!oldest || first.received_at <= oldest.received_at)) {
-        oldest = pick(first, ['id', 'received_at']);
+        oldest = pick(first, ['id', 'received_at', 'sent_at']);
       }
 
       const last = messages[messages.length - 1];
-      if (last && (!newest || last.received_at >= newest.received_at)) {
-        newest = pick(last, ['id', 'received_at']);
+      if (
+        last &&
+        (!newest || unboundedFetch || last.received_at >= newest.received_at)
+      ) {
+        newest = pick(last, ['id', 'received_at', 'sent_at']);
       }
     }
 
@@ -961,12 +1983,14 @@ export function reducer(
 
       if (oldest && oldest.id === firstId && firstId === id) {
         const second = messagesLookup[oldIds[1]];
-        oldest = second ? pick(second, ['id', 'received_at']) : undefined;
+        oldest = second
+          ? pick(second, ['id', 'received_at', 'sent_at'])
+          : undefined;
       }
       if (newest && newest.id === lastId && lastId === id) {
         const penultimate = messagesLookup[oldIds[oldIds.length - 2]];
         newest = penultimate
-          ? pick(penultimate, ['id', 'received_at'])
+          ? pick(penultimate, ['id', 'received_at', 'sent_at'])
           : undefined;
       }
     }
@@ -978,6 +2002,19 @@ export function reducer(
       id
     );
 
+    let metrics;
+    if (messageIds.length === 0) {
+      metrics = {
+        totalUnread: 0,
+      };
+    } else {
+      metrics = {
+        ...existingConversation.metrics,
+        oldest,
+        newest,
+      };
+    }
+
     return {
       ...state,
       messagesLookup: omit(messagesLookup, id),
@@ -986,15 +2023,97 @@ export function reducer(
           ...existingConversation,
           messageIds,
           heightChangeMessageIds,
+          metrics,
+        },
+      },
+    };
+  }
+
+  if (action.type === 'REPAIR_NEWEST_MESSAGE') {
+    const { conversationId } = action.payload;
+    const { messagesByConversation, messagesLookup } = state;
+
+    const existingConversation = getOwn(messagesByConversation, conversationId);
+    if (!existingConversation) {
+      return state;
+    }
+
+    const { messageIds } = existingConversation;
+    const lastId =
+      messageIds && messageIds.length
+        ? messageIds[messageIds.length - 1]
+        : undefined;
+    const last = lastId ? getOwn(messagesLookup, lastId) : undefined;
+    const newest = last
+      ? pick(last, ['id', 'received_at', 'sent_at'])
+      : undefined;
+
+    return {
+      ...state,
+      messagesByConversation: {
+        ...messagesByConversation,
+        [conversationId]: {
+          ...existingConversation,
           metrics: {
             ...existingConversation.metrics,
-            oldest,
             newest,
           },
         },
       },
     };
   }
+
+  if (action.type === 'REPAIR_OLDEST_MESSAGE') {
+    const { conversationId } = action.payload;
+    const { messagesByConversation, messagesLookup } = state;
+
+    const existingConversation = getOwn(messagesByConversation, conversationId);
+    if (!existingConversation) {
+      return state;
+    }
+
+    const { messageIds } = existingConversation;
+    const firstId = messageIds && messageIds.length ? messageIds[0] : undefined;
+    const first = firstId ? getOwn(messagesLookup, firstId) : undefined;
+    const oldest = first
+      ? pick(first, ['id', 'received_at', 'sent_at'])
+      : undefined;
+
+    return {
+      ...state,
+      messagesByConversation: {
+        ...messagesByConversation,
+        [conversationId]: {
+          ...existingConversation,
+          metrics: {
+            ...existingConversation.metrics,
+            oldest,
+          },
+        },
+      },
+    };
+  }
+
+  if (action.type === 'REVIEW_GROUP_MEMBER_NAME_COLLISION') {
+    return {
+      ...state,
+      contactSpoofingReview: {
+        type: ContactSpoofingType.MultipleGroupMembersWithSameTitle,
+        ...action.payload,
+      },
+    };
+  }
+
+  if (action.type === 'REVIEW_MESSAGE_REQUEST_NAME_COLLISION') {
+    return {
+      ...state,
+      contactSpoofingReview: {
+        type: ContactSpoofingType.DirectConversationWithSameTitle,
+        ...action.payload,
+      },
+    };
+  }
+
   if (action.type === 'MESSAGES_ADDED') {
     const { conversationId, isActive, isNewMessage, messages } = action.payload;
     const { messagesByConversation, messagesLookup } = state;
@@ -1022,17 +2141,21 @@ export function reducer(
       lookup[message.id] = message;
     });
 
-    const sorted = orderBy(values(lookup), ['received_at'], ['ASC']);
+    const sorted = orderBy(
+      values(lookup),
+      ['received_at', 'sent_at'],
+      ['ASC', 'ASC']
+    );
     const messageIds = sorted.map(message => message.id);
 
     const first = sorted[0];
     const last = sorted[sorted.length - 1];
 
     if (!newest) {
-      newest = pick(first, ['id', 'received_at']);
+      newest = pick(first, ['id', 'received_at', 'sent_at']);
     }
     if (!oldest) {
-      oldest = pick(last, ['id', 'received_at']);
+      oldest = pick(last, ['id', 'received_at', 'sent_at']);
     }
 
     const existingTotal = existingConversation.messageIds.length;
@@ -1047,12 +2170,13 @@ export function reducer(
       }
     }
 
-    // Update oldest and newest if we receive older/newer messages (or duplicated timestamps!)
+    // Update oldest and newest if we receive older/newer
+    // messages (or duplicated timestamps!)
     if (first && oldest && first.received_at <= oldest.received_at) {
-      oldest = pick(first, ['id', 'received_at']);
+      oldest = pick(first, ['id', 'received_at', 'sent_at']);
     }
     if (last && newest && last.received_at >= newest.received_at) {
-      newest = pick(last, ['id', 'received_at']);
+      newest = pick(last, ['id', 'received_at', 'sent_at']);
     }
 
     const newIds = messages.map(message => message.id);
@@ -1070,6 +2194,7 @@ export function reducer(
         oldestUnread = pick(lookup[oldestId], [
           'id',
           'received_at',
+          'sent_at',
         ]) as MessagePointerType;
       }
     }
@@ -1169,21 +2294,372 @@ export function reducer(
     const { id } = payload;
 
     return {
-      ...state,
-      selectedConversation: id,
+      ...omit(state, 'contactSpoofingReview'),
+      selectedConversationId: id,
     };
   }
   if (action.type === 'SHOW_INBOX') {
     return {
-      ...state,
+      ...omit(state, 'composer'),
       showArchived: false,
     };
   }
   if (action.type === 'SHOW_ARCHIVED_CONVERSATIONS') {
     return {
-      ...state,
+      ...omit(state, 'composer'),
       showArchived: true,
     };
+  }
+
+  if (action.type === 'SET_CONVERSATION_HEADER_TITLE') {
+    return {
+      ...state,
+      selectedConversationTitle: action.payload.title,
+    };
+  }
+
+  if (action.type === 'SET_RECENT_MEDIA_ITEMS') {
+    const { id, recentMediaItems } = action.payload;
+    const { conversationLookup } = state;
+
+    const conversationData = conversationLookup[id];
+
+    if (!conversationData) {
+      return state;
+    }
+
+    const data = {
+      ...conversationData,
+      recentMediaItems,
+    };
+
+    return {
+      ...state,
+      conversationLookup: {
+        ...conversationLookup,
+        [id]: data,
+      },
+      ...updateConversationLookups(data, undefined, state),
+    };
+  }
+
+  if (action.type === 'START_COMPOSING') {
+    if (state.composer?.step === ComposerStep.StartDirectConversation) {
+      return state;
+    }
+
+    return {
+      ...state,
+      showArchived: false,
+      composer: {
+        step: ComposerStep.StartDirectConversation,
+        searchTerm: '',
+      },
+    };
+  }
+
+  if (action.type === 'SHOW_CHOOSE_GROUP_MEMBERS') {
+    let selectedConversationIds: Array<string>;
+    let recommendedGroupSizeModalState: OneTimeModalState;
+    let maximumGroupSizeModalState: OneTimeModalState;
+    let groupName: string;
+    let groupAvatar: undefined | ArrayBuffer;
+    let groupExpireTimer: number;
+
+    switch (state.composer?.step) {
+      case ComposerStep.ChooseGroupMembers:
+        return state;
+      case ComposerStep.SetGroupMetadata:
+        ({
+          selectedConversationIds,
+          recommendedGroupSizeModalState,
+          maximumGroupSizeModalState,
+          groupName,
+          groupAvatar,
+          groupExpireTimer,
+        } = state.composer);
+        break;
+      default:
+        selectedConversationIds = [];
+        recommendedGroupSizeModalState = OneTimeModalState.NeverShown;
+        maximumGroupSizeModalState = OneTimeModalState.NeverShown;
+        groupName = '';
+        groupExpireTimer = universalExpireTimer.get();
+        break;
+    }
+
+    return {
+      ...state,
+      showArchived: false,
+      composer: {
+        step: ComposerStep.ChooseGroupMembers,
+        searchTerm: '',
+        selectedConversationIds,
+        cantAddContactIdForModal: undefined,
+        recommendedGroupSizeModalState,
+        maximumGroupSizeModalState,
+        groupName,
+        groupAvatar,
+        groupExpireTimer,
+      },
+    };
+  }
+
+  if (action.type === 'START_SETTING_GROUP_METADATA') {
+    const { composer } = state;
+
+    switch (composer?.step) {
+      case ComposerStep.ChooseGroupMembers:
+        return {
+          ...state,
+          showArchived: false,
+          composer: {
+            step: ComposerStep.SetGroupMetadata,
+            isCreating: false,
+            hasError: false,
+            ...pick(composer, [
+              'groupAvatar',
+              'groupName',
+              'groupExpireTimer',
+              'maximumGroupSizeModalState',
+              'recommendedGroupSizeModalState',
+              'selectedConversationIds',
+            ]),
+          },
+        };
+      case ComposerStep.SetGroupMetadata:
+        return state;
+      default:
+        assert(
+          false,
+          'Cannot transition to setting group metadata from this state'
+        );
+        return state;
+    }
+  }
+
+  if (action.type === 'SET_COMPOSE_GROUP_AVATAR') {
+    const { composer } = state;
+
+    switch (composer?.step) {
+      case ComposerStep.ChooseGroupMembers:
+      case ComposerStep.SetGroupMetadata:
+        return {
+          ...state,
+          composer: {
+            ...composer,
+            groupAvatar: action.payload.groupAvatar,
+          },
+        };
+      default:
+        assert(false, 'Setting compose group avatar at this step is a no-op');
+        return state;
+    }
+  }
+
+  if (action.type === 'SET_COMPOSE_GROUP_NAME') {
+    const { composer } = state;
+
+    switch (composer?.step) {
+      case ComposerStep.ChooseGroupMembers:
+      case ComposerStep.SetGroupMetadata:
+        return {
+          ...state,
+          composer: {
+            ...composer,
+            groupName: action.payload.groupName,
+          },
+        };
+      default:
+        assert(false, 'Setting compose group name at this step is a no-op');
+        return state;
+    }
+  }
+
+  if (action.type === 'SET_COMPOSE_GROUP_EXPIRE_TIMER') {
+    const { composer } = state;
+
+    switch (composer?.step) {
+      case ComposerStep.ChooseGroupMembers:
+      case ComposerStep.SetGroupMetadata:
+        return {
+          ...state,
+          composer: {
+            ...composer,
+            groupExpireTimer: action.payload.groupExpireTimer,
+          },
+        };
+      default:
+        assert(false, 'Setting compose group name at this step is a no-op');
+        return state;
+    }
+  }
+
+  if (action.type === 'SET_COMPOSE_SEARCH_TERM') {
+    const { composer } = state;
+    if (!composer) {
+      assert(
+        false,
+        'Setting compose search term with the composer closed is a no-op'
+      );
+      return state;
+    }
+    if (composer?.step === ComposerStep.SetGroupMetadata) {
+      assert(false, 'Setting compose search term at this step is a no-op');
+      return state;
+    }
+
+    return {
+      ...state,
+      composer: {
+        ...composer,
+        searchTerm: action.payload.searchTerm,
+      },
+    };
+  }
+
+  if (action.type === 'SWITCH_TO_ASSOCIATED_VIEW') {
+    const conversation = getOwn(
+      state.conversationLookup,
+      action.payload.conversationId
+    );
+    if (!conversation) {
+      return state;
+    }
+    return {
+      ...omit(state, 'composer'),
+      showArchived: Boolean(conversation.isArchived),
+    };
+  }
+
+  if (action.type === 'TOGGLE_CONVERSATION_IN_CHOOSE_MEMBERS') {
+    const { composer } = state;
+    if (composer?.step !== ComposerStep.ChooseGroupMembers) {
+      assert(
+        false,
+        'Toggling conversation members is a no-op in this composer step'
+      );
+      return state;
+    }
+
+    return {
+      ...state,
+      composer: {
+        ...composer,
+        ...toggleSelectedContactForGroupAddition(
+          action.payload.conversationId,
+          {
+            maxGroupSize: action.payload.maxGroupSize,
+            maxRecommendedGroupSize: action.payload.maxRecommendedGroupSize,
+            maximumGroupSizeModalState: composer.maximumGroupSizeModalState,
+            // We say you're already in the group, even though it hasn't been created yet.
+            numberOfContactsAlreadyInGroup: 1,
+            recommendedGroupSizeModalState:
+              composer.recommendedGroupSizeModalState,
+            selectedConversationIds: composer.selectedConversationIds,
+          }
+        ),
+      },
+    };
+  }
+
+  if (action.type === COLORS_CHANGED) {
+    const { conversationLookup } = state;
+    const { conversationColor, customColorData } = action.payload;
+
+    const nextState = {
+      ...state,
+    };
+
+    Object.keys(conversationLookup).forEach(id => {
+      const existing = conversationLookup[id];
+      const added = {
+        ...existing,
+        conversationColor,
+        customColor: customColorData?.value,
+        customColorId: customColorData?.id,
+      };
+
+      Object.assign(
+        nextState,
+        updateConversationLookups(added, existing, nextState),
+        {
+          conversationLookup: {
+            ...nextState.conversationLookup,
+            [id]: added,
+          },
+        }
+      );
+    });
+
+    return nextState;
+  }
+
+  if (action.type === COLOR_SELECTED) {
+    const { conversationLookup } = state;
+    const {
+      conversationId,
+      conversationColor,
+      customColorData,
+    } = action.payload;
+
+    const existing = conversationLookup[conversationId];
+    if (!existing) {
+      return state;
+    }
+
+    const changed = {
+      ...existing,
+      conversationColor,
+      customColor: customColorData?.value,
+      customColorId: customColorData?.id,
+    };
+
+    return {
+      ...state,
+      conversationLookup: {
+        ...conversationLookup,
+        [conversationId]: changed,
+      },
+      ...updateConversationLookups(changed, existing, state),
+    };
+  }
+
+  if (action.type === CUSTOM_COLOR_REMOVED) {
+    const { conversationLookup } = state;
+    const { colorId, defaultConversationColor } = action.payload;
+
+    const nextState = {
+      ...state,
+    };
+
+    Object.keys(conversationLookup).forEach(id => {
+      const existing = conversationLookup[id];
+
+      if (existing.customColorId !== colorId) {
+        return;
+      }
+
+      const changed = {
+        ...existing,
+        conversationColor: defaultConversationColor.color,
+        customColor: defaultConversationColor.customColorData?.value,
+        customColorId: defaultConversationColor.customColorData?.id,
+      };
+
+      Object.assign(
+        nextState,
+        updateConversationLookups(changed, existing, nextState),
+        {
+          conversationLookup: {
+            ...nextState.conversationLookup,
+            [id]: changed,
+          },
+        }
+      );
+    });
+
+    return nextState;
   }
 
   return state;

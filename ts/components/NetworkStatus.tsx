@@ -1,15 +1,19 @@
+// Copyright 2020-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import React from 'react';
 
 import { LocalizerType } from '../types/Util';
+import { SocketStatus } from '../types/SocketStatus';
 import { NetworkStateType } from '../state/ducks/network';
 
 const FIVE_SECONDS = 5 * 1000;
 
-export interface PropsType extends NetworkStateType {
+export type PropsType = NetworkStateType & {
   hasNetworkDialog: boolean;
   i18n: LocalizerType;
   manualReconnect: () => void;
-}
+};
 
 type RenderDialogTypes = {
   title: string;
@@ -40,13 +44,13 @@ export const NetworkStatus = ({
   socketStatus,
   manualReconnect,
 }: PropsType): JSX.Element | null => {
-  if (!hasNetworkDialog) {
-    return null;
-  }
-
   const [isConnecting, setIsConnecting] = React.useState<boolean>(false);
   React.useEffect(() => {
-    let timeout: any;
+    if (!hasNetworkDialog) {
+      return () => null;
+    }
+
+    let timeout: NodeJS.Timeout;
 
     if (isConnecting) {
       timeout = setTimeout(() => {
@@ -59,7 +63,11 @@ export const NetworkStatus = ({
         clearTimeout(timeout);
       }
     };
-  }, [isConnecting, setIsConnecting]);
+  }, [hasNetworkDialog, isConnecting, setIsConnecting]);
+
+  if (!hasNetworkDialog) {
+    return null;
+  }
 
   const reconnect = () => {
     setIsConnecting(true);
@@ -68,7 +76,9 @@ export const NetworkStatus = ({
 
   const manualReconnectButton = (): JSX.Element => (
     <div className="module-left-pane-dialog__actions">
-      <button onClick={reconnect}>{i18n('connect')}</button>
+      <button onClick={reconnect} type="button">
+        {i18n('connect')}
+      </button>
     </div>
   );
 
@@ -77,7 +87,8 @@ export const NetworkStatus = ({
       subtext: i18n('connectingHangOn'),
       title: i18n('connecting'),
     });
-  } else if (!isOnline) {
+  }
+  if (!isOnline) {
     return renderDialog({
       renderActionableButton: manualReconnectButton,
       subtext: i18n('checkNetworkConnection'),
@@ -90,12 +101,12 @@ export const NetworkStatus = ({
   let renderActionableButton;
 
   switch (socketStatus) {
-    case WebSocket.CONNECTING:
+    case SocketStatus.CONNECTING:
       subtext = i18n('connectingHangOn');
       title = i18n('connecting');
       break;
-    case WebSocket.CLOSED:
-    case WebSocket.CLOSING:
+    case SocketStatus.CLOSED:
+    case SocketStatus.CLOSING:
     default:
       renderActionableButton = manualReconnectButton;
       title = i18n('disconnected');

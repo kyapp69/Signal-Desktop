@@ -1,3 +1,6 @@
+// Copyright 2016-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 span.emoji {
   display: -moz-inline-box;
   -moz-box-orient: vertical;
@@ -43,7 +46,7 @@ span.emoji-inner {
 img.emoji {
   width: 1.4em;
   height: 1.4em;
-  margin-bottom: -4px;
+  margin-bottom: -5px;
   vertical-align: baseline;
 }
 

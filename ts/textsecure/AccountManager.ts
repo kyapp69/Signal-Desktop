@@ -1,19 +1,48 @@
-// tslint:disable no-backbone-get-set-outside-model no-default-export no-unnecessary-local-variable
+// Copyright 2020-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable more/no-then */
+/* eslint-disable class-methods-use-this */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import PQueue from 'p-queue';
 
 import EventTarget from './EventTarget';
 import { WebAPIType } from './WebAPI';
-import MessageReceiver from './MessageReceiver';
-import { KeyPairType, SignedPreKeyType } from '../libsignal.d';
+import { KeyPairType, CompatSignedPreKeyType } from './Types.d';
 import utils from './Helpers';
-import PQueue from 'p-queue';
 import ProvisioningCipher from './ProvisioningCipher';
 import WebSocketResource, {
   IncomingWebSocketRequest,
 } from './WebsocketResources';
+import * as Bytes from '../Bytes';
+import {
+  deriveAccessKey,
+  generateRegistrationId,
+  getRandomBytes,
+  typedArrayToArrayBuffer,
+} from '../Crypto';
+import {
+  generateKeyPair,
+  generateSignedPreKey,
+  generatePreKey,
+} from '../Curve';
+import { isMoreRecentThan, isOlderThan } from '../util/timestamp';
+import { ourProfileKeyService } from '../services/ourProfileKey';
+import { assert } from '../util/assert';
+import { getProvisioningUrl } from '../util/getProvisioningUrl';
+import { SignalService as Proto } from '../protobuf';
 
-const ARCHIVE_AGE = 7 * 24 * 60 * 60 * 1000;
+const ARCHIVE_AGE = 30 * 24 * 60 * 60 * 1000;
+const PREKEY_ROTATION_AGE = 24 * 60 * 60 * 1000;
+const PROFILE_KEY_LENGTH = 32;
+const SIGNED_KEY_GEN_BATCH_SIZE = 100;
 
-function getIdentifier(id: string) {
+// TODO: remove once we move away from ArrayBuffers
+const FIXMEU8 = Uint8Array;
+
+function getIdentifier(id: string | undefined) {
   if (!id || !id.length) {
     return id;
   }
@@ -42,7 +71,9 @@ type GeneratedKeysType = {
 
 export default class AccountManager extends EventTarget {
   server: WebAPIType;
+
   pending: Promise<void>;
+
   pendingQueue?: PQueue;
 
   constructor(username: string, password: string) {
@@ -55,9 +86,11 @@ export default class AccountManager extends EventTarget {
   async requestVoiceVerification(number: string) {
     return this.server.requestVerificationVoice(number);
   }
+
   async requestSMSVerification(number: string) {
     return this.server.requestVerificationSMS(number);
   }
+
   async encryptDeviceName(name: string, providedIdentityKey?: KeyPairType) {
     if (!name) {
       return null;
@@ -73,23 +106,31 @@ export default class AccountManager extends EventTarget {
       identityKey.pubKey
     );
 
-    const proto = new window.textsecure.protobuf.DeviceName();
-    proto.ephemeralPublic = encrypted.ephemeralPublic;
-    proto.syntheticIv = encrypted.syntheticIv;
-    proto.ciphertext = encrypted.ciphertext;
+    const proto = new Proto.DeviceName();
+    proto.ephemeralPublic = new FIXMEU8(encrypted.ephemeralPublic);
+    proto.syntheticIv = new FIXMEU8(encrypted.syntheticIv);
+    proto.ciphertext = new FIXMEU8(encrypted.ciphertext);
 
-    const arrayBuffer = proto.encode().toArrayBuffer();
-    return MessageReceiver.arrayBufferToStringBase64(arrayBuffer);
+    const bytes = Proto.DeviceName.encode(proto).finish();
+    return Bytes.toBase64(bytes);
   }
+
   async decryptDeviceName(base64: string) {
     const identityKey = await window.textsecure.storage.protocol.getIdentityKeyPair();
+    if (!identityKey) {
+      throw new Error('decryptDeviceName: No identity key pair!');
+    }
 
-    const arrayBuffer = MessageReceiver.stringToArrayBufferBase64(base64);
-    const proto = window.textsecure.protobuf.DeviceName.decode(arrayBuffer);
+    const bytes = Bytes.fromBase64(base64);
+    const proto = Proto.DeviceName.decode(bytes);
+    assert(
+      proto.ephemeralPublic && proto.syntheticIv && proto.ciphertext,
+      'Missing required fields in DeviceName'
+    );
     const encrypted = {
-      ephemeralPublic: proto.ephemeralPublic.toArrayBuffer(),
-      syntheticIv: proto.syntheticIv.toArrayBuffer(),
-      ciphertext: proto.ciphertext.toArrayBuffer(),
+      ephemeralPublic: typedArrayToArrayBuffer(proto.ephemeralPublic),
+      syntheticIv: typedArrayToArrayBuffer(proto.syntheticIv),
+      ciphertext: typedArrayToArrayBuffer(proto.ciphertext),
     };
 
     const name = await window.Signal.Crypto.decryptDeviceName(
@@ -99,64 +140,56 @@ export default class AccountManager extends EventTarget {
 
     return name;
   }
+
   async maybeUpdateDeviceName() {
     const isNameEncrypted = window.textsecure.storage.user.getDeviceNameEncrypted();
     if (isNameEncrypted) {
       return;
     }
     const deviceName = window.textsecure.storage.user.getDeviceName();
-    const base64 = await this.encryptDeviceName(deviceName);
+    const base64 = await this.encryptDeviceName(deviceName || '');
 
     if (base64) {
       await this.server.updateDeviceName(base64);
     }
   }
+
   async deviceNameIsEncrypted() {
     await window.textsecure.storage.user.setDeviceNameEncrypted();
   }
+
   async maybeDeleteSignalingKey() {
     const key = window.textsecure.storage.user.getSignalingKey();
     if (key) {
       await this.server.removeSignalingKey();
     }
   }
-  async registerSingleDevice(number: string, verificationCode: string) {
-    const registerKeys = this.server.registerKeys.bind(this.server);
-    const createAccount = this.createAccount.bind(this);
-    const clearSessionsAndPreKeys = this.clearSessionsAndPreKeys.bind(this);
-    const generateKeys = this.generateKeys.bind(this, 100);
-    const confirmKeys = this.confirmKeys.bind(this);
-    const registrationDone = this.registrationDone.bind(this);
-    return this.queueTask(async () =>
-      window.libsignal.KeyHelper.generateIdentityKeyPair().then(
-        async identityKeyPair => {
-          const profileKey = window.libsignal.crypto.getRandomBytes(32);
-          const accessKey = await window.Signal.Crypto.deriveAccessKey(
-            profileKey
-          );
 
-          return createAccount(
-            number,
-            verificationCode,
-            identityKeyPair,
-            profileKey,
-            null,
-            null,
-            null,
-            { accessKey }
-          )
-            .then(clearSessionsAndPreKeys)
-            .then(async () => generateKeys())
-            .then(async (keys: GeneratedKeysType) =>
-              registerKeys(keys).then(async () => confirmKeys(keys))
-            )
-            .then(async () => registrationDone({ number }));
-        }
-      )
-    );
+  async registerSingleDevice(number: string, verificationCode: string) {
+    return this.queueTask(async () => {
+      const identityKeyPair = generateKeyPair();
+      const profileKey = getRandomBytes(PROFILE_KEY_LENGTH);
+      const accessKey = await deriveAccessKey(profileKey);
+
+      await this.createAccount(
+        number,
+        verificationCode,
+        identityKeyPair,
+        profileKey,
+        null,
+        null,
+        null,
+        { accessKey }
+      );
+
+      await this.clearSessionsAndPreKeys();
+      const keys = await this.generateKeys(SIGNED_KEY_GEN_BATCH_SIZE);
+      await this.server.registerKeys(keys);
+      await this.confirmKeys(keys);
+      await this.registrationDone();
+    });
   }
 
-  // tslint:disable-next-line max-func-body-length
   async registerSecondDevice(
     setProvisioningUrl: Function,
     confirmNumber: (number?: string) => Promise<string>,
@@ -164,7 +197,11 @@ export default class AccountManager extends EventTarget {
   ) {
     const createAccount = this.createAccount.bind(this);
     const clearSessionsAndPreKeys = this.clearSessionsAndPreKeys.bind(this);
-    const generateKeys = this.generateKeys.bind(this, 100, progressCallback);
+    const generateKeys = this.generateKeys.bind(
+      this,
+      SIGNED_KEY_GEN_BATCH_SIZE,
+      progressCallback
+    );
     const confirmKeys = this.confirmKeys.bind(this);
     const registrationDone = this.registrationDone.bind(this);
     const registerKeys = this.server.registerKeys.bind(this.server);
@@ -172,111 +209,113 @@ export default class AccountManager extends EventTarget {
     const queueTask = this.queueTask.bind(this);
     const provisioningCipher = new ProvisioningCipher();
     let gotProvisionEnvelope = false;
-    return provisioningCipher.getPublicKey().then(
-      async (pubKey: ArrayBuffer) =>
-        new Promise((resolve, reject) => {
-          const socket = getSocket();
-          socket.onclose = event => {
-            window.log.info('provisioning socket closed. Code:', event.code);
-            if (!gotProvisionEnvelope) {
-              reject(new Error('websocket closed'));
-            }
-          };
-          socket.onopen = () => {
-            window.log.info('provisioning socket open');
-          };
-          const wsr = new WebSocketResource(socket, {
-            keepalive: { path: '/v1/keepalive/provisioning' },
-            handleRequest(request: IncomingWebSocketRequest) {
-              if (
-                request.path === '/v1/address' &&
-                request.verb === 'PUT' &&
-                request.body
-              ) {
-                const proto = window.textsecure.protobuf.ProvisioningUuid.decode(
-                  request.body
-                );
-                setProvisioningUrl(
-                  [
-                    'tsdevice:/?uuid=',
-                    proto.uuid,
-                    '&pub_key=',
-                    encodeURIComponent(btoa(utils.getString(pubKey))),
-                  ].join('')
-                );
-                request.respond(200, 'OK');
-              } else if (
-                request.path === '/v1/message' &&
-                request.verb === 'PUT' &&
-                request.body
-              ) {
-                const envelope = window.textsecure.protobuf.ProvisionEnvelope.decode(
-                  request.body,
-                  'binary'
-                );
-                request.respond(200, 'OK');
-                gotProvisionEnvelope = true;
-                wsr.close();
-                resolve(
-                  provisioningCipher
-                    .decrypt(envelope)
-                    .then(async provisionMessage =>
-                      queueTask(async () =>
-                        confirmNumber(provisionMessage.number).then(
-                          async deviceName => {
-                            if (
-                              typeof deviceName !== 'string' ||
-                              deviceName.length === 0
-                            ) {
-                              throw new Error(
-                                'AccountManager.registerSecondDevice: Invalid device name'
-                              );
-                            }
-                            if (
-                              !provisionMessage.number ||
-                              !provisionMessage.provisioningCode ||
-                              !provisionMessage.identityKeyPair
-                            ) {
-                              throw new Error(
-                                'AccountManager.registerSecondDevice: Provision message was missing key data'
-                              );
-                            }
+    const pubKey = await provisioningCipher.getPublicKey();
 
-                            return createAccount(
-                              provisionMessage.number,
-                              provisionMessage.provisioningCode,
-                              provisionMessage.identityKeyPair,
-                              provisionMessage.profileKey,
-                              deviceName,
-                              provisionMessage.userAgent,
-                              provisionMessage.readReceipts,
-                              { uuid: provisionMessage.uuid }
-                            )
-                              .then(clearSessionsAndPreKeys)
-                              .then(generateKeys)
-                              .then(async (keys: GeneratedKeysType) =>
-                                registerKeys(keys).then(async () =>
-                                  confirmKeys(keys)
-                                )
-                              )
-                              .then(async () =>
-                                registrationDone(provisionMessage)
-                              );
-                          }
+    const socket = await getSocket();
+
+    window.log.info('provisioning socket open');
+
+    return new Promise((resolve, reject) => {
+      socket.on('close', (code, reason) => {
+        window.log.info(
+          `provisioning socket closed. Code: ${code} Reason: ${reason}`
+        );
+        if (!gotProvisionEnvelope) {
+          reject(new Error('websocket closed'));
+        }
+      });
+
+      const wsr = new WebSocketResource(socket, {
+        keepalive: { path: '/v1/keepalive/provisioning' },
+        handleRequest(request: IncomingWebSocketRequest) {
+          if (
+            request.path === '/v1/address' &&
+            request.verb === 'PUT' &&
+            request.body
+          ) {
+            const proto = Proto.ProvisioningUuid.decode(request.body);
+            const { uuid } = proto;
+            if (!uuid) {
+              throw new Error('registerSecondDevice: expected a UUID');
+            }
+            const url = getProvisioningUrl(uuid, pubKey);
+
+            if (window.CI) {
+              window.CI.setProvisioningURL(url);
+            }
+
+            setProvisioningUrl(url);
+            request.respond(200, 'OK');
+          } else if (
+            request.path === '/v1/message' &&
+            request.verb === 'PUT' &&
+            request.body
+          ) {
+            const envelope = Proto.ProvisionEnvelope.decode(request.body);
+            request.respond(200, 'OK');
+            gotProvisionEnvelope = true;
+            wsr.close();
+            resolve(
+              provisioningCipher
+                .decrypt(envelope)
+                .then(async provisionMessage =>
+                  queueTask(async () =>
+                    confirmNumber(provisionMessage.number).then(
+                      async deviceName => {
+                        if (
+                          typeof deviceName !== 'string' ||
+                          deviceName.length === 0
+                        ) {
+                          throw new Error(
+                            'AccountManager.registerSecondDevice: Invalid device name'
+                          );
+                        }
+                        if (
+                          !provisionMessage.number ||
+                          !provisionMessage.provisioningCode ||
+                          !provisionMessage.identityKeyPair
+                        ) {
+                          throw new Error(
+                            'AccountManager.registerSecondDevice: Provision message was missing key data'
+                          );
+                        }
+
+                        return createAccount(
+                          provisionMessage.number,
+                          provisionMessage.provisioningCode,
+                          provisionMessage.identityKeyPair,
+                          provisionMessage.profileKey,
+                          deviceName,
+                          provisionMessage.userAgent,
+                          provisionMessage.readReceipts,
+                          { uuid: provisionMessage.uuid }
                         )
-                      )
+                          .then(clearSessionsAndPreKeys)
+                          .then(generateKeys)
+                          .then(async (keys: GeneratedKeysType) =>
+                            registerKeys(keys).then(async () =>
+                              confirmKeys(keys)
+                            )
+                          )
+                          .then(registrationDone);
+                      }
                     )
-                );
-              } else {
-                window.log.error('Unknown websocket message', request.path);
-              }
-            },
-          });
-        })
-    );
+                  )
+                )
+            );
+          } else {
+            window.log.error('Unknown websocket message', request.path);
+          }
+        },
+      });
+    });
   }
+
   async refreshPreKeys() {
-    const generateKeys = this.generateKeys.bind(this, 100);
+    const generateKeys = this.generateKeys.bind(
+      this,
+      SIGNED_KEY_GEN_BATCH_SIZE
+    );
     const registerKeys = this.server.registerKeys.bind(this.server);
 
     return this.queueTask(async () =>
@@ -289,6 +328,7 @@ export default class AccountManager extends EventTarget {
       })
     );
   }
+
   async rotateSignedPreKey() {
     return this.queueTask(async () => {
       const signedKeyId = window.textsecure.storage.get('signedKeyId', 1);
@@ -303,10 +343,9 @@ export default class AccountManager extends EventTarget {
       existingKeys.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
       const confirmedKeys = existingKeys.filter(key => key.confirmed);
 
-      const ONE_DAY_AGO = Date.now() - 24 * 60 * 60 * 1000;
       if (
         confirmedKeys.length >= 3 &&
-        confirmedKeys[0].created_at > ONE_DAY_AGO
+        isMoreRecentThan(confirmedKeys[0].created_at, PREKEY_ROTATION_AGE)
       ) {
         window.log.warn(
           'rotateSignedPreKey: 3+ confirmed keys, most recent is less than a day old. Cancelling rotation.'
@@ -314,14 +353,17 @@ export default class AccountManager extends EventTarget {
         return;
       }
 
+      // eslint-disable-next-line consistent-return
       return store
         .getIdentityKeyPair()
         .then(
-          async (identityKey: KeyPairType) =>
-            window.libsignal.KeyHelper.generateSignedPreKey(
-              identityKey,
-              signedKeyId
-            ),
+          async (identityKey: KeyPairType | undefined) => {
+            if (!identityKey) {
+              throw new Error('rotateSignedPreKey: No identity key pair!');
+            }
+
+            return generateSignedPreKey(identityKey, signedKeyId);
+          },
           () => {
             // We swallow any error here, because we don't want to get into
             //   a loop of repeated retries.
@@ -331,7 +373,7 @@ export default class AccountManager extends EventTarget {
             return null;
           }
         )
-        .then(async (res: SignedPreKeyType | null) => {
+        .then(async (res: CompatSignedPreKeyType | null) => {
           if (!res) {
             return null;
           }
@@ -369,7 +411,6 @@ export default class AccountManager extends EventTarget {
             e.code <= 599
           ) {
             const rejections =
-              // tslint:disable-next-line restrict-plus-operands
               1 + window.textsecure.storage.get('signedKeyRotationRejected', 0);
             await window.textsecure.storage.put(
               'signedKeyRotationRejected',
@@ -382,12 +423,14 @@ export default class AccountManager extends EventTarget {
         });
     });
   }
+
   async queueTask(task: () => Promise<any>) {
     this.pendingQueue = this.pendingQueue || new PQueue({ concurrency: 1 });
     const taskWithTimeout = window.textsecure.createTaskWithTimeout(task);
 
     return this.pendingQueue.add(taskWithTimeout);
   }
+
   async cleanSignedPreKeys() {
     const MINIMUM_KEYS = 3;
     const store = window.textsecure.storage.protocol;
@@ -417,9 +460,8 @@ export default class AccountManager extends EventTarget {
             return;
           }
           const createdAt = key.created_at || 0;
-          const age = Date.now() - createdAt;
 
-          if (age > ARCHIVE_AGE) {
+          if (isOlderThan(createdAt, ARCHIVE_AGE)) {
             window.log.info(
               'Removing confirmed signed prekey:',
               key.keyId,
@@ -443,8 +485,7 @@ export default class AccountManager extends EventTarget {
           }
 
           const createdAt = key.created_at || 0;
-          const age = Date.now() - createdAt;
-          if (age > ARCHIVE_AGE) {
+          if (isOlderThan(createdAt, ARCHIVE_AGE)) {
             window.log.info(
               'Removing unconfirmed signed prekey:',
               key.keyId,
@@ -458,7 +499,6 @@ export default class AccountManager extends EventTarget {
     });
   }
 
-  // tslint:disable max-func-body-length
   async createAccount(
     number: string,
     verificationCode: string,
@@ -469,12 +509,10 @@ export default class AccountManager extends EventTarget {
     readReceipts?: boolean | null,
     options: { accessKey?: ArrayBuffer; uuid?: string } = {}
   ): Promise<void> {
-    const { accessKey } = options;
-    let password = btoa(
-      utils.getString(window.libsignal.crypto.getRandomBytes(16))
-    );
+    const { accessKey, uuid } = options;
+    let password = btoa(utils.getString(getRandomBytes(16)));
     password = password.substring(0, password.length - 2);
-    const registrationId = window.libsignal.KeyHelper.generateRegistrationId();
+    const registrationId = generateRegistrationId();
 
     const previousNumber = getIdentifier(
       window.textsecure.storage.get('number_id')
@@ -507,19 +545,21 @@ export default class AccountManager extends EventTarget {
       { accessKey }
     );
 
-    const numberChanged = previousNumber && previousNumber !== number;
-    const uuidChanged =
-      previousUuid && response.uuid && previousUuid !== response.uuid;
+    const uuidChanged = previousUuid && uuid && previousUuid !== uuid;
 
-    if (numberChanged || uuidChanged) {
-      if (numberChanged) {
-        window.log.warn(
-          'New number is different from old number; deleting all previous data'
-        );
-      }
+    // We only consider the number changed if we didn't have a UUID before
+    const numberChanged =
+      !previousUuid && previousNumber && previousNumber !== number;
+
+    if (uuidChanged || numberChanged) {
       if (uuidChanged) {
         window.log.warn(
           'New uuid is different from old uuid; deleting all previous data'
+        );
+      }
+      if (numberChanged) {
+        window.log.warn(
+          'New number is different from old number; deleting all previous data'
         );
       }
 
@@ -543,7 +583,7 @@ export default class AccountManager extends EventTarget {
       window.textsecure.storage.remove('regionCode'),
       window.textsecure.storage.remove('userAgent'),
       window.textsecure.storage.remove('profileKey'),
-      window.textsecure.storage.remove('read-receipts-setting'),
+      window.textsecure.storage.remove('read-receipt-setting'),
     ]);
 
     // `setNumberAndDeviceId` and `setUuidAndDeviceId` need to be called
@@ -555,21 +595,33 @@ export default class AccountManager extends EventTarget {
     await window.textsecure.storage.user.setNumberAndDeviceId(
       number,
       response.deviceId || 1,
-      deviceName
+      deviceName || undefined
     );
 
-    const setUuid = response.uuid;
-    if (setUuid) {
+    if (uuid) {
       await window.textsecure.storage.user.setUuidAndDeviceId(
-        setUuid,
+        uuid,
         response.deviceId || 1
       );
+    }
+
+    // This needs to be done very early, because it changes how things are saved in the
+    //   database. Your identity, for example, in the saveIdentityWithAttributes call
+    //   below.
+    const conversationId = window.ConversationController.ensureContactIds({
+      e164: number,
+      uuid,
+      highTrust: true,
+    });
+
+    if (!conversationId) {
+      throw new Error('registrationDone: no conversationId!');
     }
 
     // update our own identity key, which may have changed
     // if we're relinking after a reinstall on the master device
     await window.textsecure.storage.protocol.saveIdentityWithAttributes(
-      number,
+      uuid || number,
       {
         publicKey: identityKeyPair.pubKey,
         firstUse: true,
@@ -583,7 +635,7 @@ export default class AccountManager extends EventTarget {
     await window.textsecure.storage.put('password', password);
     await window.textsecure.storage.put('registrationId', registrationId);
     if (profileKey) {
-      await window.textsecure.storage.put('profileKey', profileKey);
+      await ourProfileKeyService.set(profileKey);
     }
     if (userAgent) {
       await window.textsecure.storage.put('userAgent', userAgent);
@@ -600,6 +652,7 @@ export default class AccountManager extends EventTarget {
     await window.textsecure.storage.put('regionCode', regionCode);
     await window.textsecure.storage.protocol.hydrateCaches();
   }
+
   async clearSessionsAndPreKeys() {
     const store = window.textsecure.storage.protocol;
 
@@ -610,6 +663,11 @@ export default class AccountManager extends EventTarget {
       store.clearSessionStore(),
     ]);
   }
+
+  async getGroupCredentials(startDay: number, endDay: number) {
+    return this.server.getGroupCredentials(startDay, endDay);
+  }
+
   // Takes the same object returned by generateKeys
   async confirmKeys(keys: GeneratedKeysType) {
     const store = window.textsecure.storage.protocol;
@@ -623,6 +681,7 @@ export default class AccountManager extends EventTarget {
     window.log.info('confirmKeys: confirming key', key.keyId);
     await store.storeSignedPreKey(key.keyId, key.keyPair, confirmed);
   }
+
   async generateKeys(count: number, providedProgressCallback?: Function) {
     const progressCallback =
       typeof providedProgressCallback === 'function'
@@ -640,6 +699,10 @@ export default class AccountManager extends EventTarget {
 
     const store = window.textsecure.storage.protocol;
     return store.getIdentityKeyPair().then(async identityKey => {
+      if (!identityKey) {
+        throw new Error('generateKeys: No identity key pair!');
+      }
+
       const result: any = {
         preKeys: [],
         identityKey: identityKey.pubKey,
@@ -648,7 +711,7 @@ export default class AccountManager extends EventTarget {
 
       for (let keyId = startId; keyId < startId + count; keyId += 1) {
         promises.push(
-          window.libsignal.KeyHelper.generatePreKey(keyId).then(async res => {
+          Promise.resolve(generatePreKey(keyId)).then(async res => {
             await store.storePreKey(res.keyId, res.keyPair);
             result.preKeys.push({
               keyId: res.keyId,
@@ -662,19 +725,18 @@ export default class AccountManager extends EventTarget {
       }
 
       promises.push(
-        window.libsignal.KeyHelper.generateSignedPreKey(
-          identityKey,
-          signedKeyId
-        ).then(async res => {
-          await store.storeSignedPreKey(res.keyId, res.keyPair);
-          result.signedPreKey = {
-            keyId: res.keyId,
-            publicKey: res.keyPair.pubKey,
-            signature: res.signature,
-            // server.registerKeys doesn't use keyPair, confirmKeys does
-            keyPair: res.keyPair,
-          };
-        })
+        Promise.resolve(generateSignedPreKey(identityKey, signedKeyId)).then(
+          async res => {
+            await store.storeSignedPreKey(res.keyId, res.keyPair);
+            result.signedPreKey = {
+              keyId: res.keyId,
+              publicKey: res.keyPair.pubKey,
+              signature: res.signature,
+              // server.registerKeys doesn't use keyPair, confirmKeys does
+              keyPair: res.keyPair,
+            };
+          }
+        )
       );
 
       promises.push(
@@ -690,24 +752,9 @@ export default class AccountManager extends EventTarget {
       );
     });
   }
-  async registrationDone({ uuid, number }: { uuid?: string; number?: string }) {
+
+  async registrationDone() {
     window.log.info('registration done');
-
-    const identifier = number || uuid;
-    if (!identifier) {
-      throw new Error('registrationDone: no identifier!');
-    }
-
-    // Ensure that we always have a conversation for ourself
-    const conversation = await window.ConversationController.getOrCreateAndWait(
-      identifier,
-      'private'
-    );
-    conversation.updateE164(number);
-    conversation.updateUuid(uuid);
-
-    window.log.info('dispatching registration event');
-
     this.dispatchEvent(new Event('registration'));
   }
 }

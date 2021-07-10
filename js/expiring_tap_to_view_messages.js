@@ -1,3 +1,6 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 /* global
   _,
   MessageController,
@@ -5,9 +8,7 @@
 */
 
 // eslint-disable-next-line func-names
-(function() {
-  'use strict';
-
+(function () {
   window.Whisper = window.Whisper || {};
 
   async function eraseTapToViewMessages() {
@@ -28,7 +29,6 @@
             message.idForLogging()
           );
 
-          message.trigger('erased');
           await message.eraseContents();
         })
       );
@@ -49,15 +49,12 @@
     const HOUR = 60 * MINUTE;
     const THIRTY_DAYS = 30 * 24 * HOUR;
 
-    const toAgeOut = await window.Signal.Data.getNextTapToViewMessageToAgeOut({
-      Message: Whisper.Message,
-    });
-
-    if (!toAgeOut) {
+    const receivedAt = await window.Signal.Data.getNextTapToViewMessageTimestampToAgeOut();
+    if (!receivedAt) {
       return;
     }
 
-    const nextCheck = toAgeOut.get('received_at') + THIRTY_DAYS;
+    const nextCheck = receivedAt + THIRTY_DAYS;
 
     Whisper.TapToViewMessagesListener.nextCheck = nextCheck;
     window.log.info(

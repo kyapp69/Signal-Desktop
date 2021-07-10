@@ -1,3 +1,6 @@
+// Copyright 2018-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 const { assert } = require('chai');
 
 const SignalMenu = require('../../app/menu');
@@ -16,16 +19,16 @@ const PLATFORMS = [
     label: 'Windows',
     platform: 'win32',
     fixtures: {
-      default: './fixtures/menu-windows-linux',
-      setup: './fixtures/menu-windows-linux-setup',
+      default: './fixtures/menu-windows',
+      setup: './fixtures/menu-windows-setup',
     },
   },
   {
     label: 'Linux',
     platform: 'linux',
     fixtures: {
-      default: './fixtures/menu-windows-linux',
-      setup: './fixtures/menu-windows-linux-setup',
+      default: './fixtures/menu-linux',
+      setup: './fixtures/menu-linux-setup',
     },
   },
 ];
@@ -46,10 +49,10 @@ describe('SignalMenu', () => {
                 },
               };
               const options = {
-                isBeta: true,
+                isBeta: false,
+                devTools: true,
                 openContactUs: null,
                 openForums: null,
-                openGithub: null,
                 openJoinTheBeta: null,
                 openReleaseNotes: null,
                 openSupportPage: null,
@@ -57,6 +60,7 @@ describe('SignalMenu', () => {
                 includeSetup,
                 setupAsNewDevice: null,
                 setupAsStandalone: null,
+                forceUpdate: null,
                 showAbout: null,
                 showDebugLog: null,
                 showKeyboardShortcuts: null,

@@ -1,3 +1,6 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { SortableHandle } from 'react-sortable-hoc';
@@ -31,7 +34,13 @@ export type Props = Partial<
     readonly image?: string;
     readonly mode?: Mode;
     readonly showGuide?: boolean;
-    onPickEmoji?({ id: string, emoji: EmojiPickData }): unknown;
+    onPickEmoji?({
+      id,
+      emoji,
+    }: {
+      id: string;
+      emoji: EmojiPickDataType;
+    }): unknown;
     onRemove?(id: string): unknown;
   };
 
@@ -57,7 +66,6 @@ const ImageHandle = SortableHandle((props: { src: string }) => (
 ));
 
 export const StickerFrame = React.memo(
-  // tslint:disable-next-line max-func-body-length
   ({
     id,
     emojiData,
@@ -180,25 +188,25 @@ export const StickerFrame = React.memo(
               onMouseLeave={handleMouseLeave}
               ref={rootRef}
             >
-              {mode !== 'add' ? (
-                image ? (
-                  <ImageHandle src={image} />
-                ) : (
-                  <div className={styles.spinner}>{spinnerSvg}</div>
-                )
-              ) : null}
+              {
+                // eslint-disable-next-line no-nested-ternary
+                mode !== 'add' ? (
+                  image ? (
+                    <ImageHandle src={image} />
+                  ) : (
+                    <div className={styles.spinner}>{spinnerSvg}</div>
+                  )
+                ) : null
+              }
               {showGuide && mode !== 'add' ? (
                 <div className={styles.guide} />
               ) : null}
               {mode === 'add' && onDrop ? (
-                <DropZone
-                  onDrop={onDrop}
-                  inner={true}
-                  onDragActive={setDragActive}
-                />
+                <DropZone onDrop={onDrop} inner onDragActive={setDragActive} />
               ) : null}
               {mode === 'removable' ? (
                 <button
+                  type="button"
                   className={styles.closeButton}
                   onClick={handleRemove}
                   // Reverse the mouseenter/leave logic for the remove button so
@@ -214,6 +222,7 @@ export const StickerFrame = React.memo(
                   <PopperReference>
                     {({ ref }) => (
                       <button
+                        type="button"
                         ref={ref}
                         className={styles.emojiButton}
                         onClick={handleToggleEmojiPicker}

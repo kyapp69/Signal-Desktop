@@ -1,3 +1,6 @@
+// Copyright 2019-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import { createHash } from 'crypto';
 import {
   createReadStream,
@@ -17,7 +20,7 @@ export async function generateSignature(
   updatePackagePath: string,
   version: string,
   privateKeyPath: string
-) {
+): Promise<Buffer> {
   const privateKey = await loadHexFromPath(privateKeyPath);
   const message = await generateMessage(updatePackagePath, version);
 
@@ -52,7 +55,7 @@ export async function writeSignature(
   updatePackagePath: string,
   version: string,
   privateKeyPath: string
-) {
+): Promise<void> {
   const signaturePath = getSignaturePath(updatePackagePath);
   const signature = await generateSignature(
     updatePackagePath,
@@ -79,7 +82,7 @@ export async function _getFileHash(updatePackagePath: string): Promise<Buffer> {
   });
 }
 
-export function getSignatureFileName(fileName: string) {
+export function getSignatureFileName(fileName: string): string {
   return `${fileName}.sig`;
 }
 
@@ -105,6 +108,9 @@ export async function loadHexFromPath(target: string): Promise<Buffer> {
   return hexToBinary(hexString);
 }
 
-export async function writeHexToPath(target: string, data: Buffer) {
+export async function writeHexToPath(
+  target: string,
+  data: Buffer
+): Promise<void> {
   await writeFile(target, binaryToHex(data));
 }

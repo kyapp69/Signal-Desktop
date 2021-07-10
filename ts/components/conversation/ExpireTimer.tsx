@@ -1,19 +1,22 @@
+// Copyright 2018-2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 import React from 'react';
 import classNames from 'classnames';
 
 import { getIncrement, getTimerBucket } from '../../util/timer';
 
-interface Props {
+export type Props = {
   withImageNoCaption?: boolean;
   withSticker?: boolean;
   withTapToViewExpired?: boolean;
   expirationLength: number;
   expirationTimestamp: number;
   direction?: 'incoming' | 'outgoing';
-}
+};
 
 export class ExpireTimer extends React.Component<Props> {
-  private interval: any;
+  private interval: NodeJS.Timeout | null;
 
   constructor(props: Props) {
     super(props);
@@ -21,26 +24,28 @@ export class ExpireTimer extends React.Component<Props> {
     this.interval = null;
   }
 
-  public componentDidMount() {
+  public componentDidMount(): void {
     const { expirationLength } = this.props;
     const increment = getIncrement(expirationLength);
     const updateFrequency = Math.max(increment, 500);
 
     const update = () => {
       this.setState({
+        // Used to trigger renders
+        // eslint-disable-next-line react/no-unused-state
         lastUpdated: Date.now(),
       });
     };
     this.interval = setInterval(update, updateFrequency);
   }
 
-  public componentWillUnmount() {
+  public componentWillUnmount(): void {
     if (this.interval) {
       clearInterval(this.interval);
     }
   }
 
-  public render() {
+  public render(): JSX.Element {
     const {
       direction,
       expirationLength,

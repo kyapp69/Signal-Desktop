@@ -1,3 +1,6 @@
+// Copyright 2018-2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+
 // Tool requirements:
 //   - Feed it a set of regular expressions with descriptions as to what the risks are
 //   - Feed it also a set of exceptions
@@ -56,7 +59,6 @@ export type ExceptionType = {
   rule: string;
   path: string;
   line?: string;
-  lineNumber: number;
   reasonCategory: string;
   updated: string;
   reasonDetail: string;
